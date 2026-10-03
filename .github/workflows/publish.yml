@@ -1,0 +1,39 @@
+name: Publish
+
+# A version tag (v0.2.0) publishes that version to npm, by trusted publishing (no token;
+# npm adds provenance). The first version went up by hand.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: The tag is the package's version
+        run: test "v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
+      # A version already on npm (the first, which went up by hand) is left as it is.
+      - name: Is it on npm already?
+        id: npm
+        run: |
+          if npm view "$(node -p "require('./package.json').name")@${GITHUB_REF_NAME#v}" version; then
+            echo published=true >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.npm.outputs.published != 'true'
+        run: npm ci
+      - if: steps.npm.outputs.published != 'true'
+        run: npm run check
+      - if: steps.npm.outputs.published != 'true'
+        run: npm run build
+      - if: steps.npm.outputs.published != 'true'
+        run: npm publish

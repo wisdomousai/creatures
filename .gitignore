@@ -1,0 +1,6 @@
+node_modules
+dist
+dist-playground
+blender/build
+*.tgz
+.DS_Store

@@ -1,0 +1,78 @@
+/* A creature's (or set piece's) menu of tricks, at the pointer: a card with its name and
+   a key for each of a few tricks, in as many columns as fit, and More for the rest. */
+.trick-menu {
+  position: fixed;
+  z-index: 30;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(27rem, calc(100vw - 16px));
+  max-height: min(70vh, 30rem);
+  overflow: auto;
+  padding: 0.6rem 0.6rem 0.55rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 0.55rem;
+  background: var(--card);
+  box-shadow: 0 10px 28px -12px var(--shade, rgb(0 0 0 / 0.35));
+  color: var(--ink);
+  transform-origin: top left;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule-strong) transparent;
+}
+.trick-menu-name {
+  margin: 0 0.15rem 0.45rem;
+  color: var(--ink-soft);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+.trick-menu-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7.2rem, 1fr));
+  gap: 0.3rem;
+  min-width: min(15rem, calc(100vw - 2.6rem));
+}
+.trick-menu-item,
+.trick-menu-more,
+.trick-menu-last {
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 0.3rem;
+  background: var(--card);
+  box-shadow: 0 2px 0 var(--rule-strong);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 0.08s,
+    box-shadow 0.08s;
+}
+.trick-menu-item:hover,
+.trick-menu-item:focus-visible,
+.trick-menu-more:hover,
+.trick-menu-more:focus-visible,
+.trick-menu-last:hover,
+.trick-menu-last:focus-visible {
+  background: var(--paper-deep);
+  outline: none;
+}
+.trick-menu-item:active,
+.trick-menu-more:active,
+.trick-menu-last:active {
+  transform: translateY(2px);
+  box-shadow: 0 0 0 var(--rule-strong);
+}
+.trick-menu-more {
+  display: block;
+  margin-top: 0.3rem;
+  border-style: dashed;
+  box-shadow: none;
+  color: var(--ink-soft);
+}
+.trick-menu-last {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--ink-soft);
+}

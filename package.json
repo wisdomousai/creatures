@@ -1,0 +1,58 @@
+{
+  "name": "@wisdomousai/creatures",
+  "version": "0.1.0",
+  "description": "Toy robots of animals for the web: 149 creatures, animated live in three.js, who walk, fly, swim and play in a box round your page.",
+  "keywords": [
+    "three",
+    "threejs",
+    "webgl",
+    "robots",
+    "animals",
+    "creatures",
+    "animation",
+    "procedural-animation"
+  ],
+  "license": "MIT",
+  "homepage": "https://wisdomousai.github.io/creatures/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wisdomousai/creatures.git"
+  },
+  "bugs": "https://github.com/wisdomousai/creatures/issues",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./models/*": "./models/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "models"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsdown",
+    "build:playground": "vite build",
+    "preview": "vite preview",
+    "check": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "three": "^0.186.0"
+  },
+  "devDependencies": {
+    "@fontsource-variable/newsreader": "^5.3.0",
+    "@fontsource-variable/schibsted-grotesk": "^5.3.0",
+    "@types/three": "^0.186.0",
+    "three": "^0.186.1",
+    "tsdown": "^0.23.0",
+    "typescript": "^6.0.2",
+    "vite": "^8.3.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

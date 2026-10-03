@@ -1,0 +1,2839 @@
+{
+  "bolt": {
+    "base": {
+      "shell": "#f6f2ea",
+      "joint": "#e2703a",
+      "bezel": "#2f5fa8"
+    },
+    "roles": {
+      "Handle": "#a8784e",
+      "Bristle": "#e8c268",
+      "Feather": "#f08a4b"
+    },
+    "dots": ["#5a5a54", "#ffd27a"]
+  },
+  "cat": {
+    "base": {
+      "shell": "#f2a04e",
+      "joint": "#b9652a",
+      "bezel": "#fff1de"
+    },
+    "roles": {
+      "Ball": "#e2463f",
+      "Cup": "#3aa7c9",
+      "Coffee": "#5a3a26"
+    },
+    "coats": [
+      {
+        "base": {
+          "shell": "#f2a04e",
+          "joint": "#b9652a",
+          "bezel": "#fff1de"
+        },
+        "roles": {
+          "Stripe": "#c8641c",
+          "PatchStripe": "#c8641c",
+          "SpotStripe": "#c8641c",
+          "Tip": "#c8641c",
+          "Inner": "#f6b39c"
+        }
+      },
+      {
+        "base": {
+          "shell": "#9aa2ab",
+          "joint": "#5f666f",
+          "bezel": "#f0c567"
+        },
+        "roles": {
+          "Inner": "#e8a8b2",
+          "Collar": "#d8484a"
+        }
+      },
+      {
+        "base": {
+          "shell": "#2d2c31",
+          "joint": "#4d4c53",
+          "bezel": "#e8c63f"
+        },
+        "roles": {
+          "Inner": "#6b5560",
+          "Collar": "#e04b4b"
+        }
+      },
+      {
+        "base": {
+          "shell": "#f6f3ee",
+          "joint": "#ddd5cb",
+          "bezel": "#7fb8e6"
+        },
+        "roles": {
+          "Inner": "#f2a6b6",
+          "Paw": "#f2b7c2",
+          "Collar": "#4c86d9"
+        }
+      },
+      {
+        "base": {
+          "shell": "#f8f2e8",
+          "joint": "#e1d6c8",
+          "bezel": "#3a3330"
+        },
+        "roles": {
+          "Patch": "#e9893a",
+          "PatchStripe": "#e9893a",
+          "Spot": "#34302e",
+          "SpotStripe": "#34302e",
+          "Ear": "#34302e",
+          "Tail": "#e9893a",
+          "Tip": "#34302e",
+          "Inner": "#f0b0ae",
+          "Collar": "#3fae8f"
+        }
+      },
+      {
+        "base": {
+          "shell": "#f1e6d2",
+          "joint": "#5b3f2f",
+          "bezel": "#4b3427"
+        },
+        "roles": {
+          "Ear": "#5b3f2f",
+          "Tail": "#5b3f2f",
+          "Tip": "#4a3226",
+          "Paw": "#5b3f2f",
+          "Inner": "#8a6955",
+          "Collar": "#3b7dd8"
+        }
+      },
+      {
+        "base": {
+          "shell": "#c3c7cc",
+          "joint": "#6c727a",
+          "bezel": "#eef0f2"
+        },
+        "roles": {
+          "Stripe": "#5a5f67",
+          "PatchStripe": "#5a5f67",
+          "SpotStripe": "#5a5f67",
+          "Tip": "#5a5f67",
+          "Inner": "#e7a7b1"
+        }
+      }
+    ]
+  },
+  "dog": {
+    "base": {
+      "shell": "#d9a46c",
+      "joint": "#8b5a36",
+      "bezel": "#4a2f1d"
+    },
+    "roles": {
+      "Ear": "#8b5a36",
+      "Collar": "#e04b4b",
+      "Tongue": "#f07a8a",
+      "Bone": "#fff4d8",
+      "Patch": "#f2c48d",
+      "Spot": "#8b5a36",
+      "Inner": "#e7b8a0"
+    },
+    "dots": ["#4a2f1d", "#fff4d8"]
+  },
+  "ladybug": {
+    "base": {
+      "shell": "#e23b2e",
+      "joint": "#262626",
+      "bezel": "#dfe6ee"
+    },
+    "roles": {
+      "Head": "#262626"
+    },
+    "dots": ["#e23b2e", "#171717"]
+  },
+  "duck": {
+    "base": {
+      "shell": "#ffd33d",
+      "joint": "#f58a1f",
+      "bezel": "#f58a1f"
+    },
+    "roles": {
+      "Belly": "#ffe98a",
+      "Feather": "#f5b21f",
+      "Print": "#e2503a",
+      "Plate": "#f9a23b",
+      "Bill": "#f58a1f"
+    },
+    "dots": ["#8a6a2a", "#5ad7ff"]
+  },
+  "plant": {
+    "base": {
+      "shell": "#d4734c",
+      "joint": "#3f8f46",
+      "bezel": "#5b4030"
+    },
+    "roles": {
+      "Leaf": "#62b35b",
+      "Bud": "#62b35b",
+      "Petal": "#ff9cc2",
+      "Foot": "#9a4f33",
+      "Sole": "#3a2a20"
+    },
+    "dots": ["#3a5a44", "#8fe3ff"]
+  },
+  "vacuum": {
+    "base": {
+      "shell": "#f3f3f1",
+      "joint": "#474747",
+      "bezel": "#27b3a6"
+    },
+    "roles": {
+      "Hatch": "#f0b43a",
+      "Bristle": "#e8c268",
+      "Ball": "#e2463f"
+    },
+    "dots": ["#3a4a48", "#6fdc8c"]
+  },
+  "clock": {
+    "base": {
+      "shell": "#e3494e",
+      "joint": "#d9d9d6",
+      "bezel": "#f5f5f2"
+    },
+    "roles": {
+      "Bell": "#e3aa3c"
+    },
+    "dots": ["#c9a97a", "#ffcf4a"]
+  },
+  "sloth": {
+    "base": {
+      "shell": "#8e6c4d",
+      "joint": "#3a2d22",
+      "bezel": "#ecdfc6"
+    },
+    "roles": {
+      "Fur": "#a58461",
+      "Mask": "#2b2119",
+      "Claw": "#e6d8bd"
+    },
+    "dots": ["#b9ad98", "#4fbf6a"]
+  },
+  "hedgehog": {
+    "base": {
+      "shell": "#efe3cf",
+      "joint": "#3d3a36",
+      "bezel": "#2c2825"
+    },
+    "roles": {
+      "Dome": "#8a6248",
+      "Spike": "#5b4334"
+    },
+    "dots": ["#5b4334", "#fff3d6"]
+  },
+  "owl": {
+    "base": {
+      "shell": "#a8784e",
+      "joint": "#5a3f2a",
+      "bezel": "#f3e6cf"
+    },
+    "roles": {
+      "Wing": "#7d5537",
+      "Quill": "#5c3d27",
+      "Beak": "#e8a33c"
+    },
+    "dots": ["#5a3f2a", "#ffd27a"]
+  },
+  "cactus": {
+    "base": {
+      "shell": "#4f9a5c",
+      "joint": "#2f5a3a",
+      "bezel": "#244430"
+    },
+    "roles": {
+      "Pot": "#d9794e",
+      "Soil": "#5a3d2b",
+      "Spine": "#e9dfc3",
+      "Petal": "#ff7aa8",
+      "Tumble": "#c9a66b"
+    },
+    "dots": ["#e9dfc3", "#fff4b0"]
+  },
+  "octopus": {
+    "base": {
+      "shell": "#7c54cc",
+      "joint": "#35245e",
+      "bezel": "#ffc2dc"
+    },
+    "roles": {
+      "Ink": "#2b2146"
+    },
+    "dots": ["#4f3690", "#fff1c9"]
+  },
+  "bear": {
+    "base": {
+      "shell": "#a8622f",
+      "joint": "#5e3419",
+      "bezel": "#3b2212"
+    },
+    "roles": {
+      "Belly": "#f1dcb6",
+      "Snout": "#f1dcb6",
+      "Pad": "#e8c79a",
+      "Bow": "#b23a48",
+      "Key": "#d9a441"
+    },
+    "dots": ["#e8c79a", "#fff1d0"]
+  },
+  "bunny": {
+    "base": {
+      "shell": "#a3a9b3",
+      "joint": "#555a68",
+      "bezel": "#f5f2ec"
+    },
+    "roles": {
+      "Nose": "#f2849c",
+      "Tail": "#fbf9f4",
+      "Teeth": "#fbf9f4",
+      "Belly": "#fbf9f4",
+      "Bow": "#e0566f",
+      "Toe": "#fbf9f4",
+      "Carrot": "#f28c38",
+      "Leaf": "#4f9a5c"
+    },
+    "dots": ["#d9a9b6", "#ff8fb0"]
+  },
+  "fox": {
+    "base": {
+      "shell": "#e2621d",
+      "joint": "#4a3a31",
+      "bezel": "#2b221d"
+    },
+    "roles": {
+      "Chest": "#f7efe2",
+      "Sock": "#2f241e",
+      "EarIn": "#2f241e"
+    },
+    "dots": ["#f3e9da", "#fff6e0"]
+  },
+  "puffer": {
+    "base": {
+      "shell": "#f4d06a",
+      "joint": "#c8902e",
+      "bezel": "#8a5e22"
+    },
+    "roles": {
+      "Belly": "#fbf6e6",
+      "Fin": "#f39a62",
+      "Spike": "#c8902e",
+      "Blush": "#ff9fb0"
+    },
+    "dots": ["#d9a23a", "#fff4c2"]
+  },
+  "kitten": {
+    "base": {
+      "shell": "#34313a",
+      "joint": "#5a5661",
+      "bezel": "#f3d36b"
+    },
+    "roles": {
+      "Blaze": "#f6f3ee",
+      "Bib": "#f6f3ee",
+      "Paw": "#f6f3ee",
+      "Tuft": "#f6f3ee",
+      "Tip": "#f6f3ee",
+      "Inner": "#f2a6b6",
+      "Collar": "#e04b4b",
+      "Ball": "#e2463f",
+      "Fluff": "#4b4753",
+      "Spot": "#4b4753",
+      "Patch": "#f6f3ee",
+      "Pad": "#f2a6b6",
+      "Tongue": "#f08aa0"
+    },
+    "dots": ["#ffd6d6", "#fff4d8"]
+  },
+  "scamp": {
+    "base": {
+      "shell": "#b3a3d1",
+      "joint": "#7e6f9a",
+      "bezel": "#fff0c8"
+    },
+    "roles": {
+      "Stripe": "#7f6ba3",
+      "PatchStripe": "#7f6ba3",
+      "SpotStripe": "#7f6ba3",
+      "Tip": "#7f6ba3",
+      "Inner": "#f2a6b6",
+      "Paw": "#efe8f7",
+      "Collar": "#3fae8f"
+    },
+    "dots": ["#ff9a8f", "#ff3b30"]
+  },
+  "koi": {
+    "base": {
+      "shell": "#f7f3ec",
+      "joint": "#3a3836",
+      "bezel": "#2b2926"
+    },
+    "roles": {
+      "Patch": "#f0561c",
+      "Sumi": "#232120",
+      "Fin": "#f2a064"
+    },
+    "dots": ["#e2d9ca", "#ffd27a"]
+  },
+  "decor-pendant": {
+    "base": {
+      "joint": "#3b3b38"
+    },
+    "roles": {
+      "Shade": "#e3a93f"
+    },
+    "dots": ["#6b6457", "#ffd98a"]
+  },
+  "decor-mobile": {
+    "base": {
+      "joint": "#b9a88f"
+    },
+    "roles": {
+      "Moon": "#f2d36b",
+      "Cloud": "#ffffff",
+      "Planet": "#e58a6b"
+    },
+    "dots": ["#8a7a4a", "#ffe27a"]
+  },
+  "decor-disco": {
+    "base": {
+      "joint": "#5b6270"
+    },
+    "roles": {
+      "Mirror": "#d3d9e3"
+    },
+    "dots": ["#9aa3b5", "#ffffff"]
+  },
+  "decor-swing": {
+    "base": {
+      "joint": "#b08b5b"
+    },
+    "roles": {
+      "Seat": "#e86a5a"
+    }
+  },
+  "decor-lantern": {
+    "base": {
+      "joint": "#8e2f2a"
+    },
+    "roles": {
+      "Tassel": "#e0b040"
+    },
+    "dots": ["#a84a3a", "#ff7a5c"]
+  },
+  "decor-chime": {
+    "base": {
+      "joint": "#555a60"
+    },
+    "roles": {
+      "Top": "#6e8b5b",
+      "Tube": "#c9ccd1",
+      "Sail": "#f0c35a"
+    },
+    "dots": ["#9aa0a8", "#bfe8ff"]
+  },
+  "decor-orrery": {
+    "base": {
+      "joint": "#b58a3a"
+    },
+    "roles": {
+      "Planet1": "#d86c4f",
+      "Planet2": "#e6c07a",
+      "Planet3": "#5b8fd6"
+    },
+    "dots": ["#b8862a", "#ffcf4a"]
+  },
+  "decor-planter": {
+    "base": {
+      "joint": "#6b5a4a"
+    },
+    "roles": {
+      "Pot": "#d9774b",
+      "Leaf": "#5aa35a",
+      "Stem": "#3e7a3e"
+    }
+  },
+  "decor-plane": {
+    "base": {
+      "joint": "#55554f",
+      "bezel": "#7fb7e0"
+    },
+    "roles": {
+      "Plane": "#e84a4a",
+      "Wing": "#f4f4f1"
+    },
+    "dots": ["#a33a3a", "#ffd84a"]
+  },
+  "squirrel": {
+    "base": {
+      "shell": "#c8683a",
+      "joint": "#6b3a22",
+      "bezel": "#3a2418"
+    },
+    "roles": {
+      "Belly": "#f3e2c4",
+      "Tooth": "#fffaf0",
+      "Nut": "#d9a441",
+      "Plate": "#d9804d",
+      "Rim": "#7a4226",
+      "Pouch": "#8a5a32",
+      "Dirt": "#6b4a30"
+    },
+    "dots": ["#8a4a2a", "#ffe2b8"]
+  },
+  "raven": {
+    "base": {
+      "shell": "#151b30",
+      "joint": "#3a4260",
+      "bezel": "#8a90a8"
+    },
+    "roles": {
+      "Sheen": "#232f78",
+      "Beak": "#98a0bd"
+    },
+    "dots": ["#2b3563", "#8fb4ff"]
+  },
+  "shorthair": {
+    "base": {
+      "shell": "#8a9aab",
+      "joint": "#5b6979",
+      "bezel": "#37424f",
+      "glow": "#f2a63c"
+    },
+    "roles": {
+      "Cheek": "#9aa9b9",
+      "Bean": "#d9a0a8",
+      "EarPad": "#d9a0a8"
+    },
+    "dots": ["#66768a", "#ffd58a"]
+  },
+  "fatcat": {
+    "base": {
+      "shell": "#34363d",
+      "joint": "#22242a",
+      "bezel": "#f1ede4"
+    },
+    "roles": {
+      "Belly": "#f3efe6",
+      "Muzzle": "#f3efe6",
+      "Sock": "#f3efe6",
+      "Tip": "#f3efe6",
+      "Stripe": "#4a4d57"
+    },
+    "dots": ["#5a5d68", "#ffe9b0"]
+  },
+  "prop-yarn": {
+    "base": {
+      "joint": "#5f6670"
+    },
+    "roles": {
+      "Yarn": "#e8708e"
+    },
+    "dots": ["#6a3a44", "#8ff0c8"]
+  },
+  "prop-bone": {
+    "base": {
+      "joint": "#9aa4ad"
+    },
+    "roles": {
+      "Bone": "#f3e8d2"
+    },
+    "dots": ["#6a5a2a", "#ffcf5a"]
+  },
+  "prop-ball": {
+    "base": {
+      "joint": "#ffffff"
+    },
+    "roles": {
+      "Ball": "#4f9be8"
+    },
+    "dots": ["#3a4a6a", "#ffe27a"]
+  },
+  "prop-cushion": {
+    "base": {
+      "joint": "#b5752a"
+    },
+    "roles": {
+      "Cushion": "#eaa640"
+    },
+    "dots": ["#6a4a2a", "#ff8f6a"]
+  },
+  "prop-crate": {
+    "base": {
+      "joint": "#6f7780"
+    },
+    "roles": {
+      "Crate": "#c99a5e"
+    },
+    "dots": ["#2f4a34", "#7ee08a"]
+  },
+  "prop-table": {
+    "base": {
+      "joint": "#d9d4c8"
+    },
+    "roles": {
+      "Table": "#8fc7b0",
+      "Skirt": "#f2c9c0"
+    },
+    "dots": ["#6a5a2a", "#ffe27a"]
+  },
+  "prop-balloon": {
+    "base": {
+      "joint": "#ffffff"
+    },
+    "roles": {
+      "Balloon": "#f0506e"
+    },
+    "dots": ["#7a3040", "#fff1a8"]
+  },
+  "prop-frisbee": {
+    "base": {
+      "joint": "#ffffff"
+    },
+    "roles": {
+      "Disc": "#ffb13d"
+    },
+    "dots": ["#6a4a1a", "#fff4c2"]
+  },
+  "prop-block-star": {
+    "base": {
+      "joint": "#ffffff"
+    },
+    "roles": {
+      "Block": "#ffd24a"
+    },
+    "dots": ["#6a5a2a", "#ff8f6a"]
+  },
+  "prop-block-ring": {
+    "base": {
+      "joint": "#ffffff"
+    },
+    "roles": {
+      "Block": "#5fb4f0"
+    },
+    "dots": ["#2a4a6a", "#ffe27a"]
+  },
+  "prop-block-heart": {
+    "base": {
+      "joint": "#ffffff"
+    },
+    "roles": {
+      "Block": "#f58fb0"
+    },
+    "dots": ["#6a2a44", "#8ff0c8"]
+  },
+  "prop-top": {
+    "base": {
+      "joint": "#ffffff"
+    },
+    "roles": {
+      "Top": "#9b7ff0"
+    },
+    "dots": ["#3a2a6a", "#7fe3ff"]
+  },
+  "prop-trampoline": {
+    "base": {
+      "joint": "#8a929c"
+    },
+    "roles": {
+      "Pad": "#4fc3a1",
+      "Mat": "#2e3440"
+    },
+    "dots": ["#2a5a4a", "#ffe27a"]
+  },
+  "prop-seesaw": {
+    "base": {
+      "joint": "#d9d4c8"
+    },
+    "roles": {
+      "Stand": "#f0a04b",
+      "Plank": "#e8604c",
+      "Seat": "#ffd24a"
+    },
+    "dots": ["#6a3a2a", "#ffe27a"]
+  },
+  "prop-drum": {
+    "base": {
+      "joint": "#f2d27a"
+    },
+    "roles": {
+      "Drum": "#e84f5a",
+      "Skin": "#f6efe2"
+    },
+    "dots": ["#6a3a2a", "#ffcf5a"]
+  },
+  "prop-wand": {
+    "base": {
+      "joint": "#ffffff"
+    },
+    "roles": {
+      "Wand": "#7fd0f0"
+    },
+    "dots": ["#3a5a6a", "#e8f8ff"]
+  },
+  "prop-spot": {
+    "base": {
+      "joint": "#ffffff"
+    },
+    "roles": {},
+    "dots": ["#6a5a2a", "#fff1a8"]
+  },
+  "swan": {
+    "base": {
+      "shell": "#f8f8f5",
+      "joint": "#ee8a2b",
+      "bezel": "#26262b"
+    },
+    "roles": {
+      "Ring": "#c9d1dc",
+      "Plate": "#e4eaf2",
+      "Quill": "#f1f4f8",
+      "Wing": "#fbfcfd",
+      "Beak": "#f2892a",
+      "Knob": "#1f1f24",
+      "Claw": "#26262b",
+      "Foot": "#ee8a2b"
+    },
+    "dots": ["#a9bdd6", "#7fdcff"]
+  },
+  "poodle": {
+    "base": {
+      "shell": "#f7eef2",
+      "joint": "#6b6470",
+      "bezel": "#3b3540"
+    },
+    "roles": {
+      "Mane": "#fbe3ec",
+      "Ear": "#fbe3ec",
+      "Pom": "#f08db3",
+      "Trim": "#f08db3",
+      "Bow": "#f08db3",
+      "EarPlate": "#f6d3e0"
+    },
+    "dots": ["#f08db3", "#fff4f8"]
+  },
+  "dachshund": {
+    "base": {
+      "shell": "#b8652e",
+      "joint": "#4b2f1f",
+      "bezel": "#2e1d14"
+    },
+    "roles": {
+      "Ear": "#7c3f1c",
+      "EarPlate": "#a15a2b",
+      "Collar": "#2f86c9",
+      "Tag": "#e8b93c"
+    },
+    "dots": ["#7c3f1c", "#ffd98a"]
+  },
+  "puppy": {
+    "base": {
+      "shell": "#f2dcae",
+      "joint": "#c89250",
+      "bezel": "#5a3d25"
+    },
+    "roles": {
+      "Ear": "#c89250",
+      "EarPanel": "#f0a9a0",
+      "Collar": "#e0503f",
+      "Tongue": "#f07a8a",
+      "Bone": "#fff4d8",
+      "Patch": "#a8703a",
+      "Cuff": "#e0503f"
+    },
+    "dots": ["#c89250", "#fff4c8"]
+  },
+  "macaw": {
+    "base": {
+      "shell": "#c81e12",
+      "joint": "#4a4a52",
+      "bezel": "#7a7a82"
+    },
+    "roles": {
+      "Band": "#f5a800",
+      "Flight": "#1246c8",
+      "Patch": "#f1e8d4",
+      "Beak": "#cbbf9f",
+      "Jaw": "#3b3b40",
+      "Nut": "#8a5a2b",
+      "Claw": "#2b2b30"
+    },
+    "dots": ["#4a2a10", "#ffd23a"]
+  },
+  "bat": {
+    "base": {
+      "shell": "#3f3a5c",
+      "joint": "#8f86b8",
+      "bezel": "#2b2745"
+    },
+    "roles": {
+      "Fluff": "#6b5f9a",
+      "Membrane": "#8a5fd0",
+      "Dish": "#5a4f8c",
+      "Tooth": "#fffaf0",
+      "Mouth": "#1c1830",
+      "Chin": "#6d648f"
+    },
+    "dots": ["#3a7d8c", "#8ff0ff"]
+  },
+  "drone": {
+    "base": {
+      "shell": "#eef1f4",
+      "joint": "#5a6673",
+      "bezel": "#2a3542",
+      "glow": "#9fefff"
+    },
+    "roles": {
+      "Head": "#4aa8e0",
+      "Duct": "#f2b84b",
+      "Package": "#c99a5b",
+      "Fin": "#f2b84b",
+      "Hatch": "#3a4a5a",
+      "Foot": "#f2b84b"
+    },
+    "dots": ["#3c6d86", "#9fefff"]
+  },
+  "crawler": {
+    "base": {
+      "shell": "#c9a86a",
+      "joint": "#5b4a35",
+      "bezel": "#2f2820",
+      "glow": "#ffe9b0"
+    },
+    "roles": {
+      "Eye": "#7f9f8a",
+      "Scoop": "#b8b3a8",
+      "Pebble": "#9a958c",
+      "Tread": "#3a3129",
+      "Hatch": "#8a7350"
+    },
+    "dots": ["#7a6a3c", "#ffe08a"]
+  },
+  "penguin": {
+    "base": {
+      "shell": "#2f3b4b",
+      "joint": "#8996a6",
+      "bezel": "#1b232e"
+    },
+    "roles": {
+      "Belly": "#f6f8fa",
+      "Blush": "#ffc247",
+      "Beak": "#f08a24",
+      "Feet": "#f08a24",
+      "Toes": "#c96a14",
+      "Flipper": "#3b4a5e"
+    },
+    "dots": ["#5b6b80", "#7fe3ff"]
+  },
+  "unicycle": {
+    "base": {
+      "shell": "#3f6fd8",
+      "joint": "#5b6478",
+      "bezel": "#f2c14e"
+    },
+    "roles": {
+      "Ball0": "#e5484d",
+      "Ball1": "#f2c14e",
+      "Ball2": "#3fb68b",
+      "Saddle": "#8a5a3c",
+      "Bow": "#e5484d",
+      "Spring": "#e5484d"
+    },
+    "dots": ["#5a4a2a", "#ffd23f"]
+  },
+  "pogo": {
+    "base": {
+      "shell": "#ff7a59",
+      "joint": "#7a8492",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Rubber": "#232a36",
+      "Guard": "#ffd15c",
+      "Hatch": "#ffa78d"
+    },
+    "dots": ["#4a2f2a", "#ffe066"]
+  },
+  "nova": {
+    "base": {
+      "shell": "#f6f2ea",
+      "joint": "#2f9c98",
+      "bezel": "#4b3a86"
+    },
+    "roles": {
+      "Skirt": "#f0796a",
+      "Band": "#ffc94a",
+      "Trim": "#ffc94a",
+      "Bun": "#ffc94a",
+      "Boot": "#4b3a86"
+    },
+    "dots": ["#5a3b57", "#ff7fb0"]
+  },
+  "snail": {
+    "base": {
+      "shell": "#fff0e6",
+      "joint": "#b85a48",
+      "bezel": "#7a3a30"
+    },
+    "roles": {
+      "Whorl": "#f06a52",
+      "Skin": "#f6c9b8",
+      "Mark": "#ffe6d8"
+    },
+    "dots": ["#8a8496", "#fff3d0"],
+    "coats": [
+      {
+        "base": {
+          "shell": "#fff0e6",
+          "joint": "#b85a48",
+          "bezel": "#7a3a30"
+        },
+        "roles": {
+          "Whorl": "#f06a52",
+          "Skin": "#f6c9b8",
+          "Mark": "#ffe6d8"
+        }
+      },
+      {
+        "base": {
+          "shell": "#f2fff9",
+          "joint": "#2f8f70",
+          "bezel": "#1f6a54"
+        },
+        "roles": {
+          "Whorl": "#45c493",
+          "Skin": "#c4eedd",
+          "Mark": "#eafff6"
+        }
+      },
+      {
+        "base": {
+          "shell": "#f7f3ff",
+          "joint": "#6b52b5",
+          "bezel": "#47358a"
+        },
+        "roles": {
+          "Whorl": "#9370dc",
+          "Skin": "#ddd2f6",
+          "Mark": "#f1e9ff"
+        }
+      },
+      {
+        "base": {
+          "shell": "#fff4c4",
+          "joint": "#a97f0a",
+          "bezel": "#7a5f0c"
+        },
+        "roles": {
+          "Whorl": "#f0bd22",
+          "Skin": "#f7dd7a",
+          "Mark": "#a27a0a"
+        }
+      },
+      {
+        "base": {
+          "shell": "#f3faff",
+          "joint": "#2f78b3",
+          "bezel": "#1d4f7d"
+        },
+        "roles": {
+          "Whorl": "#45a3ea",
+          "Skin": "#c2e0f7",
+          "Mark": "#eaf6ff"
+        }
+      }
+    ]
+  },
+  "lizard": {
+    "base": {
+      "shell": "#5fbd3d",
+      "joint": "#2f7a22",
+      "bezel": "#fbe27a"
+    },
+    "roles": {
+      "Skin": "#8ad45a",
+      "Pad": "#fbe27a",
+      "Tongue": "#f0708a",
+      "Rim": "#3f9a2c",
+      "Band": "#e9f29a",
+      "Plate": "#fbe27a"
+    },
+    "dots": ["#3f7f2c", "#fff36a"]
+  },
+  "tang": {
+    "base": {
+      "shell": "#2b62d6",
+      "joint": "#183a8c",
+      "bezel": "#0f2058"
+    },
+    "roles": {
+      "Yellow": "#ffd23a",
+      "Fin": "#1f4fb8"
+    },
+    "dots": ["#0c1a4a", "#8fe9ff"]
+  },
+  "set-fern": {
+    "base": {
+      "joint": "#4f8f5a"
+    },
+    "roles": {
+      "Pot": "#d98a5f",
+      "Frond": "#4f8f5a",
+      "Leaf": "#7cc26e"
+    },
+    "dots": ["#3a5a2a", "#d8ff7a"]
+  },
+  "set-sunflower": {
+    "base": {
+      "joint": "#5a8f4a",
+      "bezel": "#6b4a2a"
+    },
+    "roles": {
+      "Base": "#b9803f",
+      "Stem": "#5a8f4a",
+      "Leaf": "#7cc26e",
+      "Sepal": "#5a8f4a",
+      "Disc": "#6b4a2a",
+      "Petal": "#ffcb3d"
+    },
+    "dots": ["#6a4a1a", "#ffd23f"]
+  },
+  "set-lamp": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Base": "#3b4a5e",
+      "Pole": "#e8b04a",
+      "Shade": "#e5484d",
+      "Trim": "#f4d58a"
+    },
+    "dots": ["#5a4a2a", "#ffe27a"]
+  },
+  "set-armchair": {
+    "base": {
+      "joint": "#8a6a4a"
+    },
+    "roles": {
+      "Cushion": "#3fa39a",
+      "Trim": "#f2c14e",
+      "Foot": "#f2c14e"
+    },
+    "dots": ["#5a4a2a", "#ffe27a"]
+  },
+  "set-bookshelf": {
+    "base": {
+      "joint": "#5b4a3a",
+      "bezel": "#2f2a26"
+    },
+    "roles": {
+      "Wood": "#c99a5e",
+      "Book0": "#e5484d",
+      "Book1": "#3f6fd8",
+      "Book2": "#3fb68b",
+      "Book3": "#f2c14e",
+      "Band": "#f4f4f1",
+      "Trim": "#f2c14e"
+    },
+    "dots": ["#5a4a2a", "#ffe27a"]
+  },
+  "set-rug": {
+    "base": {
+      "joint": "#f2c9c0"
+    },
+    "roles": {
+      "Rug": "#7a5ad8",
+      "Trim": "#ffc94a"
+    },
+    "dots": ["#5a3b57", "#ff9fd0"]
+  },
+  "set-stool": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Cushion": "#e5484d",
+      "Hub": "#2f3a4a",
+      "Leg": "#e8b04a",
+      "Foot": "#2f3a4a"
+    },
+    "dots": ["#5a4a2a", "#ffe27a"]
+  },
+  "set-radio": {
+    "base": {
+      "joint": "#d9d4c8",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Case": "#ff7a59",
+      "Foot": "#2f3a4a",
+      "Cone": "#f4f4f1",
+      "Dial": "#f2c14e"
+    },
+    "dots": ["#4a2f2a", "#ffe066"]
+  },
+  "set-gramophone": {
+    "base": {
+      "joint": "#d9d4c8",
+      "bezel": "#2f2a2a"
+    },
+    "roles": {
+      "Case": "#b8603a",
+      "Foot": "#2f2a2a",
+      "Platter": "#d9d4c8",
+      "Label": "#e0644f",
+      "Brass": "#f2c14e",
+      "Horn": "#f2c14e",
+      "HornIn": "#e0644f",
+      "Seam": "#c99a2e"
+    },
+    "dots": ["#4a2f2a", "#ffe066"]
+  },
+  "set-fireplace": {
+    "base": {
+      "joint": "#3b3632",
+      "bezel": "#1e1b19",
+      "glow": "#ffcf7a"
+    },
+    "roles": {
+      "Surround": "#a4553f",
+      "Stone": "#cbbfa8",
+      "Wood": "#8a5a36",
+      "Log": "#7a5436",
+      "Dog": "#2f2c2a",
+      "Wax": "#f2e6c8"
+    },
+    "dots": ["#5a3a1a", "#ffb347"]
+  },
+  "set-bookcase": {
+    "base": {
+      "joint": "#5b4a3a",
+      "bezel": "#2f2a26",
+      "glow": "#e8b04a"
+    },
+    "roles": {
+      "Wood": "#7a4e2e",
+      "Book0": "#8c2f2f",
+      "Book1": "#2f4f7a",
+      "Book2": "#3f6f4f",
+      "Book3": "#b08a3e",
+      "Book4": "#5a3a5f",
+      "Band": "#e8d9a8",
+      "Title": "#e8d9a8",
+      "Trim": "#c9a24a",
+      "Cushion": "#8a3a34"
+    },
+    "dots": ["#5a4a2a", "#ffe27a"]
+  },
+  "set-libcase": {
+    "base": {
+      "joint": "#5b4a3a",
+      "bezel": "#2f2a26",
+      "glow": "#e8b04a"
+    },
+    "roles": {
+      "Wood": "#7a4e2e",
+      "Book0": "#8c2f2f",
+      "Book1": "#2f4f7a",
+      "Book2": "#3f6f4f",
+      "Book3": "#b08a3e",
+      "Book4": "#5a3a5f",
+      "Band": "#e8d9a8",
+      "Title": "#e8d9a8",
+      "Trim": "#c9a24a",
+      "Cushion": "#8a3a34"
+    },
+    "dots": ["#5a4a2a", "#ffe27a"]
+  },
+  "set-librug": {
+    "base": {
+      "joint": "#6b5a4a"
+    },
+    "roles": {
+      "Pile": "#6b2a24",
+      "Binding": "#4a3020"
+    },
+    "dots": ["#5a4a2a", "#ffe27a"]
+  },
+  "set-cattree": {
+    "base": {
+      "joint": "#6b5a4a",
+      "bezel": "#2f2a26",
+      "glow": "#ffe27a"
+    },
+    "roles": {
+      "Base": "#8a6a4a",
+      "Post": "#d9b27a",
+      "Pad": "#6fa3c7",
+      "Toy": "#e5484d"
+    },
+    "dots": ["#5a4a2a", "#ffe27a"]
+  },
+  "set-kennel": {
+    "base": {
+      "joint": "#7a6a5a",
+      "bezel": "#2f2a26",
+      "glow": "#ffe27a"
+    },
+    "roles": {
+      "Base": "#9a8a78",
+      "Wall": "#e8d9b8",
+      "Roof": "#c4553f",
+      "Trim": "#f4efe2",
+      "Flap": "#5a8fc4",
+      "Bone": "#f4efe2",
+      "Bowl": "#e5484d"
+    },
+    "dots": ["#5a4a2a", "#ffe27a"]
+  },
+  "set-birdbath": {
+    "base": {
+      "joint": "#7a8088",
+      "bezel": "#2f3a4a",
+      "glow": "#9fe8ff"
+    },
+    "roles": {
+      "Base": "#8a8f98",
+      "Stone": "#cfc8ba",
+      "Water": "#6fb8e8"
+    },
+    "dots": ["#2a4a5a", "#9fe8ff"]
+  },
+  "set-perch": {
+    "base": {
+      "joint": "#6b7480",
+      "bezel": "#2f3a4a",
+      "glow": "#ffe27a"
+    },
+    "roles": {
+      "Hub": "#2f3a4a",
+      "Leg": "#3b4a5e",
+      "Foot": "#2f3a4a",
+      "Pole": "#d9a45a",
+      "Ring": "#e5484d",
+      "Cup": "#6fa3c7",
+      "Seed": "#8a6a3a",
+      "Bell": "#e8c04a"
+    },
+    "dots": ["#5a4a2a", "#ffe27a"]
+  },
+  "monitor": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Case": "#efe6d2",
+      "Knob": "#e8b04a",
+      "Plinth": "#3b4a5e",
+      "PlinthTrim": "#2f3a4a",
+      "Cabinet": "#d8bd92",
+      "CabinetDoor": "#c4a275",
+      "Post": "#6c747d",
+      "PostSteel": "#3b4148",
+      "Column": "#6e4429",
+      "ColumnRing": "#b8913f",
+      "Trunk": "#5e4330",
+      "TrunkRing": "#b39066",
+      "TrunkMoss": "#6f8a3c",
+      "Oak": "#dcc8a2",
+      "OakLip": "#34383c",
+      "Walnut": "#5b3a25",
+      "Gilt": "#c8a04c",
+      "Steel": "#7c848b",
+      "Rivet": "#4b5258",
+      "Bamboo": "#6a6f3e",
+      "BambooPole": "#c4ad6c",
+      "Lashing": "#8c6a45",
+      "Leaf": "#5d8a38"
+    },
+    "dots": ["#4a2f2a", "#ff8a5c"]
+  },
+  "turtle": {
+    "base": {
+      "shell": "#f2f7f4",
+      "joint": "#4a5f5c",
+      "bezel": "#2c3b3a",
+      "glow": "#bff7e8"
+    },
+    "roles": {
+      "Plate": "#2fa58f",
+      "Rim": "#1d6f66",
+      "Head": "#7fd1b8",
+      "Flipper": "#5cc2a5"
+    },
+    "dots": ["#2f6f63", "#bff7e8"]
+  },
+  "tortoise": {
+    "base": {
+      "shell": "#efe9dc",
+      "joint": "#6b5f4a",
+      "bezel": "#3b3226",
+      "glow": "#ffe9a8"
+    },
+    "roles": {
+      "Scute": "#a88a4a",
+      "Head": "#c9b98a",
+      "Leg": "#8f8360",
+      "Leaf": "#5fae4b",
+      "Candle": "#f2e6c8"
+    },
+    "dots": ["#6b5a33", "#ffd970"]
+  },
+  "greatdane": {
+    "base": {
+      "shell": "#aab3c0",
+      "joint": "#3f4651",
+      "bezel": "#23272e",
+      "glow": "#d6e6ff"
+    },
+    "roles": {
+      "Mask": "#2d3138",
+      "Ear": "#6f7885",
+      "EarPlate": "#c5ccd6",
+      "Patch": "#2d3138",
+      "Collar": "#d9b34a"
+    },
+    "dots": ["#3f4651", "#bcd9ff"]
+  },
+  "corgi": {
+    "base": {
+      "shell": "#eba85e",
+      "joint": "#b8692c",
+      "bezel": "#4a2c18"
+    },
+    "roles": {
+      "White": "#fff6e8",
+      "Ear": "#d98a3e",
+      "EarPlate": "#f6c9a0",
+      "Collar": "#3a8f6a",
+      "Muzzle": "#fff6e8"
+    },
+    "dots": ["#b8692c", "#fff0b8"]
+  },
+  "husky": {
+    "base": {
+      "shell": "#f1f4f6",
+      "joint": "#4c545e",
+      "bezel": "#262a30",
+      "glow": "#a9e6ff"
+    },
+    "roles": {
+      "Coat": "#7e8892",
+      "Mask": "#4c545e",
+      "Ruff": "#e4e9ee",
+      "Ear": "#7e8892",
+      "EarPlate": "#f6c9d0",
+      "Harness": "#d6452f"
+    },
+    "dots": ["#4e9fd0", "#c8f2ff"]
+  },
+  "chihuahua": {
+    "base": {
+      "shell": "#ebc890",
+      "joint": "#b8824a",
+      "bezel": "#4a3320"
+    },
+    "roles": {
+      "Ear": "#d9a766",
+      "EarPlate": "#f4b8b0",
+      "Collar": "#e0503f",
+      "Cushion": "#8f5fb0",
+      "Trim": "#ffd98a",
+      "Sweater": "#4f9bd6"
+    },
+    "dots": ["#d9a766", "#ffe1a3"]
+  },
+  "labrador": {
+    "base": {
+      "shell": "#e6c27a",
+      "joint": "#a88543",
+      "bezel": "#4b3b20"
+    },
+    "roles": {
+      "Grey": "#d4d1c8",
+      "Ear": "#cfa458",
+      "Collar": "#3a6ea5",
+      "Ball": "#c8e04a",
+      "EarPanel": "#f0d9a3",
+      "Brace": "#4b6f9c"
+    },
+    "dots": ["#a88543", "#ffe9a8"]
+  },
+  "siamese": {
+    "base": {
+      "shell": "#efe3cc",
+      "joint": "#a99a82",
+      "bezel": "#5a4636",
+      "glow": "#7ec3ff"
+    },
+    "roles": {
+      "Point": "#4a382e",
+      "Tail": "#4a382e",
+      "Tip": "#4a382e",
+      "Paw": "#4a382e",
+      "Inner": "#e3a79f",
+      "Collar": "#3a8fd0",
+      "Stripe": "#d8c6a4"
+    },
+    "dots": ["#7a6a5a", "#bfe3ff"]
+  },
+  "mainecoon": {
+    "base": {
+      "shell": "#8b6a4a",
+      "joint": "#4e3a28",
+      "bezel": "#e8c76a",
+      "glow": "#a6e07a"
+    },
+    "roles": {
+      "Ruff": "#d8c9a8",
+      "Plume": "#6a4e34",
+      "Tuft": "#2f2318",
+      "Inner": "#d9a39a",
+      "Stripe": "#4a3524",
+      "Tail": "#8b6a4a",
+      "Tip": "#4a3524",
+      "Paw": "#d8c9a8",
+      "Sock": "#d8c9a8",
+      "Collar": "#b8402e"
+    },
+    "dots": ["#7a6a4a", "#e8ffc8"]
+  },
+  "sphynx": {
+    "base": {
+      "shell": "#d6a894",
+      "joint": "#a07566",
+      "bezel": "#7a5a50",
+      "glow": "#f2ea4a"
+    },
+    "roles": {
+      "Fold": "#9a6c5c",
+      "Inner": "#eba8a0",
+      "Paw": "#c9a090",
+      "Sock": "#c9a090",
+      "Stripe": "#c29a8b",
+      "Collar": "#6f93d6"
+    },
+    "dots": ["#8a6a5a", "#fff3a0"]
+  },
+  "persian": {
+    "base": {
+      "shell": "#9a98a6",
+      "joint": "#65636f",
+      "bezel": "#3c3a46",
+      "glow": "#f2a43c"
+    },
+    "roles": {
+      "Fluff": "#d9d7de",
+      "Muzzle": "#eceae4",
+      "Lid": "#8a8894",
+      "Inner": "#d9a3ab",
+      "Paw": "#d9d7de",
+      "Sock": "#d9d7de",
+      "Stripe": "#9a98a4",
+      "Tail": "#9a98a6",
+      "Tip": "#d9d7de",
+      "Collar": "#8a3a58"
+    },
+    "dots": ["#8a7a6a", "#ffd9a0"]
+  },
+  "scottishfold": {
+    "base": {
+      "shell": "#c9c4c1",
+      "joint": "#8c8782",
+      "bezel": "#3d3a38",
+      "glow": "#f4b53c"
+    },
+    "roles": {
+      "Ear": "#8d8884",
+      "Inner": "#e8a8b0",
+      "Muzzle": "#efeae5",
+      "Paw": "#efeae5",
+      "Sock": "#efeae5",
+      "Stripe": "#8f8985",
+      "Tail": "#c9c4c1",
+      "Tip": "#8f8985",
+      "Collar": "#e0566e"
+    },
+    "dots": ["#8a7a6a", "#ffe3a8"]
+  },
+  "greyhound": {
+    "base": {
+      "shell": "#aeb6c2",
+      "joint": "#5f6975",
+      "bezel": "#2c313a"
+    },
+    "roles": {
+      "Ear": "#8e97a4",
+      "EarPanel": "#e5b5b5",
+      "Vest": "#f2842c",
+      "Collar": "#f2842c",
+      "Cuff": "#f2842c"
+    },
+    "dots": ["#f2842c", "#ffd9a8"]
+  },
+  "saintbernard": {
+    "base": {
+      "shell": "#f3e9d8",
+      "joint": "#a85f2a",
+      "bezel": "#3a2a22"
+    },
+    "roles": {
+      "Ear": "#a85f2a",
+      "EarPanel": "#e7b79a",
+      "Patch": "#b86a30",
+      "Mask": "#4a3428",
+      "Brow": "#4a3428",
+      "Collar": "#c0392b",
+      "Barrel": "#8a5a2b",
+      "Cross": "#c0392b",
+      "Oil": "#d9a21b",
+      "Tongue": "#f07a8a"
+    },
+    "dots": ["#a85f2a", "#ffd98a"]
+  },
+  "pug": {
+    "base": {
+      "shell": "#dcb67f",
+      "joint": "#8a6a45",
+      "bezel": "#4a3a2c"
+    },
+    "roles": {
+      "Mask": "#2e2a2c",
+      "Ear": "#2e2a2c",
+      "EarPanel": "#7a5a5a",
+      "Patch": "#d4b583",
+      "Collar": "#2fa4b8",
+      "Tongue": "#f07a8a"
+    },
+    "dots": ["#2e2a2c", "#ffcf6b"]
+  },
+  "bordercollie": {
+    "base": {
+      "shell": "#f6f6f2",
+      "joint": "#2a2a2e",
+      "bezel": "#202024"
+    },
+    "roles": {
+      "Patch": "#242428",
+      "Ear": "#242428",
+      "EarPanel": "#c98a8a",
+      "Sock": "#f6f6f2",
+      "Collar": "#e0503f"
+    },
+    "dots": ["#bcd6ee", "#5ac8ff"]
+  },
+  "beagle": {
+    "base": {
+      "shell": "#f7f1e4",
+      "joint": "#b5651d",
+      "bezel": "#3a2a20"
+    },
+    "roles": {
+      "Ear": "#a55a1c",
+      "EarPanel": "#e8b7a0",
+      "Tan": "#c7782b",
+      "Saddle": "#2b2420",
+      "Muzzle": "#f7f1e4",
+      "Collar": "#2f86c9",
+      "Tongue": "#f07a8a"
+    },
+    "dots": ["#a55a1c", "#fff1c8"]
+  },
+  "bengal": {
+    "base": {
+      "shell": "#d89a45",
+      "joint": "#8a5a28",
+      "bezel": "#2b1d12",
+      "glow": "#d9f06a"
+    },
+    "roles": {
+      "Spot": "#4a2c14",
+      "Ear": "#d89a45",
+      "Inner": "#e8b79a",
+      "Paw": "#ecd2a0",
+      "Tail": "#d89a45",
+      "Tip": "#2a1c10",
+      "Bean": "#4a2c14",
+      "Collar": "#2f9d7a",
+      "Cheek": "#efd9b0",
+      "Water": "#8fd3ee"
+    },
+    "dots": ["#6b4a24", "#f6e36a"]
+  },
+  "ragdoll": {
+    "base": {
+      "shell": "#f1e8d8",
+      "joint": "#9a8068",
+      "bezel": "#5c4636",
+      "glow": "#7fc6ff"
+    },
+    "roles": {
+      "Mask": "#6a5240",
+      "Ear": "#6a5240",
+      "Inner": "#e6b4ae",
+      "Paw": "#fbf8f2",
+      "Tail": "#6a5240",
+      "Tip": "#6a5240",
+      "Point": "#6a5240",
+      "Bean": "#e8a6ae",
+      "Collar": "#6fa8dc",
+      "Fluff": "#fbf5ea"
+    },
+    "dots": ["#8aa6c4", "#c4e6ff"]
+  },
+  "abyssinian": {
+    "base": {
+      "shell": "#c9702e",
+      "joint": "#8a4620",
+      "bezel": "#2e1a10",
+      "glow": "#f0dd5a"
+    },
+    "roles": {
+      "Tick": "#4a2412",
+      "Ear": "#c9702e",
+      "Inner": "#eba58e",
+      "Paw": "#4a2412",
+      "Tail": "#c9702e",
+      "Tip": "#2a170d",
+      "Bean": "#4a2412",
+      "Collar": "#e6b030",
+      "Bib": "#eec9a0",
+      "Cheek": "#eec9a0"
+    },
+    "dots": ["#8a5a30", "#ffe27a"]
+  },
+  "munchkin": {
+    "base": {
+      "shell": "#f6e8cc",
+      "joint": "#c79a62",
+      "bezel": "#ff9a4c",
+      "glow": "#8fe0c8"
+    },
+    "roles": {
+      "Patch": "#e8913f",
+      "Ear": "#e8913f",
+      "Inner": "#f2a9a0",
+      "Paw": "#fbf6ec",
+      "Tail": "#e8913f",
+      "Tip": "#fbf6ec",
+      "Bean": "#f2a9a0",
+      "Collar": "#e0464a",
+      "Blaze": "#fffaf0"
+    },
+    "dots": ["#d9b890", "#ffd98a"]
+  },
+  "oldtabby": {
+    "base": {
+      "shell": "#a29078",
+      "joint": "#5e4f3e",
+      "bezel": "#2c241c",
+      "glow": "#e0cf72"
+    },
+    "roles": {
+      "Stripe": "#4a3d30",
+      "Ear": "#a29078",
+      "Inner": "#c99aa0",
+      "Paw": "#bdb09c",
+      "Tail": "#a29078",
+      "Tip": "#4a3d30",
+      "Bean": "#7a5e5e",
+      "Collar": "#8a4a3a",
+      "Muzzle": "#d9d5cb",
+      "Hip": "#92806a"
+    },
+    "dots": ["#6b5a3a", "#ffb347"]
+  },
+  "hummingbird": {
+    "base": {
+      "shell": "#2f8f6a",
+      "joint": "#26343a",
+      "bezel": "#bfe9dc",
+      "glow": "#c8ffe8"
+    },
+    "roles": {
+      "Gorget": "#c4235f",
+      "Back": "#1f6e55",
+      "Under": "#52b88f",
+      "Bill": "#2a2a30",
+      "Foot": "#3a3a40"
+    },
+    "dots": ["#5a2a44", "#ff4fa0"]
+  },
+  "flamingo": {
+    "base": {
+      "shell": "#f59db2",
+      "joint": "#d9667f",
+      "bezel": "#a8405b",
+      "glow": "#ffe3ea"
+    },
+    "roles": {
+      "Ring": "#ff4f7a",
+      "Wing": "#ff8fa8",
+      "Flight": "#25252b",
+      "Bill": "#f6e6d4",
+      "Tip": "#25252b",
+      "Leg": "#ee7a92",
+      "Foot": "#e46a86"
+    },
+    "dots": ["#6a3a46", "#ff7a9a"]
+  },
+  "toucan": {
+    "base": {
+      "shell": "#1d1d22",
+      "joint": "#3a3a42",
+      "bezel": "#6c6c76",
+      "glow": "#fff0d0"
+    },
+    "roles": {
+      "Band1": "#ff9a00",
+      "Band2": "#ff4a14",
+      "Band3": "#ffd91a",
+      "Tip": "#1d1d22",
+      "Ring": "#2e8bff",
+      "Bib": "#fff4d6",
+      "Under": "#e8362a",
+      "Foot": "#7aa7d9"
+    },
+    "dots": ["#5a2a1a", "#ffb23a"]
+  },
+  "robin": {
+    "base": {
+      "shell": "#a8714a",
+      "joint": "#4a3a30",
+      "bezel": "#8c6a52",
+      "glow": "#ffe9d2"
+    },
+    "roles": {
+      "Breast": "#e8602a",
+      "Belly": "#f2e3c8",
+      "Wing": "#8a5a38",
+      "Bill": "#3a2f2a",
+      "Foot": "#5a4838"
+    },
+    "dots": ["#5a2a1a", "#ff6a2a"]
+  },
+  "hen": {
+    "base": {
+      "shell": "#e0b068",
+      "joint": "#7a5a38",
+      "bezel": "#a07a48",
+      "glow": "#fff1cc"
+    },
+    "roles": {
+      "Comb": "#e0302a",
+      "Wattle": "#d6281f",
+      "Wing": "#c48a3e",
+      "Tail": "#2d2d30",
+      "Foot": "#e8b74a",
+      "Bill": "#f2b63a",
+      "Egg": "#f7efe0"
+    },
+    "dots": ["#6a3a1a", "#ffcf5a"]
+  },
+  "cow": {
+    "base": {
+      "shell": "#f3eee2",
+      "joint": "#7d7466",
+      "bezel": "#3a342d",
+      "glow": "#fff3d6"
+    },
+    "roles": {
+      "Patch": "#2c2724",
+      "Nose": "#eba9a4",
+      "Horn": "#e6dcb8",
+      "Ear": "#d8c8ac",
+      "Inner": "#eba9a4",
+      "Hoof": "#4a423a",
+      "Collar": "#b8483a",
+      "Tuft": "#2c2724"
+    },
+    "dots": ["#6b5a48", "#ffe28a"]
+  },
+  "unicorn": {
+    "base": {
+      "shell": "#ece6f6",
+      "joint": "#8e7fb8",
+      "bezel": "#6a5d8a",
+      "glow": "#fff0ff"
+    },
+    "roles": {
+      "Horn": "#fff0c4",
+      "Mane": "#b585ff",
+      "Ear": "#efe9f6",
+      "Inner": "#f6b3d6",
+      "Hoof": "#d9c8f2",
+      "Nose": "#d9c4ee"
+    },
+    "dots": ["#8a7aaa", "#ffd6ff"]
+  },
+  "lamb": {
+    "base": {
+      "shell": "#ece4d2",
+      "joint": "#8f8472",
+      "bezel": "#3a322c",
+      "glow": "#fff4d8"
+    },
+    "roles": {
+      "Wool": "#fbf6ea",
+      "Face": "#4a3f38",
+      "Leg": "#4a3f38",
+      "Ear": "#5a4c44",
+      "Inner": "#e8aaa2",
+      "Hoof": "#2b2522",
+      "Nose": "#2b2522"
+    },
+    "dots": ["#8a7a62", "#ffd9a0"]
+  },
+  "alpaca": {
+    "base": {
+      "shell": "#e6d6bb",
+      "joint": "#8c7a5e",
+      "bezel": "#3a2f26",
+      "glow": "#fff0c8"
+    },
+    "roles": {
+      "Wool": "#f4e8d0",
+      "Tuft": "#f4e8d0",
+      "Jaw": "#d8c3a2",
+      "Ear": "#cdb48f",
+      "Inner": "#e6a79c",
+      "Hoof": "#3a2f26",
+      "Nose": "#3a2f26"
+    },
+    "dots": ["#8a7a5a", "#7fe0c8"]
+  },
+  "piglet": {
+    "base": {
+      "shell": "#f2b8c0",
+      "joint": "#b9707c",
+      "bezel": "#4a2a30",
+      "glow": "#fff0f0"
+    },
+    "roles": {
+      "Nose": "#e68b99",
+      "Jaw": "#e9a3ad",
+      "Ear": "#e9a3ad",
+      "Inner": "#c9707f",
+      "Hoof": "#5a3a3e"
+    },
+    "dots": ["#a06068", "#ffe6a8"]
+  },
+  "tigercub": {
+    "base": {
+      "shell": "#f08c2c",
+      "joint": "#a85a14",
+      "bezel": "#2b1a10",
+      "glow": "#fff3c4"
+    },
+    "roles": {
+      "Stripe": "#2b1a10",
+      "Ear": "#f08c2c",
+      "Inner": "#fff0d6",
+      "Paw": "#fff0d6",
+      "Tail": "#f08c2c",
+      "Tip": "#2b1a10",
+      "Bean": "#f2a6a0",
+      "Collar": "#3a9ad9",
+      "Cheek": "#fff0d6"
+    },
+    "dots": ["#c89a62", "#ffffff"]
+  },
+  "elephant": {
+    "base": {
+      "shell": "#a9b4c6",
+      "joint": "#66728a",
+      "bezel": "#36415a",
+      "glow": "#cdeeff"
+    },
+    "roles": {
+      "Inner": "#eaa5b8",
+      "Tusk": "#fbf1d6",
+      "Trunk": "#a0acc0",
+      "Belly": "#cfd8e6",
+      "Blanket": "#e0575b",
+      "Foot": "#8693ab"
+    },
+    "dots": ["#5a6a8a", "#9fe3ff"]
+  },
+  "frog": {
+    "base": {
+      "shell": "#7fd24a",
+      "joint": "#3f7f2a",
+      "bezel": "#1f3a1a",
+      "glow": "#fff6a8"
+    },
+    "roles": {
+      "Belly": "#f4f0b8",
+      "Stripe": "#ffe14a",
+      "Tongue": "#ff6f8f",
+      "Pad": "#ffb84a"
+    },
+    "dots": ["#c96a2a", "#ffd23a"]
+  },
+  "monkey": {
+    "base": {
+      "shell": "#a06a3a",
+      "joint": "#6e4524",
+      "bezel": "#2f1f12",
+      "glow": "#fff0b0"
+    },
+    "roles": {
+      "Belly": "#f1d9b0",
+      "Face": "#f1d9b0",
+      "Brass": "#f3c33d"
+    },
+    "dots": ["#8a5a2a", "#ffcf5a"]
+  },
+  "chameleon": {
+    "base": {
+      "shell": "#58b894",
+      "joint": "#2f6f5a",
+      "bezel": "#17352c",
+      "glow": "#fff6a8"
+    },
+    "roles": {
+      "Belly": "#e4f0c4",
+      "Tongue": "#ff6f8f",
+      "Pad": "#2f6f5a"
+    },
+    "dots": ["#2f7a62", "#ffd23a"]
+  },
+  "bee": {
+    "base": {
+      "shell": "#2b2118",
+      "joint": "#4a3a28",
+      "bezel": "#fff0c0",
+      "glow": "#fff4cc"
+    },
+    "roles": {
+      "Fuzz": "#f2b630",
+      "Head": "#f2b630",
+      "Wing": "#d4eef8"
+    },
+    "dots": ["#6e4c10", "#ffc93c"]
+  },
+  "butterfly": {
+    "base": {
+      "shell": "#2e2236",
+      "joint": "#3c2d46",
+      "bezel": "#f3e4ff",
+      "glow": "#fff0fb"
+    },
+    "roles": {
+      "Fuzz": "#7a4a8f",
+      "Head": "#7a4a8f"
+    },
+    "dots": ["#4b3358", "#ff9ad5"]
+  },
+  "caterpillar": {
+    "base": {
+      "shell": "#86cc4e",
+      "joint": "#2f6b2a",
+      "bezel": "#e6ffc8",
+      "glow": "#f4ffd8"
+    },
+    "roles": {
+      "Head": "#f2a33a",
+      "Silk": "#efe6cf",
+      "Wing": "#ffd9a0"
+    },
+    "dots": ["#3d7a2f", "#e4ff5a"]
+  },
+  "firefly": {
+    "base": {
+      "shell": "#3a3328",
+      "joint": "#1f1b15",
+      "bezel": "#f1e6b8",
+      "glow": "#fff3b0"
+    },
+    "roles": {
+      "Fuzz": "#e8863a",
+      "Head": "#e8863a",
+      "Wing": "#e9d7a0"
+    },
+    "dots": ["#4f5a1a", "#d8ff2e"]
+  },
+  "beetle": {
+    "base": {
+      "shell": "#7a4a2e",
+      "joint": "#2e2018",
+      "bezel": "#f3d9b0",
+      "glow": "#ffe2a8"
+    },
+    "roles": {
+      "Fuzz": "#4a6b8a",
+      "Head": "#4a6b8a",
+      "Wing": "#f0c070",
+      "Horn": "#2c1d16"
+    },
+    "dots": ["#6e4c10", "#ffb02e"]
+  },
+  "hamster": {
+    "base": {
+      "shell": "#dc8f3e",
+      "joint": "#8a5530",
+      "bezel": "#3b2416"
+    },
+    "roles": {
+      "Belly": "#fbf0dc",
+      "Paw": "#f6d9a8",
+      "Pad": "#f2a99a",
+      "EarIn": "#f2a99a",
+      "Nose": "#c0655e",
+      "Wheel": "#7aa7c7",
+      "Seed": "#d9b26a"
+    },
+    "dots": ["#f4dcb4", "#ffae3c"]
+  },
+  "chinchilla": {
+    "base": {
+      "shell": "#a9acb4",
+      "joint": "#5d6068",
+      "bezel": "#2d2f34"
+    },
+    "roles": {
+      "Belly": "#f1f1ef",
+      "Pad": "#e8b8b4",
+      "Dish": "#f0d9d6",
+      "Ring": "#d3d5db",
+      "Nose": "#d79a98"
+    },
+    "dots": ["#dcecf8", "#9fd8ff"]
+  },
+  "redpanda": {
+    "base": {
+      "shell": "#c85a22",
+      "joint": "#5a3320",
+      "bezel": "#2e1a12"
+    },
+    "roles": {
+      "Cream": "#f6e9d3",
+      "Sock": "#2a1f1a",
+      "Ring": "#7a3a1a",
+      "Tip": "#fbf5ea",
+      "Pad": "#2a1f1a",
+      "Nose": "#2a1f1a"
+    },
+    "dots": ["#ffe3b0", "#ffa94a"]
+  },
+  "koala": {
+    "base": {
+      "shell": "#9a9ea6",
+      "joint": "#565a62",
+      "bezel": "#2c2e33"
+    },
+    "roles": {
+      "Belly": "#e9e9e6",
+      "Ear": "#e5e5e1",
+      "Nose": "#24262a",
+      "Pad": "#3a3c42",
+      "Leaf": "#6fa85a"
+    },
+    "dots": ["#d2e6cb", "#9be37a"]
+  },
+  "panda": {
+    "base": {
+      "shell": "#f3f3ef",
+      "joint": "#4b4b4b",
+      "bezel": "#222222"
+    },
+    "roles": {
+      "Black": "#24262a",
+      "Pad": "#4b4b4b",
+      "Nose": "#24262a",
+      "Bamboo": "#7ab85a"
+    },
+    "dots": ["#d2e6cb", "#8ee072"]
+  },
+  "tin": {
+    "base": { "shell": "#d8452f", "joint": "#9ca7b2", "bezel": "#2a2f3a", "glow": "#ffe9a8" },
+    "roles": { "Dome": "#c8d0d8", "Key": "#f2c230", "Foot": "#2e4aa0", "Gear": "#d9a93a" },
+    "dots": ["#5a4a2a", "#ffd23f"]
+  },
+  "tot": {
+    "base": { "shell": "#ffe08a", "joint": "#9fb3c8", "bezel": "#3a3550", "glow": "#fff4c8" },
+    "roles": { "Nappy": "#ffffff", "Pacifier": "#ff8fb8", "Trim": "#8fd3ff", "Bootie": "#8fd3ff" },
+    "dots": ["#5a4a58", "#ff9ccf"]
+  },
+  "teapot": {
+    "base": { "shell": "#f4efe6", "joint": "#5b7fc2", "bezel": "#2c3a63", "glow": "#fff3d6" },
+    "roles": {
+      "Lid": "#5b7fc2",
+      "Trim": "#d7b45a",
+      "Bow": "#c8433a",
+      "Glove": "#ffffff",
+      "Tray": "#d7b45a",
+      "Cup": "#ffffff"
+    },
+    "dots": ["#6a5a40", "#ffe8a8"]
+  },
+  "lanky": {
+    "base": { "shell": "#f2efe8", "joint": "#8d97a3", "bezel": "#2f3745", "glow": "#e8fff4" },
+    "roles": { "Sleeve": "#3fb6a8", "Stripe": "#ffb347", "Shoe": "#e5484d" },
+    "dots": ["#4a5a50", "#7dffc8"]
+  },
+  "skater": {
+    "base": { "shell": "#f3f0ea", "joint": "#58606e", "bezel": "#262a35", "glow": "#fff0f6" },
+    "roles": { "Helmet": "#ff5a8a", "Pad": "#2b3a8a", "Skate": "#ffd23f", "Wheel": "#ffffff" },
+    "dots": ["#5a3a48", "#ff9ad0"]
+  },
+  "panther": {
+    "base": { "shell": "#2f86a8", "joint": "#1b4f6b", "bezel": "#0e2d3f", "glow": "#f4ffff" },
+    "roles": { "Belly": "#f2e8d8", "Tongue": "#ff6f8f", "Pad": "#1b4f6b" },
+    "dots": ["#23465a", "#ff6a3a"]
+  },
+  "jackson": {
+    "base": { "shell": "#6fc84a", "joint": "#2f6b2a", "bezel": "#16360f", "glow": "#f6ffd0" },
+    "roles": { "Belly": "#f0f4c4", "Tongue": "#ff6f8f", "Pad": "#2f6b2a", "Horn": "#f1e8b8" },
+    "dots": ["#4a7a2a", "#e8ff5a"]
+  },
+  "pygmy": {
+    "base": { "shell": "#9a7448", "joint": "#5e4125", "bezel": "#2c1d10", "glow": "#ffe9b8" },
+    "roles": { "Belly": "#e3cfa6", "Tongue": "#ff8a7a", "Pad": "#5e4125" },
+    "dots": ["#6a4a20", "#ffa83a"]
+  },
+  "parson": {
+    "base": { "shell": "#1f9a86", "joint": "#0f5a4c", "bezel": "#08302a", "glow": "#e8fff2" },
+    "roles": { "Belly": "#d4efd0", "Tongue": "#ff6f8f", "Pad": "#0f5a4c", "Turret": "#ff8a1f" },
+    "dots": ["#0f5a4c", "#ffb03a"]
+  },
+  "tin": {
+    "base": {
+      "shell": "#d8452f",
+      "joint": "#9ca7b2",
+      "bezel": "#2a2f3a",
+      "glow": "#ffe9a8"
+    },
+    "roles": {
+      "Dome": "#c8d0d8",
+      "Key": "#f2c230",
+      "Foot": "#2e4aa0",
+      "Gear": "#d9a93a"
+    },
+    "dots": ["#5a4a2a", "#ffd23f"]
+  },
+  "tot": {
+    "base": {
+      "shell": "#ffe08a",
+      "joint": "#9fb3c8",
+      "bezel": "#3a3550",
+      "glow": "#fff4c8"
+    },
+    "roles": {
+      "Nappy": "#ffffff",
+      "Pacifier": "#ff8fb8",
+      "Trim": "#8fd3ff",
+      "Bootie": "#8fd3ff"
+    },
+    "dots": ["#5a4a58", "#ff9ccf"]
+  },
+  "teapot": {
+    "base": {
+      "shell": "#f4efe6",
+      "joint": "#5b7fc2",
+      "bezel": "#2c3a63",
+      "glow": "#fff3d6"
+    },
+    "roles": {
+      "Lid": "#5b7fc2",
+      "Trim": "#d7b45a",
+      "Bow": "#c8433a",
+      "Glove": "#ffffff",
+      "Tray": "#d7b45a",
+      "Cup": "#ffffff"
+    },
+    "dots": ["#6a5a40", "#ffe8a8"]
+  },
+  "lanky": {
+    "base": {
+      "shell": "#f2efe8",
+      "joint": "#8d97a3",
+      "bezel": "#2f3745",
+      "glow": "#e8fff4"
+    },
+    "roles": {
+      "Sleeve": "#3fb6a8",
+      "Stripe": "#ffb347",
+      "Shoe": "#e5484d"
+    },
+    "dots": ["#4a5a50", "#7dffc8"]
+  },
+  "skater": {
+    "base": {
+      "shell": "#f3f0ea",
+      "joint": "#58606e",
+      "bezel": "#262a35",
+      "glow": "#fff0f6"
+    },
+    "roles": {
+      "Helmet": "#ff5a8a",
+      "Pad": "#2b3a8a",
+      "Skate": "#ffd23f",
+      "Wheel": "#ffffff"
+    },
+    "dots": ["#5a3a48", "#ff9ad0"]
+  },
+  "jellyfish": {
+    "base": {
+      "shell": "#f3e6ff",
+      "joint": "#7a56c2",
+      "bezel": "#4b3190"
+    },
+    "roles": {
+      "Bell": "#e2c8ff",
+      "Tentacle": "#ff9fd2",
+      "Arm": "#c9a4ff",
+      "Lappet": "#ff7fbf"
+    },
+    "dots": ["#8a5fd0", "#fff3a8"]
+  },
+  "seahorse": {
+    "base": {
+      "shell": "#86e0cc",
+      "joint": "#2f8f84",
+      "bezel": "#1d5f5a"
+    },
+    "roles": {
+      "Tail": "#6fd0bb",
+      "Plate": "#ffe08a",
+      "Snout": "#a6efdc",
+      "Crown": "#ff7a5c",
+      "Fin": "#ffb36b"
+    },
+    "dots": ["#2a7a70", "#fff1a8"]
+  },
+  "narwhal": {
+    "base": {
+      "shell": "#9dbcf0",
+      "joint": "#3d5a99",
+      "bezel": "#27396b"
+    },
+    "roles": {
+      "Belly": "#f4f1ea",
+      "Tusk": "#fff1c2",
+      "Fin": "#6f94d6",
+      "Fluke": "#5b7fc4"
+    },
+    "dots": ["#4a63a8", "#a5f5ff"]
+  },
+  "crab": {
+    "base": {
+      "shell": "#ee7f62",
+      "joint": "#9b3f2e",
+      "bezel": "#5a2219"
+    },
+    "roles": {
+      "Claw": "#e4533a",
+      "Leg": "#c25a43",
+      "Sand": "#e8d6a6"
+    },
+    "dots": ["#ffe9a0", "#7a2e22"]
+  },
+  "otter": {
+    "base": {
+      "shell": "#7d5a42",
+      "joint": "#4a3626",
+      "bezel": "#33271e"
+    },
+    "roles": {
+      "Belly": "#e6d2b0",
+      "Paw": "#55402f",
+      "Shell": "#d9a7c8",
+      "Stone": "#8d949c",
+      "Kelp": "#4f9a5e"
+    },
+    "dots": ["#6b5242", "#fff1c2"]
+  },
+  "foal": {
+    "base": {
+      "shell": "#b9855a",
+      "joint": "#6a4a38",
+      "bezel": "#3a2a22",
+      "glow": "#fff1d6"
+    },
+    "roles": {
+      "Leg": "#d9c4a4",
+      "Hoof": "#efe6d8",
+      "Mane": "#4a2f22",
+      "Blaze": "#fff6e6",
+      "Ear": "#b0794e",
+      "Inner": "#eab0a0",
+      "Nose": "#5a4032"
+    },
+    "dots": ["#7a5a3a", "#ffe8a0"]
+  },
+  "ram": {
+    "base": {
+      "shell": "#e9e1d0",
+      "joint": "#7a6f5e",
+      "bezel": "#2e2824",
+      "glow": "#fff0d0"
+    },
+    "roles": {
+      "Wool": "#f4eedf",
+      "Face": "#4a423a",
+      "Leg": "#4a423a",
+      "Horn": "#c9a468",
+      "Ear": "#5a4e44",
+      "Inner": "#d8a090",
+      "Hoof": "#241f1c",
+      "Nose": "#241f1c"
+    },
+    "dots": ["#8a7a60", "#ffb347"]
+  },
+  "highlandcalf": {
+    "base": {
+      "shell": "#c8642c",
+      "joint": "#7a4020",
+      "bezel": "#3a2216",
+      "glow": "#fff0d0"
+    },
+    "roles": {
+      "Coat": "#d9743a",
+      "Fringe": "#e8883e",
+      "Face": "#b05a26",
+      "Horn": "#efe2c0",
+      "Leg": "#8a4622",
+      "Ear": "#b85a28",
+      "Inner": "#f0b8a0",
+      "Hoof": "#2b1c14",
+      "Nose": "#2b1c14"
+    },
+    "dots": ["#7a4a2a", "#ffcf70"]
+  },
+  "rooster": {
+    "base": {
+      "shell": "#d9822b",
+      "joint": "#7a4a22",
+      "bezel": "#8a5a2a",
+      "glow": "#fff1cc"
+    },
+    "roles": {
+      "Comb": "#e0302a",
+      "Wattle": "#d6281f",
+      "Hackle": "#f0b040",
+      "Wing": "#9a3e1c",
+      "Tail": "#1f4a4a",
+      "Foot": "#e8b74a",
+      "Bill": "#f2b63a"
+    },
+    "dots": ["#6a3a1a", "#5fe0c0"]
+  },
+  "goose": {
+    "base": {
+      "shell": "#f2f0ea",
+      "joint": "#7a7a80",
+      "bezel": "#9a9aa2",
+      "glow": "#fff6e0"
+    },
+    "roles": {
+      "Bill": "#f08a1e",
+      "Foot": "#f08a1e",
+      "Wing": "#dedbd2",
+      "Tail": "#c9c6bd"
+    },
+    "dots": ["#8a7a60", "#ffd070"]
+  },
+  "goat": {
+    "base": {
+      "shell": "#efe3cb",
+      "joint": "#8a6a46",
+      "bezel": "#3a2c22"
+    },
+    "roles": {
+      "Face": "#b98a58",
+      "Leg": "#4a3626",
+      "Ear": "#c99a62",
+      "Inner": "#e8aaa2",
+      "Hoof": "#2b2522",
+      "Nose": "#2b2522",
+      "Horn": "#d9c8a4",
+      "Beard": "#f7f0e0",
+      "Stripe": "#7a5a3a"
+    },
+    "dots": ["#7a6246", "#ffc25a"]
+  },
+  "guineapig": {
+    "base": {
+      "shell": "#f4ead6",
+      "joint": "#8a5a34",
+      "bezel": "#3b2a1e"
+    },
+    "roles": {
+      "Patch": "#d9822f",
+      "Dark": "#4b3426",
+      "Belly": "#fbf3e2",
+      "Paw": "#f6dcb6",
+      "Pad": "#f2a99a",
+      "EarIn": "#f2a99a",
+      "Nose": "#c0655e",
+      "Hay": "#d8c36a"
+    },
+    "dots": ["#f4dcb4", "#ff9f3c"]
+  },
+  "ferret": {
+    "base": {
+      "shell": "#d8c7a4",
+      "joint": "#6a5446",
+      "bezel": "#2c211b"
+    },
+    "roles": {
+      "Mask": "#3a2b24",
+      "Dark": "#4a3a30",
+      "Ring": "#6a5446",
+      "Pad": "#e7a89a",
+      "Nose": "#d98b84",
+      "Belly": "#efe4cc"
+    },
+    "dots": ["#6a7a78", "#6fe3d4"]
+  },
+  "donkey": {
+    "base": {
+      "shell": "#a9a6a2",
+      "joint": "#5f5b57",
+      "bezel": "#2e2b29"
+    },
+    "roles": {
+      "Muzzle": "#e8e2d6",
+      "Belly": "#e8e2d6",
+      "Mane": "#4a4642",
+      "Tuft": "#4a4642",
+      "Ear": "#9c9995",
+      "Inner": "#efe3d8",
+      "Hoof": "#2b2826",
+      "Nose": "#3a3634",
+      "Cross": "#3f3b38"
+    },
+    "dots": ["#8a8a98", "#ffd36a"]
+  },
+  "chick": {
+    "base": {
+      "shell": "#ffd84a",
+      "joint": "#c98f1c",
+      "bezel": "#7a5b14"
+    },
+    "roles": {
+      "Beak": "#f28a2a",
+      "Foot": "#f0a03a",
+      "Wing": "#f2c23a",
+      "Tuft": "#ffe680",
+      "Egg": "#f7efe0"
+    },
+    "dots": ["#8a6a2a", "#fff1a0"]
+  },
+  "slinky": {
+    "base": { "shell": "#fbf3e4", "joint": "#9aa3b2", "bezel": "#3b4252" },
+    "roles": {
+      "Ring0": "#ff5d6c",
+      "Ring1": "#ffb347",
+      "Ring2": "#ffe066",
+      "Ring3": "#6fdc8c",
+      "Ring4": "#5ec8ff",
+      "Ring5": "#b08cff"
+    },
+    "dots": ["#6a6a58", "#fff7b8"]
+  },
+  "hexapod": {
+    "base": { "shell": "#8fe0c8", "joint": "#5a6b7a", "bezel": "#2d3b4a" },
+    "roles": { "Leg": "#ff8a5c" },
+    "dots": ["#3c5a50", "#fff2a8"]
+  },
+  "ballbot": {
+    "base": { "shell": "#ffd96a", "joint": "#6e7b8d", "bezel": "#2f3a4a" },
+    "roles": { "Ball": "#5ec8ff" },
+    "dots": ["#4d5a66", "#fff2a8"]
+  },
+  "camerabot": {
+    "base": { "shell": "#ff6b5e", "joint": "#59606e", "bezel": "#262b36" },
+    "roles": { "Bellows": "#3c4150", "Card": "#fbf6ea", "Button": "#ffd24a" },
+    "dots": ["#4d5a66", "#fff2a8"]
+  },
+  "djbot": {
+    "base": { "shell": "#8f6bff", "joint": "#b4bccb", "bezel": "#252a36" },
+    "roles": {
+      "Phones": "#ff4fa3",
+      "Label": "#ffd24a",
+      "Vinyl": "#1a1d26",
+      "Cone": "#2b3040",
+      "Knob": "#ffd24a"
+    },
+    "dots": ["#4a3a6a", "#ffe58a"]
+  },
+  "raccoon": {
+    "base": { "shell": "#8f949c", "joint": "#3a3d44", "bezel": "#24262b" },
+    "roles": {
+      "Dark": "#2b2d33",
+      "Pale": "#d9dbd8",
+      "Nose": "#1c1d21",
+      "Pad": "#3a3d44"
+    },
+    "dots": ["#5a5f68", "#8fe0ff"]
+  },
+  "beaver": {
+    "base": { "shell": "#8e5c36", "joint": "#5a3d28", "bezel": "#2f2018" },
+    "roles": {
+      "Dark": "#5a3d28",
+      "Belly": "#e3cca4",
+      "Nose": "#2a1c14",
+      "Pad": "#3d2a1c",
+      "Log": "#8a5e3a",
+      "Wood": "#ecd29c"
+    },
+    "dots": ["#7a5a3a", "#fff0b0"]
+  },
+  "polarcub": {
+    "base": { "shell": "#f4f8fa", "joint": "#9dbfd6", "bezel": "#2a3a4a" },
+    "roles": { "Nose": "#1b1e22", "Pad": "#a9c6da" },
+    "dots": ["#8fb4cc", "#9fe3ff"]
+  },
+  "mouse": {
+    "base": { "shell": "#8d929b", "joint": "#e9a5ad", "bezel": "#3a3d44" },
+    "roles": {
+      "Pink": "#e9a5ad",
+      "Belly": "#ece8e2",
+      "Pad": "#d98a96",
+      "Cheese": "#f2c94a",
+      "Hole": "#c99a1c"
+    },
+    "dots": ["#8a6a74", "#ffd1dc"]
+  },
+  "fawn": {
+    "base": { "shell": "#b9794a", "joint": "#7a4f34", "bezel": "#3a2417", "glow": "#fff4d6" },
+    "roles": {
+      "Leg": "#a96d42",
+      "Hoof": "#3a2a22",
+      "Flag": "#fff6ea",
+      "Ear": "#b9794a",
+      "Inner": "#f0c4b4",
+      "Nose": "#2a1c16",
+      "Muzzle": "#ead5b8"
+    },
+    "dots": ["#8a6a4a", "#fff4d6"]
+  },
+  "moth": {
+    "base": { "shell": "#6f5d4a", "joint": "#3d3126", "bezel": "#f6ead2", "glow": "#fff0c0" },
+    "roles": { "Fuzz": "#e2d0b0", "Head": "#e2d0b0", "Tuft": "#f4e9d3", "Wing": "#a98757" },
+    "dots": ["#6a5532", "#ffd24a"]
+  },
+  "dragonfly": {
+    "base": { "shell": "#2f9aa8", "joint": "#1d3b44", "bezel": "#e6fbff", "glow": "#d8fffb" },
+    "roles": {
+      "Fuzz": "#2e6f9e",
+      "Head": "#2e6f9e",
+      "Eye": "#2fae7a",
+      "Wing": "#bfe9f2",
+      "Stem": "#7a8a3a"
+    },
+    "dots": ["#244a52", "#7fffe0"]
+  },
+  "jumpingspider": {
+    "base": { "shell": "#3a2a30", "joint": "#241a20", "bezel": "#fdf0ff", "glow": "#ffeaff" },
+    "roles": {
+      "Head": "#6b4a3a",
+      "Fuzz": "#6b4a3a",
+      "Tuft": "#d1a572",
+      "Palp": "#ff8a3a",
+      "Knee": "#ff8a3a"
+    },
+    "dots": ["#6a3f5a", "#ff6ad5"]
+  },
+  "ant": {
+    "base": { "shell": "#3b2622", "joint": "#241512", "bezel": "#ffe6d4", "glow": "#ffe8c0" },
+    "roles": { "Head": "#c4502e", "Thorax": "#c4502e", "Crumb": "#dcaa63" },
+    "dots": ["#5a3a2a", "#ffb24a"]
+  },
+  "grasshopper": {
+    "base": { "shell": "#6fb04a", "joint": "#2e4d1f", "bezel": "#f0ffd2", "glow": "#f4ffc8" },
+    "roles": {
+      "Head": "#8cc84b",
+      "Cover": "#4f9a3a",
+      "Thigh": "#d4b02a",
+      "Wing": "#ff9a5a",
+      "Saddle": "#3d7a2e"
+    },
+    "dots": ["#35571f", "#d6ff4a"]
+  },
+  "capybara": {
+    "base": { "shell": "#a87a52", "joint": "#5e3d26", "bezel": "#2e1d12" },
+    "roles": {
+      "Belly": "#e6cfa6",
+      "Nose": "#3b261a",
+      "Pad": "#d59b84",
+      "Ear": "#8a5d3c",
+      "EarIn": "#f0b9a0",
+      "Leaf": "#6fae4a",
+      "Bird": "#58b4dc",
+      "Beak": "#ffbe3d"
+    },
+    "dots": ["#6a5036", "#ff9f2e"]
+  },
+  "wombat": {
+    "base": { "shell": "#8c7f72", "joint": "#4f463d", "bezel": "#26211c" },
+    "roles": {
+      "Rump": "#5a5048",
+      "Nose": "#2b2420",
+      "Pad": "#c9a99a",
+      "Claw": "#efe6d4",
+      "Ear": "#7a6e62",
+      "Dirt": "#a0693a"
+    },
+    "dots": ["#6b5a47", "#ffb04a"]
+  },
+  "quokka": {
+    "base": { "shell": "#b98b5e", "joint": "#6a4527", "bezel": "#2f1e12" },
+    "roles": {
+      "Belly": "#efdcb8",
+      "Nose": "#3b261a",
+      "Pad": "#e0a68e",
+      "Ear": "#a97a4e",
+      "Leaf": "#6ab04a",
+      "Cheek": "#f2a898"
+    },
+    "dots": ["#6e5035", "#ffc65a"]
+  },
+  "fennec": {
+    "base": { "shell": "#efd6ac", "joint": "#a8845a", "bezel": "#33261a" },
+    "roles": {
+      "EarIn": "#f4a9a0",
+      "Belly": "#fff4e0",
+      "Nose": "#2e2018",
+      "Pad": "#d8a58a",
+      "TailTip": "#2e2018",
+      "Sand": "#e8c37a"
+    },
+    "dots": ["#8d6c4a", "#ffd98a"]
+  },
+  "snowleopard": {
+    "base": { "shell": "#b9bec6", "joint": "#6a707a", "bezel": "#2b2e34" },
+    "roles": {
+      "Rosette": "#3d4148",
+      "Ear": "#b9bec6",
+      "Inner": "#eef0f2",
+      "Paw": "#e4e7ea",
+      "Tail": "#b9bec6",
+      "Tip": "#3d4148",
+      "Bean": "#d9a2a2",
+      "Cheek": "#eef0f2",
+      "Stripe": "#3d4148"
+    },
+    "dots": ["#8fb4cc", "#9fe0ff"]
+  },
+  "anglerfish": {
+    "base": { "shell": "#4a5496", "joint": "#2c3466", "bezel": "#161a38" },
+    "roles": { "Belly": "#9aa6dc", "Fin": "#6672b8", "Tooth": "#fff0c8" },
+    "dots": ["#6a5a2e", "#ffd45e"]
+  },
+  "hermitcrab": {
+    "base": { "shell": "#f0a35e", "joint": "#b8693a", "bezel": "#5a3018" },
+    "roles": {
+      "Spiral": "#f4e3c8",
+      "Lip": "#d98a5a",
+      "Soft": "#e8b08a",
+      "Claw": "#e8743c",
+      "Leg": "#d4814f",
+      "Mug": "#6fb7c9",
+      "Steel": "#9aa3ad",
+      "Cap": "#d9473a"
+    },
+    "dots": ["#8a5a3a", "#ffe08a"]
+  },
+  "dolphin": {
+    "base": { "shell": "#9eb3c4", "joint": "#5f7589", "bezel": "#2a3a4a" },
+    "roles": { "Belly": "#eef3f6", "Fin": "#7a93a8", "Fluke": "#6f889d" },
+    "dots": ["#5f8fb0", "#8fe6ff"]
+  },
+  "clownfish": {
+    "base": { "shell": "#ff7414", "joint": "#e0560f", "bezel": "#4a2410" },
+    "roles": { "Fin": "#ff9d4d", "Cushion": "#a85cc4", "Stalk": "#d98cf0" },
+    "dots": ["#e8dcc8", "#ffffff"]
+  },
+  "mantisshrimp": {
+    "base": { "shell": "#5fbf9f", "joint": "#2f7d66", "bezel": "#17382e" },
+    "roles": { "Fin": "#e8698f", "Club": "#f0603c" },
+    "dots": ["#7a6a8a", "#ffd45e"]
+  },
+  "gardener": {
+    "base": { "shell": "#f1ece0", "joint": "#6b4f36", "bezel": "#2f3a2c", "glow": "#fff4d6" },
+    "roles": {
+      "Can": "#4f9a5a",
+      "Trim": "#d9b45c",
+      "Boot": "#f0c640",
+      "Overall": "#3f6fb0",
+      "Glove": "#f4efe2",
+      "Wood": "#a2703f",
+      "Steel": "#b8c1c8",
+      "Petal": "#ff9ccf",
+      "Leaf": "#5ab868",
+      "Soil": "#6b4f36"
+    },
+    "dots": ["#8a7a50", "#ffd35c"]
+  },
+  "astronaut": {
+    "base": { "shell": "#f2f3f5", "joint": "#8d96a3", "bezel": "#2a2f3a", "glow": "#d8f4ff" },
+    "roles": {
+      "Trim": "#e9b84a",
+      "Boot": "#dfe2e8",
+      "Stripe": "#ff7a45",
+      "Pack": "#c4cad4",
+      "Tank": "#ff9a5a",
+      "Glove": "#e6e9ee",
+      "Flag": "#ff5a4a",
+      "Dust": "#b9b3a8"
+    },
+    "dots": ["#5a6a7a", "#6fe3ff"]
+  },
+  "painter": {
+    "base": { "shell": "#f1ece0", "joint": "#8a7a6a", "bezel": "#33302c", "glow": "#fff4d6" },
+    "roles": {
+      "Smock": "#6a8fd8",
+      "Beret": "#d94a4a",
+      "Scarf": "#ffb347",
+      "Shoe": "#6b4a36",
+      "Trim": "#d9b45c",
+      "Wood": "#b98a5a",
+      "Steel": "#b8c1c8",
+      "Canvas": "#fbf8ee",
+      "PaintA": "#ff6a6a",
+      "PaintB": "#ffd35c",
+      "PaintC": "#5ab8ff",
+      "PaintD": "#7ad98a"
+    },
+    "dots": ["#8a6a5a", "#ff8a5c"]
+  },
+  "juggler": {
+    "base": { "shell": "#f6efe0", "joint": "#6f6a64", "bezel": "#2c2a2e", "glow": "#fff4d6" },
+    "roles": {
+      "Stripe": "#e8514a",
+      "Shoe": "#f0c640",
+      "Ruff": "#fff4d6",
+      "Ruff2": "#5ab8ff",
+      "Glove": "#ffffff",
+      "Glove2": "#ffd35c"
+    },
+    "dots": ["#7a6a8a", "#ff6acb"]
+  },
+  "knight": {
+    "base": { "shell": "#cfd5dc", "joint": "#7d8791", "bezel": "#3a4048", "glow": "#fff4d6" },
+    "roles": {
+      "Armor": "#aab4be",
+      "Trim": "#e0b84e",
+      "Visor": "#b8c0c8",
+      "Plume": "#e8513f",
+      "Shield": "#3f6fc0",
+      "Wood": "#a2703f"
+    },
+    "dots": ["#8a8a50", "#ffd35c"]
+  },
+  "starfish": {
+    "base": { "shell": "#ffa07a", "joint": "#b5502f", "bezel": "#6a2a18" },
+    "roles": { "Arm": "#ff7d5c" },
+    "dots": ["#8a3a22", "#ffeaa0"]
+  },
+  "manta": {
+    "base": { "shell": "#4a78b8", "joint": "#243f73", "bezel": "#16284a" },
+    "roles": {
+      "Wing": "#5a8ccf",
+      "Belly": "#f1efe8",
+      "Fin": "#3d68a8",
+      "Tail": "#2c4f8c",
+      "Cape": "#6fa0dd"
+    },
+    "dots": ["#2c4f8c", "#aef2ff"]
+  },
+  "axolotl": {
+    "base": { "shell": "#ffc9d8", "joint": "#d9708f", "bezel": "#8a3a58" },
+    "roles": { "Gill": "#ff6f9a", "Belly": "#fff1ee", "Hand": "#ffb0c6", "Crest": "#ffa8c0" },
+    "dots": ["#d94f7a", "#ffe6a8"]
+  },
+  "sealpup": {
+    "base": { "shell": "#9aa3ae", "joint": "#4a5260", "bezel": "#2b313b" },
+    "roles": { "Belly": "#dfe2e6", "Flipper": "#6f7884", "Whisker": "#e9edf2", "Nose": "#2b313b" },
+    "dots": ["#566070", "#b8f0ff"]
+  },
+  "babywhale": {
+    "base": { "shell": "#5aa6b8", "joint": "#2f6a7c", "bezel": "#1c4352" },
+    "roles": { "Belly": "#e9f3f2", "Throat": "#a8e0ea", "Fin": "#3f8a9e", "Fluke": "#3f8a9e" },
+    "dots": ["#2f6272", "#c8fff0"]
+  },
+  "pygmyhippo": {
+    "base": {
+      "shell": "#6f8479",
+      "joint": "#46584f",
+      "bezel": "#25312d",
+      "glow": "#ffe3ee"
+    },
+    "roles": {
+      "Belly": "#f0b8c4",
+      "Muzzle": "#86a094",
+      "Ear": "#7b9185",
+      "Inner": "#f0b8c4"
+    },
+    "dots": ["#46584f", "#ffd1dc"]
+  },
+  "tapir": {
+    "base": {
+      "shell": "#6a4d3c",
+      "joint": "#3f2d22",
+      "bezel": "#241911",
+      "glow": "#fff0c8"
+    },
+    "roles": {
+      "Snout": "#8c6a52",
+      "Spot": "#f6e7c4",
+      "Belly": "#e9d8b4",
+      "Ear": "#f1e3c4"
+    },
+    "dots": ["#6a4d3c", "#ffe9a0"]
+  },
+  "gorilla": {
+    "base": {
+      "shell": "#586070",
+      "joint": "#323844",
+      "bezel": "#171a20",
+      "glow": "#e6f2ff"
+    },
+    "roles": {
+      "Chest": "#2b2f38",
+      "Saddle": "#c9d1dc",
+      "Face": "#2d3139",
+      "Brow": "#3a404c"
+    },
+    "dots": ["#586070", "#9fe0ff"]
+  },
+  "lemur": {
+    "base": {
+      "shell": "#a4acb7",
+      "joint": "#626b76",
+      "bezel": "#2a2e34",
+      "glow": "#ffbf4a"
+    },
+    "roles": {
+      "Belly": "#f2efe6",
+      "Face": "#f2efe6",
+      "Mask": "#24272c",
+      "Ring": "#2c3037"
+    },
+    "dots": ["#6c7078", "#ffb53c"]
+  },
+  "python": {
+    "base": {
+      "shell": "#4e6b52",
+      "joint": "#2f4235",
+      "bezel": "#151d17",
+      "glow": "#f2ffd8"
+    },
+    "roles": {
+      "Head": "#3f5a45",
+      "Spot": "#e3ecc4"
+    },
+    "dots": ["#4e6b52", "#ffd166"]
+  }
+}

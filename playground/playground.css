@@ -1,0 +1,331 @@
+/*
+ * The playground: the box fills the window and the sheet of pictures is pinned to its
+ * back wall. The tokens are the ones the crew read for the box (--paper, --card, --ink,
+ * --rule…), day or night by --dim.
+ */
+:root {
+  --dim: 0;
+  --mix: calc(var(--dim) * 100%);
+  --paper: color-mix(in oklab, #f4f4f1, #1f1f1d var(--mix));
+  --paper-deep: color-mix(in oklab, #e9e9e5, #282826 var(--mix));
+  --card: color-mix(in oklab, #fff, #2b2b28 var(--mix));
+  --ink: color-mix(in oklab, #111, #ecece8 var(--mix));
+  --ink-soft: color-mix(in oklab, #55554f, #b9b9b2 var(--mix));
+  --ink-faint: color-mix(in oklab, #6e6e68, #95958e var(--mix));
+  --rule: color-mix(in oklab, #e0e0db, #383834 var(--mix));
+  --rule-strong: color-mix(in oklab, #d6d6d1, #4c4c46 var(--mix));
+  --shade: color-mix(in oklab, rgb(0 0 0 / 0.1), rgb(0 0 0 / 0.45) var(--mix));
+  /* The frame the crew read: its inset and corners, and their size (--bot, px). */
+  --frame-inset: 8px;
+  --frame-radius: 16px;
+  --bot: 72px;
+  --serif: 'Newsreader Variable', Georgia, serif;
+  --sans: 'Schibsted Grotesk Variable', system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (min-width: 40rem) {
+  :root {
+    --frame-inset: 10px;
+    --frame-radius: 20px;
+    --bot: 96px;
+  }
+}
+@media (min-width: 60rem) {
+  :root {
+    --frame-inset: 12px;
+    --frame-radius: 24px;
+    --bot: 120px;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --dim: 1;
+    color-scheme: dark;
+  }
+}
+:root[data-theme='dark'] {
+  --dim: 1;
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font:
+    16px/1.55 var(--sans),
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+button {
+  font: inherit;
+  color: inherit;
+}
+a {
+  color: inherit;
+}
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.skip {
+  position: fixed;
+  left: 50%;
+  top: 0;
+  z-index: 20;
+  translate: -50% -120%;
+  padding: 0.4rem 0.8rem;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 0 0 6px 6px;
+  text-decoration: none;
+}
+.skip:focus {
+  translate: -50% 0;
+}
+.frame {
+  position: fixed;
+  inset: var(--frame-inset);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--frame-radius);
+  pointer-events: none;
+  z-index: 5;
+}
+#crew {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 6;
+}
+#hits {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 7;
+}
+
+/* The sheet on the back wall: it scrolls; the floor in front stays clear for the crew. */
+#sheet {
+  position: fixed;
+  z-index: 6;
+  /* Low enough under the ceiling for the hangings to hang above it. */
+  top: calc(var(--frame-inset) + var(--bot) * 1.6);
+  bottom: calc(var(--frame-inset) + var(--bot) * 1.5);
+  left: 50%;
+  translate: -50% 0;
+  box-sizing: border-box;
+  width: min(50rem, 62vw, calc(100% - 2 * var(--frame-inset) - 2rem));
+  overflow: auto;
+  padding: 1.6rem clamp(1rem, 4vw, 2.4rem) 1.2rem;
+  background: var(--card);
+  border: 1px solid var(--rule-strong);
+  border-radius: 4px;
+  box-shadow: 0 2px 6px var(--shade);
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule-strong) transparent;
+}
+h1 {
+  margin: 0;
+  font: 600 2.2rem/1.1 var(--serif);
+}
+h2 {
+  margin: 2rem 0 0.2rem;
+  font: 600 1.25rem/1.3 var(--serif);
+}
+.lede {
+  margin: 0.4rem 0 1rem;
+  color: var(--ink-soft);
+}
+.line,
+.hint {
+  margin: 0.3rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+/* Where to go: the playgrounds and the room's pages, by name. */
+.places {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1rem;
+  margin-bottom: 0.9rem;
+}
+.places a {
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.places a:hover,
+.places a[aria-current] {
+  border-bottom-color: var(--ink);
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.2rem;
+  font-size: 0.85rem;
+}
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.choice-name {
+  margin-right: 0.3rem;
+  color: var(--ink-soft);
+}
+.choice button,
+.send {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--card);
+  cursor: pointer;
+}
+.choice button[aria-pressed='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--card);
+}
+.foot {
+  margin-top: 2.4rem;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+/* The cards pinned to the sheet: a playground's, or one of the room's pages. */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1.5rem 1.3rem;
+  margin: 1rem 0 0.5rem;
+  padding-top: 0.4rem;
+}
+.card {
+  position: relative;
+  display: block;
+  padding: 1.15rem 1rem 1rem;
+  background: var(--paper);
+  border: 1px solid var(--rule-strong);
+  border-radius: 3px;
+  color: inherit;
+  text-decoration: none;
+  rotate: var(--turn, 0deg);
+  box-shadow: 0 1px 2px var(--shade);
+  transition:
+    translate 0.25s cubic-bezier(0.3, 1.6, 0.5, 1),
+    box-shadow 0.25s;
+}
+.card:hover {
+  translate: 0 -3px;
+  box-shadow: 0 6px 14px var(--shade);
+}
+.pin {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  width: 11px;
+  height: 11px;
+  margin-left: -5.5px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--ink-faint), var(--ink) 60%);
+  box-shadow: 0 2px 2px var(--shade);
+}
+.card-faces {
+  display: flex;
+  justify-content: center;
+  margin: -0.3rem 0 0.4rem;
+}
+.card-face {
+  width: 4.2rem;
+  height: auto;
+  margin: 0 -0.5rem;
+}
+.card-name {
+  display: block;
+  font: 600 1.15rem/1.2 var(--serif);
+}
+.card-line {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+/* The crew's pictures (and the room's things): pick one and it comes out. Out, its picture
+   is an empty place, faint, till it's back. */
+.crewmates {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6.2rem, 1fr));
+  gap: 0.9rem 0.4rem;
+  margin: 1rem 0 0.5rem;
+}
+.crewmate,
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.2rem 0.2rem 0.5rem;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.crewmate:focus-visible,
+.tile:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.crewmate-face {
+  width: 100%;
+  max-width: 6.6rem;
+  height: auto;
+  aspect-ratio: 1;
+  transition:
+    translate 0.25s cubic-bezier(0.3, 1.6, 0.5, 1),
+    opacity 0.3s;
+}
+.crewmate:hover .crewmate-face,
+.tile:hover .crewmate-face {
+  translate: 0 -4px;
+}
+.crewmate-name {
+  margin-top: 0.1rem;
+  font: 600 0.95rem/1.2 var(--serif);
+}
+.crewmate-what {
+  margin-top: 0.15rem;
+  font-size: 0.72rem;
+  line-height: 1.3;
+  color: var(--ink-soft);
+}
+.crewmate.out .crewmate-face,
+.tile.out .crewmate-face {
+  opacity: 0.14;
+  translate: none;
+}
+.crewmate.out .crewmate-what::after,
+.tile.out .crewmate-what::after {
+  content: ' · out';
+}
+
+@media (max-width: 40rem) {
+  .crewmates {
+    grid-template-columns: repeat(auto-fill, minmax(5.4rem, 1fr));
+    gap: 0.7rem 0.4rem;
+  }
+}
