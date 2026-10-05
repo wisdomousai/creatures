@@ -49,6 +49,9 @@ interface Sample {
 }
 
 export class Tot extends Toybot {
+  static readonly terms =
+    'baby infant child diaper nappy pacifier dummy booties cream yellow beige blue white big head wobbly toddles cries giggles peekaboo claps';
+
   private fx = { hop: 0, spin: 0, sit: 0, tears: 0, giggle: 0, still: false };
   private sit = 0;
   private tearAt = 0;

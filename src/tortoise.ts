@@ -64,6 +64,9 @@ const bump = (x: number, width: number) => Math.max(0, 1 - Math.abs(x) / width);
 const cycle = (x: number) => x - Math.floor(x);
 
 export class Tortoise extends Character {
+  static readonly terms =
+    'shelled reptile dome helmet shell scutes plates tan brown beige khaki slow old senior wise sleepy stumpy legs neck plod walk';
+
   private env: Env | null = null;
   /** How far into the shell (0 out, 1 all the way in), and how far the neck reaches. */
   private inside = new Spring(1.5, 0.7, 1, 0);

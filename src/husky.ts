@@ -52,6 +52,9 @@ const HUSKY: Anatomy = {
 };
 
 export class Husky extends Hound {
+  static readonly terms =
+    'doggo pooch sled arctic snow grey gray silver white fluffy ruff curled tail red harness blue eyes ice howl woo dig pull';
+
   protected readonly anatomy = HUSKY;
   protected readonly build = { middle: 0.4, spring: 1, speed: 1.5 };
   /** How hard she is pulling, 0..1: the trace goes taut, the harness lamp lights. */

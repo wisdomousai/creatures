@@ -41,6 +41,9 @@ const CURLED = 37;
 const DOTS = 6;
 
 export class Seahorse extends Swimmer {
+  static readonly terms =
+    'sea horse hippocampus mint teal green aqua cream bands curled tail spiral snout crown fin swim upright bob hover flutter';
+
   /** The tail let out (1 straight .. 0 as built) and wound tighter (1), the fins' buzz. */
   private out = new FixedSpring(2.4, 0.6);
   private tight = new FixedSpring(2.8, 0.55);

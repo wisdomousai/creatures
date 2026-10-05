@@ -54,6 +54,9 @@ const sm = (x: number) => {
 type Pair = [number, number];
 
 export class Camerabot extends Bird {
+  static readonly terms =
+    'photo photograph photographer picture snapshot lens flash bellows folding zoom focus coral salmon pink black charcoal boxy print polaroid portrait';
+
   private extS = new Spring(4, 0.55, 1.1, 1);
   private dropS = new Spring(5, 0.6, 1, 0);
   private hopS = new Spring(6, 0.5, 1, 0);

@@ -43,6 +43,9 @@ const COW: Anatomy = {
 };
 
 export class Cow extends Hoofed {
+  static readonly terms =
+    'bovine cattle heifer dairy moo spotted spots patches black white pink nose horns bell collar speaker big calm barrel chews cud walk';
+
   protected readonly anatomy = COW;
   protected readonly build = { middle: 0.45, spring: 0.55, speed: 0.8 };
   /** How loud the moo is right now, 0..1: the grille glows. */

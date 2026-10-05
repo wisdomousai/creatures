@@ -137,6 +137,9 @@ const span = (t: number, a: number, b: number, c: number, d: number) =>
   ease(t, a, b) * (1 - ease(t, c, d));
 
 export class Fox extends Pet {
+  static readonly terms =
+    'vixen orange ginger white black bushy tail tall pointy ears sleek sneak stalk pounce dive snow howl yip sly cunning prance';
+
   protected readonly anatomy: Anatomy = { ...FOX, drop: { ...FOX.drop } };
   private gaze = this.spec.gaze;
   private frame: Frame | null = null;

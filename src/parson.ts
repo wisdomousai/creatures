@@ -25,6 +25,9 @@ export const PARSON_FACE: FaceLayout = {
  * steps, a huge slow yawn, and rolling one eye round while the other stays on you.
  */
 export class Parson extends Chameleons {
+  static readonly terms =
+    'chameleon lizard reptile giant big huge heavy slow teal green turquoise orange eyes ear flaps yawn steps colour color changing';
+
   constructor(model: Object3D) {
     super(model, {
       name: 'Sage',

@@ -68,6 +68,9 @@ const pulse = (t: number, at: number, length: number) =>
 type Sensors = 'scan' | 'alarm' | 'ripple' | 'off';
 
 export class Vacuum extends Character {
+  static readonly terms =
+    'hoover roomba robovac cleaner sweeper sweep clean dust disc round flat white cream mint teal brushes bumper dock charge battery spin wheelie';
+
   private env: Env | null = null;
   private brush = 0;
   private brushSpeed = 0;

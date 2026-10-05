@@ -35,6 +35,9 @@ const SIDES = [
 ] as const;
 
 export class Chick extends Bird {
+  static readonly terms =
+    'hatchling fluffball fluffy chicken round tiny small yellow cream butter gold orange beak wings flap hop scurry cheep peep sleepy';
+
   private openS = new Spring(7, 0.4, 1.2);
   private puffS = new Spring(3, 0.6);
   private tipS = new Spring(3.2, 0.55, 1.5);

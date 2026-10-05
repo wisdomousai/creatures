@@ -94,6 +94,9 @@ const OLDTABBY: Anatomy = {
 };
 
 export class Oldtabby extends Moggy {
+  static readonly terms =
+    'kitty moggy old senior elderly aged grey gray brown taupe beige stripes striped thin bony torn ear yellow eyes slow stiff creaky';
+
   protected readonly anatomy = OLDTABBY;
   protected readonly build = { middle: 0.3, spring: 0.5, speed: 0.7 };
   /** How much a joint is catching just now, 0..1 (lights the knees). */

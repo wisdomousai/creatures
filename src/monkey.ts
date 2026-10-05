@@ -79,6 +79,9 @@ const fresh = (): Want => ({
 });
 
 export class Monkey extends Character {
+  static readonly terms =
+    'ape chimp simian primate brown tan cream long arms swing climb winding key windup curly tail big ears cymbals chatter hang';
+
   private want = fresh();
   private run = { n: 0, dir: 1 };
   private pokes: number[] = [];

@@ -127,6 +127,9 @@ for (const [sfx] of SIDES)
 const inward = (a: number): Point => ({ x: -Math.sin(a), y: -Math.cos(a) });
 
 export class Ladybug extends Character {
+  static readonly terms =
+    'ladybird beetle insect red black spots dots spotted shell wings antennae scuttle crawl fly buzz hop ceiling upside down tiny cute pet';
+
   /** Held by the pointer, it flies after it. */
   readonly flies = true;
   private winks = RING.map(() => ({ at: -1, next: 1 + Math.random() * 4 }));

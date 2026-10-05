@@ -36,6 +36,9 @@ export const RACCOON_FACE: FaceLayout = {
 const TAIL = ['tail.1', 'tail.2', 'tail.3', 'tail.4'];
 
 export class Raccoon extends Fluffy {
+  static readonly terms =
+    'coon bandit mask grey gray black dark ringed stripes bushy tail stocky muzzle wash puddle pebble sneak tiptoe peek';
+
   private pebble = new Spring(6, 0.45, 1.3);
   private pebbleGoal = 0;
   private puddle = new Spring(4, 0.6, 1.2);

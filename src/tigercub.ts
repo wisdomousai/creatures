@@ -47,6 +47,9 @@ const TIGERCUB: Anatomy = {
 };
 
 export class Tigercub extends Moggy {
+  static readonly terms =
+    'big cat stripes striped orange ginger black white oversized head paws round ears pounce stalk whiskers playful roar squeak tumble feline';
+
   protected readonly anatomy = TIGERCUB;
   protected readonly build = { middle: 0.17, spring: 1.1, speed: 1.9 };
 

@@ -70,6 +70,9 @@ const DACHSHUND: Anatomy = {
 };
 
 export class Dachshund extends Hound {
+  static readonly terms =
+    'doggo pooch sausage wiener weiner long low short legs orange brown rust chestnut copper blue collar floppy ears bendy wiggle sniff roll';
+
   protected readonly anatomy = DACHSHUND;
   protected readonly build = { middle: 0.2, spring: 0.6, speed: 1.3 };
   /** Extra sideways bend in the middle and chest joints (degrees), set by a trick. */

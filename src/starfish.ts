@@ -64,6 +64,9 @@ interface ArmPose {
 }
 
 export class Starfish extends Character {
+  static readonly terms =
+    'sea star five arms tube feet suckers coral pink peach cream salmon spots studs cartwheel roll climb walls spin jumps ocean';
+
   private arms: ArmPose[] = [];
   private spinAng = 0;
   private roll0 = 0;

@@ -55,6 +55,9 @@ const CHIHUAHUA: Anatomy = {
 };
 
 export class Chihuahua extends Hound {
+  static readonly terms =
+    'doggo pooch tiny small little mini tan cream beige big ears satellite dish eyes shiver tremble shake brave bark scuttle blue';
+
   protected readonly anatomy = CHIHUAHUA;
   protected readonly build = {
     middle: 0.15,

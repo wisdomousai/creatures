@@ -49,6 +49,9 @@ const SNOWLEOPARD: Anatomy = {
 };
 
 export class Snowleopard extends Moggy {
+  static readonly terms =
+    'big cat cub kitten ounce grey gray white smoky black spots spotted rosettes fluffy furry thick long tail chase pounce stalk mountain';
+
   protected readonly anatomy = SNOWLEOPARD;
   protected readonly build = { middle: 0.17, spring: 1.05, speed: 1.7 };
 

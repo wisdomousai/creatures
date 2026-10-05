@@ -35,6 +35,9 @@ export const SPIDER_FACE: FaceLayout = {
 const LEGS = 4;
 
 export class JumpingSpider extends Bug {
+  static readonly terms =
+    'spider arachnid tiny small fuzzy furry hairy brown cream white lilac pink black eight legs big eyes hop jump leap boxing';
+
   private crouchS = new Spring(7, 0.5);
   private rearS = new Spring(5, 0.5);
   private tiltS = new Spring(5, 0.5);

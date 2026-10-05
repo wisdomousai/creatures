@@ -55,6 +55,9 @@ const LABRADOR: Anatomy = {
 };
 
 export class Labrador extends Hound {
+  static readonly terms =
+    'doggo pooch old senior elderly yellow golden gold cream tan beige broad solid slow stiff grey gray muzzle blue collar ball fetch';
+
   protected readonly anatomy = LABRADOR;
   protected readonly build = {
     middle: 0.3,

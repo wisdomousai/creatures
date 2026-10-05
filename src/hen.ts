@@ -42,6 +42,9 @@ const SIDES = [
 const SINK = 0.11;
 
 export class Hen extends Bird {
+  static readonly terms =
+    'chicken chook poultry golden yellow tan cream red comb wattle plump round egg lay peck scratch cluck waddle flap nest farm';
+
   private eggS = new Spring(5, 0.5, 1.4);
   private openS = new Spring(6, 0.45, 1.2);
   private puffS = new Spring(3, 0.6);

@@ -34,6 +34,9 @@ export const REDPANDA_FACE: FaceLayout = {
 const TAIL = ['tail.1', 'tail.2', 'tail.3', 'tail.4'];
 
 export class RedPanda extends Fluffy {
+  static readonly terms =
+    'firefox rust orange ginger red cream white dark black mask tear marks bushy big tail pods ears socks curled scarf rears fluffy';
+
   /** The side she curls up on (+1 her left): the side facing us. */
   private side = 1;
   private run = 0;

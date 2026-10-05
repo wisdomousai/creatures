@@ -55,6 +55,9 @@ const GREATDANE: Anatomy = {
 };
 
 export class Greatdane extends Hound {
+  static readonly terms =
+    'doggo pooch dane giant huge big tall large long legs slender grey gray silver white blue gentle clumsy lumber lean shy';
+
   protected readonly anatomy = GREATDANE;
   protected readonly build = { middle: 0.55, spring: 0.7, speed: 1.2 };
   /** How scared he is right now, 0..1: the heart beats faster. */

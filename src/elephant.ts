@@ -115,6 +115,9 @@ const fresh = (): Want => ({
 });
 
 export class Elephant extends Pet {
+  static readonly terms =
+    'calf trunk tusks nubs big ears flappy dumbo pachyderm grey gray blue silver pink round stubby legs trumpet sprays water stomps';
+
   protected readonly anatomy: Anatomy = { ...ELEPHANT, drop: { ...ELEPHANT.drop } };
   private want = fresh();
   private env!: Env;

@@ -50,6 +50,9 @@ const CALF: Anatomy = {
 };
 
 export class HighlandCalf extends Hoofed {
+  static readonly terms =
+    'hairy coo cow cattle shaggy ginger orange rusty brown fringe bangs horns scottish scotland baby hop moo rug fur';
+
   protected readonly anatomy = CALF;
   protected readonly build = { middle: 0.4, spring: 0.7, speed: 0.9 };
   /** How far the fringe is swept aside this frame (0..1), set by tricks. */

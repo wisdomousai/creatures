@@ -41,6 +41,9 @@ const CODE = [
 ];
 
 export class Anglerfish extends Fishy {
+  static readonly terms =
+    'deep sea fish blue periwinkle navy teeth toothy underbite jaw lure lamp lantern light glow glowing rod fishing bulb dark ivory cream';
+
   private jaw = new FixedSpring(8, 0.45);
   private curl = new FixedSpring(3, 0.55);
   private swing = new FixedSpring(2.5, 0.4);

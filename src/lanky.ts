@@ -45,6 +45,9 @@ const UP = 0.24;
 const DOWN = 0.36;
 
 export class Lanky extends Toybot {
+  static readonly terms =
+    'tall thin skinny slim beanpole long legs arms stretch telescoping periscope antenna mint teal white gauge extends folds catches tosses ball';
+
   private fx = {
     hop: 0,
     spin: 0,

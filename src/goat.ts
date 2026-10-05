@@ -49,6 +49,9 @@ const GOAT: Anatomy = {
 };
 
 export class Goat extends Hoofed {
+  static readonly terms =
+    'billy nanny baby horns beard ears upright cream white tan brown legs springy jump leap climb bleat butt prance perky tail';
+
   protected readonly anatomy = GOAT;
   protected readonly build = { middle: 0.3, spring: 1.1, speed: 1 };
   /** How lit the horn caps are, 0..1 (set by tricks, fades). */

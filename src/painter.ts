@@ -34,6 +34,9 @@ const FLOWER = '#ff8ab8';
 const TIP = '#ff8a5c';
 
 export class Painter extends Jobbot {
+  static readonly terms =
+    'artist art paint paintbrush brush palette easel canvas beret french red blue brown white painting picture smock sun hill flower colourful color';
+
   private fx = {
     easel: 0, // the easel and canvas, 0..1
     sun: 0,

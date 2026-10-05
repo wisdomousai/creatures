@@ -67,6 +67,9 @@ const SHAPE = {
 };
 
 export class Flamingo extends Bird {
+  static readonly terms =
+    'pink rose tall long legs skinny slender thin neck one leg stand balance haughty elegant preen nap march wade rings glow';
+
   private raise = { L: new Spring(3.5, 0.55, 1.1), R: new Spring(3.5, 0.55, 1.1) };
   private weight = new Spring(3, 0.6);
   private open = new Spring(4, 0.5, 1.2);

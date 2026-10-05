@@ -103,6 +103,9 @@ const blank = (): Pose => ({
 type Trick = (t: number, a: Pose, len: number) => void;
 
 export class Pogo extends Character {
+  static readonly terms =
+    'stick spring springy coil bounce bouncy hop jump egg coral pink salmon peach grey gray silver antenna mittens somersault excitable wobble squash';
+
   private frame: Frame | null = null;
   private crew: readonly Character[] = [];
   private pokes: number[] = [];

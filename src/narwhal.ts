@@ -39,6 +39,9 @@ const TUSK = ['tusk.1', 'tusk.2', 'tusk.3'];
 const RINGS = 7;
 
 export class Narwhal extends Swimmer {
+  static readonly terms =
+    'whale unicorn tusk horn spiral rings blue pale light white belly flippers flukes tail swim breach spout blowhole roll small round';
+
   private blow = new FixedSpring(3, 0.8);
   private tusk = new FixedSpring(4, 0.35);
   private flipper = new FixedSpring(5, 0.3);

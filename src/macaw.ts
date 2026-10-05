@@ -78,6 +78,9 @@ interface Waypoint {
 type Kind = 'circuit' | 'flyover' | 'lookout' | 'ceiling' | 'drop';
 
 export class Macaw extends Character {
+  static readonly terms =
+    'parrot red yellow blue white colourful colorful big hooked beak crest long tail wings chatty talk whistle copycat fly hang showoff tropical';
+
   /** Held by the pointer, it flies after it. */
   readonly flies = true;
   private env: Env | null = null;

@@ -35,6 +35,9 @@ export const DOLPHIN_FACE: FaceLayout = {
 const CLICK = ['click.0', 'click.1', 'click.2', 'click.3'];
 
 export class Dolphin extends Fishy {
+  static readonly terms =
+    'porpoise sea ocean mammal grey gray blue silver white pale belly fin flippers flukes beak smile leap jump swim click whistle sleek';
+
   /** Ages of the bursts of ripples sent out so far (s). */
   private bursts: number[] = [];
 

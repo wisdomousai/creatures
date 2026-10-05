@@ -70,6 +70,9 @@ const POODLE: Anatomy = {
 };
 
 export class Poodle extends Hound {
+  static readonly terms =
+    'doggo pooch fancy posh prim proud show elegant white pink silver pompoms pom curly fluffy long legs neck prance bow pirouette sparkle';
+
   protected readonly anatomy = POODLE;
   protected readonly build = { middle: 0.43, spring: 0.8, speed: 1.4 };
   /** How high she lifts her feet: 0 a plain trot, 1 the show-ring step. */

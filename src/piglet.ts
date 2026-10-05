@@ -41,6 +41,9 @@ const PIGLET: Anatomy = {
 };
 
 export class Piglet extends Hoofed {
+  static readonly terms =
+    'pig piggy hog swine pink snout nostrils floppy ears curly tail coil spring stubby legs round roots sniffs rolls oink zoomies';
+
   protected readonly anatomy = PIGLET;
   protected readonly build = { middle: 0.25, spring: 0.9, speed: 1.1 };
   /** How hard she is sniffing, 0..1 (the nostrils glow), and the tummy lamp. */

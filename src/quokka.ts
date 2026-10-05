@@ -37,6 +37,9 @@ export const QUOKKA_FACE: FaceLayout = {
 };
 
 export class Quokka extends Fluffy {
+  static readonly terms =
+    'marsupial wallaby kangaroo australian smile smiling happy selfie camera cheeks tan brown beige cream upright hop hind legs paws leaf nibble cute';
+
   private leaf = new Spring(6, 0.5, 1.3);
   private leafGoal = 0;
   private leafLeft = 1;

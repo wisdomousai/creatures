@@ -54,6 +54,9 @@ interface Claw {
 const claw = (up = 0, bend = 0, jaw = 0.4, inw = 0): Claw => ({ up, bend, jaw, inw });
 
 export class Hermitcrab extends Character {
+  static readonly terms =
+    'crab shellfish crustacean spiral shell house snail cream peach coral orange pink claws pincers big claw tiny antennae scuttle hides peeks';
+
   private arms: Record<'L' | 'R', Record<keyof Claw, FixedSpring>> = {
     L: this.clawSprings(),
     R: this.clawSprings(),

@@ -141,6 +141,9 @@ const span = (t: number, a: number, b: number, c: number, d: number) =>
   ease(t, a, b) * (1 - ease(t, c, d));
 
 export class Shorthair extends Pet {
+  static readonly terms =
+    'kitty british blue grey gray slate silver copper orange teddy plush round chubby cheeks big eyes calm chunky stroll loaf';
+
   protected readonly anatomy: Anatomy = { ...SHORTHAIR, drop: { ...SHORTHAIR.drop } };
   private gaze = this.spec.gaze;
   private frame: Frame | null = null;

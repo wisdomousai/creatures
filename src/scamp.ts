@@ -56,6 +56,9 @@ const SCAMP: Anatomy = {
 };
 
 export class Scamp extends Kitty {
+  static readonly terms =
+    'kitty lilac lavender purple violet lanky leggy skinny long legs big ears tail stripes striped young playful lope pounce zoomies';
+
   protected readonly anatomy = SCAMP;
   protected readonly build = {
     middle: 0.24,

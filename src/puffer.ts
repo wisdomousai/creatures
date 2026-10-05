@@ -87,6 +87,9 @@ const bump = (x: number, width: number) => Math.max(0, 1 - Math.abs(x) / width);
 const cycle = (x: number) => x - Math.floor(x);
 
 export class Puffer extends Character {
+  static readonly terms =
+    'blowfish fugu balloonfish fish spiky spines round ball inflates puffs swells cream tan beige gold spots swim float bob drift marine ocean';
+
   /** Held by the pointer, it flies after it. */
   readonly flies = true;
   /** It comes in its own way (flying or swimming), not jumping out of its picture. */

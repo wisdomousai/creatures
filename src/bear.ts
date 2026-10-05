@@ -114,6 +114,9 @@ const CONGA: Side[] = [1, -1, 1, -1];
 const bump = (x: number, width: number) => Math.max(0, 1 - Math.abs(x) / width);
 
 export class Bear extends Character {
+  static readonly terms =
+    'cuddly plush toy brown tan orange honey heart belly round ears button nose wave clap dance kick bow sit hug cute';
+
   private posture: Posture = 'stand';
   private crouch = new Spring(3, 0.7);
   private seat = new Spring(2.6, 0.8);

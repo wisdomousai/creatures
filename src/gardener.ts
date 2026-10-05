@@ -38,6 +38,9 @@ const TIP = { x: 0.298, z: 0.235, pivot: 0.42 };
 const SPOT = { x: 0.3, drop: 0.19 };
 
 export class Gardener extends Jobbot {
+  static readonly terms =
+    'garden gardening plant watering can spout green blue yellow tan boots wellies wellington dungarees overalls trowel glove seeds seedling flowers grow digs';
+
   private fx = {
     sprout: 0, // growth 0..1
     bud: 0, // how brightly the bud glows

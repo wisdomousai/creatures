@@ -63,6 +63,9 @@ const UNICORN: Anatomy = {
 };
 
 export class Unicorn extends Hoofed {
+  static readonly terms =
+    'pony horse horn spiral rainbow magical mythical fantasy white lilac lavender pastel mane slim long legs sparkle glow prance trot star';
+
   protected readonly anatomy = UNICORN;
   protected readonly build = { middle: 0.5, spring: 0.7, speed: 1 };
   /** The horn's glow (0..1) when she is casting or shimmering, and the star's progress. */

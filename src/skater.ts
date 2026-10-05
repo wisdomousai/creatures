@@ -45,6 +45,9 @@ const SPEED = 1.7;
 const WHEELS = ['wheel0.L', 'wheel1.L', 'wheel2.L', 'wheel0.R', 'wheel1.R', 'wheel2.R'];
 
 export class Skater extends Toybot {
+  static readonly terms =
+    'skates inline rollerblades blades skate wheels helmet visor knee pads elbow pink blue white shorts fast quick glide slalom jump skid tuck';
+
   private fx = {
     hop: 0,
     spin: 0,

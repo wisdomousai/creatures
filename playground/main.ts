@@ -16,6 +16,7 @@ import {
   type LookName,
 } from '@wisdomousai/creatures';
 import { menu } from './menu';
+import { FINDABLE, find } from './search';
 import { words } from './words';
 import { ROOM, roomPage } from './world';
 
@@ -89,8 +90,14 @@ function faces(within: ParentNode = document) {
   }
 }
 
+/** Each of the crew's place on the sheet, made once: a page or a search shows it again
+ * with its picture already in. */
+const cells = new Map<string, HTMLElement>();
+
 /** One of the crew, its picture, name and what it is: picked, it jumps out to play. */
 function crewmate(name: string) {
+  const made = cells.get(name);
+  if (made) return made;
   const c = CARDS[name];
   const b = el(
     'button',
@@ -103,7 +110,9 @@ function crewmate(name: string) {
   b.dataset.crew = name;
   b.setAttribute('aria-label', `${c.name}, ${c.what.toLowerCase()}: call out to play`);
   b.addEventListener('click', () => callOut(b));
-  return el('div', 'crewmate-cell', b, installKey(name, c.name));
+  const cell = el('div', 'crewmate-cell', b, installKey(name, c.name));
+  cells.set(name, cell);
+  return cell;
 }
 
 /** A small key that copies `text` (the command itself shows as its title); says so for a moment. */
@@ -138,11 +147,14 @@ document
   .querySelector('.agents')!
   .append(copyKey('skill', 'npx @wisdomousai/creatures skill', 'Copy the command that installs the make-a-creature skill'));
 
+/** Some of the crew, side by side. */
+function crewmates(names: string[]) {
+  return el('div', 'crewmates', ...names.map(crewmate));
+}
+
 /** Everyone in a family who comes by (weight 0 never does, and has no picture). */
-function crewmates(family: Family) {
-  const g = el('div', 'crewmates');
-  for (const n of inFamily(family)) if (ROSTER[n]?.weight !== 0) g.append(crewmate(n));
-  return g;
+function family(f: Family) {
+  return crewmates(inFamily(f).filter((n) => ROSTER[n]?.weight !== 0));
 }
 
 /** A card pinned to the sheet, three pictures on it: it goes to a playground or the room's
@@ -242,35 +254,62 @@ function everyonePage() {
     room,
     ...SECTIONS.filter((s) => inFamily(s.family).length).flatMap((s) => [
       el('h2', '', s.label),
-      crewmates(s.family),
+      family(s.family),
     ]),
   ];
 }
 
-let shown = '';
-/** The page in the address: the sheet shows it, and the room turns into it. */
-function show() {
+/** The page in the address: a playground, one of the room's, or everyone (''). */
+function here() {
   const key = location.hash.slice(1);
   const ground = PLAYGROUNDS.find((g) => g.key === key);
   const room = ROOM.find((r) => r.key === key);
-  const place = ground || room ? key : '';
-  if (place === shown && content.childElementCount) return;
-  shown = place;
+  return { ground, room, place: ground || room ? key : '' };
+}
+
+/** The sheet: whoever matches what's typed in the search, or else the page in the address. */
+function page() {
+  const sought = search.value.trim();
+  root.toggleAttribute('data-searching', !!sought);
+  clear.hidden = !search.value;
+  if (sought) {
+    const keys = find(sought);
+    found.value = keys.length ? `${keys.length} found` : 'none';
+    content.replaceChildren(
+      keys.length
+        ? crewmates(keys)
+        : el(
+            'p',
+            'line nobody',
+            'Nobody like that. Try what they are (dog, fish, robot), a colour, or how they get about (hop, swim, fly).',
+          ),
+    );
+  } else {
+    found.value = '';
+    const { ground, room } = here();
+    if (ground)
+      content.replaceChildren(
+        el('h2', '', ground.label),
+        el('p', 'line', `${ground.line} Pick one and it jumps out to play.`),
+        family(ground.family),
+      );
+    else if (room)
+      content.replaceChildren(
+        el('h2', '', room.label),
+        el('p', 'line', room.line),
+        roomPage(room.key, world),
+      );
+    else content.replaceChildren(...everyonePage());
+  }
+  faces();
+}
+
+let shown: string | undefined;
+/** The page in the address: the sheet shows it, and the room turns into it. */
+function show() {
+  const { ground, room, place } = here();
   for (const a of nav.querySelectorAll<HTMLAnchorElement>('a'))
     a.toggleAttribute('aria-current', a.dataset.place === place);
-  if (ground)
-    content.replaceChildren(
-      el('h2', '', ground.label),
-      el('p', 'line', `${ground.line} Pick one and it jumps out to play.`),
-      crewmates(ground.family),
-    );
-  else if (room)
-    content.replaceChildren(
-      el('h2', '', room.label),
-      el('p', 'line', room.line),
-      roomPage(room.key, world),
-    );
-  else content.replaceChildren(...everyonePage());
   // The folded card has three of the page's pictures on it.
   const pictures = ground
     ? inFamily(ground.family).slice(0, 3)
@@ -278,8 +317,10 @@ function show() {
   opener
     .querySelector('.card-faces')!
     .replaceChildren(...pictures.map((n) => face(n, 'card-face')));
-  faces();
+  page();
   sheet.scrollTop = 0;
+  if (place === shown) return;
+  shown = place;
 
   // The room stays as it is on every page (bare, till something is put in it from the
   // Furniture or Hanging page). A family's playground has its own games, and only that
@@ -291,7 +332,54 @@ function show() {
   for (const [name, m] of crew.members)
     if (m.state !== 'gone' && !crew.roster.includes(name)) setTimeout(() => m.leave(), 500 * i++);
 }
-addEventListener('hashchange', show);
+
+// ---------- The search ----------
+
+// At the top of the sheet, staying there as it scrolls: what's typed picks out everyone it
+// matches, in place of the page (the ways to the other pages step aside till it's empty).
+// Enter calls out the first, Escape empties it, and / anywhere goes to it.
+const search = sheet.querySelector<HTMLInputElement>('#find')!;
+const found = sheet.querySelector<HTMLOutputElement>('.found')!;
+const clear = sheet.querySelector<HTMLButtonElement>('.clear')!;
+const head = sheet.querySelector<HTMLElement>('.head')!;
+search.placeholder = `Search ${FINDABLE} creatures`;
+
+search.addEventListener('input', () => {
+  page();
+  // Scrolled down, the search is stuck at the top: what it found starts just under it.
+  const top = head.offsetTop + head.offsetHeight;
+  if (sheet.scrollTop > top) sheet.scrollTop = top;
+});
+search.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    content.querySelector<HTMLButtonElement>('button.crewmate')?.click();
+  } else if (e.key === 'Escape' && search.value) {
+    e.preventDefault();
+    search.value = '';
+    page();
+  }
+});
+clear.addEventListener('click', () => {
+  search.value = '';
+  page();
+  search.focus();
+});
+addEventListener('keydown', (e) => {
+  const at = e.target as HTMLElement;
+  if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (at.closest('input, textarea, select, [contenteditable]')) return;
+  e.preventDefault();
+  unfold(true);
+  search.focus();
+  search.select();
+});
+
+// Another page empties the search.
+addEventListener('hashchange', () => {
+  search.value = '';
+  show();
+});
 show();
 
 // ---------- The settings (look and lights), and send out ----------
@@ -316,7 +404,7 @@ addEventListener(
   true,
 );
 addEventListener('keydown', (e) => {
-  if (e.key !== 'Escape' || settings.hidden) return;
+  if (e.key !== 'Escape' || settings.hidden || e.defaultPrevented) return;
   e.preventDefault();
   showSettings(false);
   settingsKey.focus({ preventScroll: true });

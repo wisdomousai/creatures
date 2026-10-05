@@ -40,6 +40,9 @@ const STEAM = '#ffffff';
 const TONE = '#ffe8a8';
 
 export class Teapot extends Toybot {
+  static readonly terms =
+    'tea porcelain china white blue cream pink bow tie lid spout handle glove tray cup saucer steam whistle pours polite waiter spats';
+
   private fx = {
     hop: 0, // metres
     spin: 0, // radians about the up axis

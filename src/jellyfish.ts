@@ -44,6 +44,9 @@ const ARM_SEGS = 3;
 const turnAngle = (k: number, n: number, off = 0) => ((off + (360 * k) / n) * Math.PI) / 180;
 
 export class Jellyfish extends Swimmer {
+  static readonly terms =
+    'jelly medusa bell dome lampshade lilac lavender purple pink peach cream tentacles float drift glow lamp pulse swim glide umbrella';
+
   /** The bell squashed (1) or relaxed (0), kicked by each pulse. */
   private sq = new FixedSpring();
   private beatT = 0;

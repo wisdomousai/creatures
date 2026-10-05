@@ -35,6 +35,9 @@ const SIDES = [
 const SINK = 0.09;
 
 export class Goose extends Bird {
+  static readonly terms =
+    'gander honk white grey gray pale orange beak feet webbed long neck waddle plump preen chase wings round collar';
+
   private openS = new Spring(6, 0.45, 1.2);
   private puffS = new Spring(3, 0.6);
   private sinkS = new Spring(2.5, 0.75);

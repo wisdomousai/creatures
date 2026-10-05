@@ -188,6 +188,13 @@ export function loadModel(url: string): Promise<Object3D> {
 }
 
 export abstract class Character {
+  /**
+   * Words to find it by in a search, besides its name and what it is: what else it's
+   * called, its colours (in the colour look), how it looks, and how it gets about and what
+   * it does. Lower case, a space between each. On the class, so a page can search the crew
+   * before any of their models are loaded (ROSTER has them too).
+   */
+  static readonly terms: string = '';
   readonly spec: Spec;
   /** On the frame: placed, rotated to the edge and scaled to pixels. */
   readonly holder = new Group();

@@ -91,6 +91,9 @@ interface Leg extends Point {
 }
 
 export class Squirrel extends Character {
+  static readonly terms =
+    'chipmunk nut bushy big tail curled tufted ears buck teeth cheeks orange brown tan scamper dash dig bury climb leap twitchy quick';
+
   /** What the acts want this frame (reset in idle, then sprung in pose). */
   private want = {
     crouch: 0,

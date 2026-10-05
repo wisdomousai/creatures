@@ -44,6 +44,9 @@ const SUNRISE = ['#ff5a3d', '#ff7a3d', '#ff9a45', '#ffbd4d', '#ffd866', '#ffe98a
 const LEG = 0.2 / 0.86;
 
 export class Rooster extends Bird {
+  static readonly terms =
+    'cockerel cock chicken red comb wattles gold golden orange tail fan feathers teal mint proud strut crow tall yellow legs dawn';
+
   private openS = new Spring(6, 0.45, 1.2);
   private puffS = new Spring(3, 0.6);
   private turn = new Spring(1.6, 0.8);

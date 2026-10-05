@@ -45,6 +45,9 @@ const SIDES = [
 const DOTS = [0, 1, 3, 4];
 
 export class Otter extends Swimmer {
+  static readonly terms =
+    'floating float back swim brown chocolate cream belly stone rock clam shell kelp pearl paddle paws roll nap chunky tummy';
+
   private raise = new FixedSpring(3, 0.45);
   private wrap = new FixedSpring(1.6, 0.8);
   private stone = new FixedSpring(5, 0.8);

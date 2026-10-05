@@ -52,6 +52,9 @@ const CORGI: Anatomy = {
 };
 
 export class Corgi extends Hound {
+  static readonly terms =
+    'doggo pooch small short stubby legs long low orange peach tan ginger white big ears green collar butt wiggle rump sploot loaf';
+
   protected readonly anatomy = CORGI;
   protected readonly build = { middle: 0.2, spring: 0.8, speed: 1.4 };
   /** How hard the rump lamps flash with the wiggle, 0..1. */

@@ -78,6 +78,9 @@ const fresh = (): Want => ({
 const mir = (a: Arm): Arm => [a[0], -a[1], a[2]];
 
 export class Gorilla extends Character {
+  static readonly terms =
+    'ape primate monkey silverback young big strong chest drum beat pound knuckle fists arms grey gray blue slate silver black thinker';
+
   private want = fresh();
   private run = { n: 0, dir: 1 };
   private pokes: number[] = [];

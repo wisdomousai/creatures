@@ -28,6 +28,9 @@ export const GUINEAPIG_FACE: FaceLayout = {
 };
 
 export class GuineaPig extends Fluffy {
+  static readonly terms =
+    'cavy cavia rodent pet potato round ginger brown cream white patches tiny ears short legs wheek popcorn hop nibble hay rosette';
+
   private wheek = 0;
   private emote: Expression | null = null;
   private zoomBoost = 1;

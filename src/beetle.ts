@@ -33,6 +33,9 @@ export const BEETLE_FACE: FaceLayout = {
 };
 
 export class Beetle extends Bug {
+  static readonly terms =
+    'rhino rhinoceros insect brown blue black horn shell wings six legs strong heavy domed pushes ball charges bashes clumsy weightlifter flips';
+
   private openS = new Spring(5, 0.5);
   private buzzS = new Spring(6, 0.8);
   private rollS = new Spring(3.2, 0.5);

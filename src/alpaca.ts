@@ -41,6 +41,9 @@ const ALPACA: Anatomy = {
 };
 
 export class Alpaca extends Hoofed {
+  static readonly terms =
+    'llama camelid tall long neck slim legs cream white beige fluffy topknot pom banana ears aloof snooty haughty hums spits rings';
+
   protected readonly anatomy = ALPACA;
   protected readonly build = { middle: 0.55, spring: 0.6, speed: 0.95 };
   /** The neck rings' pulse level, 0..1, and the spit's start time within the act. */

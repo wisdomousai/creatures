@@ -82,6 +82,9 @@ interface V {
 }
 
 export class Slinky extends Bird {
+  static readonly terms =
+    'spring coil rings stack rainbow pastel colourful colorful pink orange yellow green blue lilac stairs boing bounce stretch squash walk wobble';
+
   private extS = new Spring(3, 0.17, 1.2, 1);
   private leanF = new Spring(2.4, 0.4, 1, 0);
   private leanS = new Spring(2.4, 0.4, 1, 0);

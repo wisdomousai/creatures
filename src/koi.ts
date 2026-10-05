@@ -195,6 +195,9 @@ interface Bubble {
 }
 
 export class Koi extends Character {
+  static readonly terms =
+    'carp goldfish fish pond tank white cream coral orange pink patches scales fins tail black mask swim glide cruise bubbles';
+
   /** Held by the pointer, it flies after it. */
   readonly flies = true;
   /** It comes in its own way (flying or swimming), not jumping out of its picture. */

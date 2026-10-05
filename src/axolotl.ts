@@ -40,6 +40,9 @@ const SIDES = [
 const DEG = 180 / Math.PI;
 
 export class Axolotl extends Character {
+  static readonly terms =
+    'salamander mexican walking fish amphibian pink white pale gills frilly feathery smile happy cute float flutter waddle hop lazy yawn';
+
   /** Gills: flutter size, flutter rate (Hz), how far spread, how far lifted, how far drooped. */
   private flutter = new FixedSpring(3, 0.7);
   private rate = new FixedSpring(2, 0.8, 1, 0.8);

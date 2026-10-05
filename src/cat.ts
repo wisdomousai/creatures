@@ -164,6 +164,9 @@ const CUP_FALL = 0.5;
 const TAIL_BUSY = ['tailFlick', 'tailChase', 'chatter', 'pounce', 'zoomies', 'hiss'];
 
 export class Cat extends Pet {
+  static readonly terms =
+    'kitty kitties moggy feline peach orange apricot ginger tan cream tv screen whiskers collar tag tail stroll sit groom stretch nap';
+
   protected readonly anatomy: Anatomy = { ...CAT, drop: { ...CAT.drop } };
   private gaze = this.spec.gaze;
   private frame: Frame | null = null;

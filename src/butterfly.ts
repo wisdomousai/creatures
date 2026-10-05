@@ -40,6 +40,9 @@ const BAND = 7;
 const FOLD = 64;
 
 export class Butterfly extends Bug {
+  static readonly terms =
+    'insect purple lilac lavender pink wings stained glass cells flutter fly drift glow shimmer colourful colorful rainbow tiny delicate land';
+
   /** Held by the pointer, it flies after it. */
   readonly flies = true;
   private openS = new Spring(3, 0.7);

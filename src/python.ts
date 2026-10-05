@@ -54,6 +54,9 @@ const PIVOT = BONES.map((_, k) => (k === 0 ? -0.042 : 0.036));
 const RISE = [-12, -4, 18, 46, 72, 86, 84, 66, 36, 12, 0, 0, 0];
 
 export class Python extends Bird {
+  static readonly terms =
+    'snake serpent reptile slither slithering coil coiled long green cream spots tongue forked hiss rings segments diamonds hug wrap sways legless';
+
   private yaw = Array.from({ length: N }, (_, k) => new Spring(7 - 3 * (k / N), 0.75));
   private pit = Array.from({ length: N }, (_, k) => new Spring(7 - 3 * (k / N), 0.75));
   private lean = new Spring(2, 0.8);

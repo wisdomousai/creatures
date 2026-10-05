@@ -52,6 +52,9 @@ const BEAGLE: Anatomy = {
 };
 
 export class Beagle extends Hound {
+  static readonly terms =
+    'doggo pup pooch baby young white orange brown tan patches long floppy ears big paws tail flag nose sniff scent follow howl';
+
   protected readonly anatomy = BEAGLE;
   protected readonly build = { middle: 0.2, spring: 1.3, speed: 1.5 };
   /** The toe lights: a flash per paw (FL FR BL BR). */

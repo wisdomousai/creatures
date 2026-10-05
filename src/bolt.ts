@@ -34,6 +34,9 @@ export const BEACON: Partial<Record<Expression, string>> = {
 export const RAINBOW = ['#5ec8ff', '#ff5fa2', '#ffb347', '#6fdc8c'];
 
 export class Bolt extends Character {
+  static readonly terms =
+    'spaceman rocket boots jet flames fly flying hover white orange grey gray boy antenna dance nap sit ledge land android humanoid';
+
   /** Held by the pointer, it flies after it. */
   readonly flies = true;
   /** It comes in its own way (flying or swimming), not jumping out of its picture. */

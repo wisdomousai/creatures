@@ -25,6 +25,32 @@
       <header class="head">
         <h1>Play</h1>
         <p class="lede">Everyone in the box. Pick one and it jumps out to play.</p>
+      </header>
+      <div class="search" role="search">
+        <label class="search-box">
+          <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+            <circle cx="8.5" cy="8.5" r="5.5" />
+            <path d="M12.6 12.6 17 17" />
+          </svg>
+          <input
+            id="find"
+            type="search"
+            placeholder="Search the creatures"
+            aria-label="Search the creatures"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            enterkeyhint="go"
+          />
+          <output class="found" for="find"></output>
+        </label>
+        <button class="clear" type="button" aria-label="Clear the search" hidden>
+          <svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true">
+            <path d="M5 5l10 10M15 5 5 15" />
+          </svg>
+        </button>
+      </div>
+      <div class="ways">
         <nav class="places" aria-label="Playgrounds and the room"></nav>
         <div class="controls">
           <button class="send" type="button">Send everyone out</button>
@@ -32,7 +58,7 @@
         <p class="hint">
           Right-click one (or press it a while) for its tricks. Hold one down and it follows you.
         </p>
-      </header>
+      </div>
       <div id="page"></div>
       <footer class="foot">
         <p class="agents">Want to make one? Your coding agent can learn how: </p>

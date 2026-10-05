@@ -138,6 +138,9 @@ const AIR: Record<Mode, { rate: number; amp: number; open: number; body: number;
 };
 
 export class Owl extends Character {
+  static readonly terms =
+    'hoot night nocturnal wise brown tan cream beige white feathers feathered wings talons big round eyes fly flap hover glide swoop perch';
+
   /** Held by the pointer, it flies after it. */
   readonly flies = true;
   private env: Env | null = null;

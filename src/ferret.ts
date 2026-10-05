@@ -29,6 +29,9 @@ export const FERRET_FACE: FaceLayout = {
 };
 
 export class Ferret extends Fluffy {
+  static readonly terms =
+    'polecat weasel long noodle sausage cream tan brown dark mask segments rings tail slink flow war dance hop periscope flop sleep';
+
   private emote: Expression | null = null;
   private stage = 0;
   private mark = 0;

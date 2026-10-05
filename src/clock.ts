@@ -63,6 +63,9 @@ const pulse = (t: number, at: number, length: number) =>
   t > at && t < at + length ? Math.sin(((t - at) / length) * Math.PI) : 0;
 
 export class Clock extends Character {
+  static readonly terms =
+    'time bells ring chime red coral white black dial hands tick tock hour cuckoo hammer winding key snooze wake sleepy march';
+
   private hop = new Spring(3, 0.3);
   private crouch = new Spring(2, 0.7);
   private lid = new Spring(5, 0.6);

@@ -36,6 +36,9 @@ export const HAMSTER_FACE: FaceLayout = {
 const SEEDS = 4;
 
 export class Hamster extends Fluffy {
+  static readonly terms =
+    'rodent pet plump round orange tan peach cream brown cheeks pouches seeds sunflower stuffs wheel running paws tiny ears fluffy nibbles';
+
   /** How full each cheek is (0..1) and the wheel's state. */
   private cheeks = [new Spring(6, 0.45, 1.3), new Spring(6, 0.45, 1.3)];
   private full = [0, 0];

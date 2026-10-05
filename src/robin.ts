@@ -43,6 +43,9 @@ const SIDES = [
 const FLOAT = 0.12;
 
 export class Robin extends Bird {
+  static readonly terms =
+    'redbreast red orange brown tan cream breast small round plump sing song chirp tweet worm hop tilt listen songbird puff tail';
+
   /** Held by the pointer, it flies after it. */
   readonly flies = true;
   private noteS = [new Spring(8, 0.6, 1), new Spring(8, 0.6, 1), new Spring(8, 0.6, 1)];

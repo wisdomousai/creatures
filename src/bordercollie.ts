@@ -51,6 +51,9 @@ const COLLIE: Anatomy = {
 };
 
 export class Bordercollie extends Hound {
+  static readonly terms =
+    'doggo pooch collie sheepdog herding black white patches ears half up tail young quick lean fast clever alert stare circle herd disc';
+
   protected readonly anatomy = COLLIE;
   protected readonly build = { middle: 0.33, spring: 1.4, speed: 1.9 };
   /** The sock lights: a flash per paw (FL FR BL BR). */

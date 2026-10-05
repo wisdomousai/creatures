@@ -40,6 +40,9 @@ const dartIn = (t: number) =>
   0.6 * (ease((t - 6.6) / 0.4) - ease((t - 7.2) / 0.4));
 
 export class Clownfish extends Fishy {
+  static readonly terms =
+    'nemo fish orange white black brown stripes bands striped fins tail anemone tiny small round swim wiggle zigzag shimmer reef shy';
+
   private anem = new FixedSpring(5, 0.5);
   private dart = new FixedSpring(7, 0.5);
   private flare = new FixedSpring(6, 0.35);

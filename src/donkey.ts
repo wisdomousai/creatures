@@ -47,6 +47,9 @@ const DONKEY: Anatomy = {
 };
 
 export class Donkey extends Hoofed {
+  static readonly terms =
+    'ass burro mule grey gray long ears upright sturdy pale muzzle bray hee haw stubborn sit roll scratch flick tips';
+
   protected readonly anatomy = DONKEY;
   protected readonly build = { middle: 0.55, spring: 0.7, speed: 1 };
   /** How loud the bray is, and how lit each ear tip is (left, right), 0..1. */

@@ -123,6 +123,9 @@ const fresh = (): Fx => ({
 });
 
 export class Plant extends Character {
+  static readonly terms =
+    'flower blossom pot potted terracotta peach coral pink green leaves petals stem seedling garden shuffle sun bask wilt water thirsty gauge walk';
+
   mood: Mood = 'calm';
   private fx: Fx = fresh();
   private bloom = new Spring(0.8, 0.6, 0, 0.55);

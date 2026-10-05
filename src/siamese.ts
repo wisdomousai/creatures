@@ -48,6 +48,9 @@ const SIAMESE: Anatomy = {
 };
 
 export class Siamese extends Kitty {
+  static readonly terms =
+    'kitty siam slender slim elegant tall long legs cream white beige brown chocolate dark points blue eyes big ears whip tail yowl';
+
   protected readonly anatomy = SIAMESE;
   protected readonly build = { middle: 0.4, spring: 1.1, speed: 1.6 };
 

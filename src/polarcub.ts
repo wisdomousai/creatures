@@ -29,6 +29,9 @@ export const POLARCUB_FACE: FaceLayout = {
 };
 
 export class PolarCub extends Fluffy {
+  static readonly terms =
+    'baby white ice blue pale icy snow arctic round paws pads slide belly roll clumsy stand black nose snout collar';
+
   private emote: Expression | null = null;
   private slideK = 0;
   private roll = 0;

@@ -43,6 +43,9 @@ const GEAR_RATIO = [1, -12 / 9, 12 / 6];
 const GOLD = '#ffd23f';
 
 export class Tin extends Toybot {
+  static readonly terms =
+    'windup clockwork retro vintage metal toy red coral orange silver key winding gears sparks rivets can march stiff salute antennae pincers';
+
   private fx = { hop: 0, spin: 0, spark: 0, rattle: 0, still: false, march: false, lean: 0 };
   /** How far wound he is, 0..1; the key turns (and the legs go) accordingly. */
   private wound = 1;

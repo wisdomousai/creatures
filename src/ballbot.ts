@@ -40,6 +40,9 @@ const sm = (x: number) => {
 };
 
 export class Ballbot extends Bird {
+  static readonly terms =
+    'ball balancing balance balancer segway single striped blue cream yellow beige slim tall roll spin hop lean wobble arms sway';
+
   // The lean about the ball (degrees): lightly damped, knocked now and then, so the balancing
   // is always correcting something.
   private leanP = new Spring(2.1, 0.22, 1, 0);

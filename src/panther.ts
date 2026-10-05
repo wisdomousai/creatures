@@ -27,6 +27,9 @@ export const PANTHER_FACE: FaceLayout = {
  * crewmate, and a slow, low stalk.
  */
 export class Panther extends Chameleons {
+  static readonly terms =
+    'chameleon lizard reptile blue bright coral pink stripes bands white colour color changing shifter rainbow stocky puff display stalk walk';
+
   constructor(model: Object3D) {
     super(model, {
       name: 'Flare',

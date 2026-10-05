@@ -43,6 +43,9 @@ const SIDES = [
 const PEAK = 0.45;
 
 export class Toucan extends Bird {
+  static readonly terms =
+    'black white bib blue orange yellow red huge big beak banded tropical hop clack berry fruit toss catch bounce goofy';
+
   /** Held by the pointer, it flies after it. */
   readonly flies = true;
   private berryS = new Spring(7, 0.5, 1.4);

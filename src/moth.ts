@@ -45,6 +45,9 @@ const SPOTS = 0; // Dot0 fore eye-spots, Dot1 edge cells, Dot2 hind eye-spots, D
 const ORB_X = 0.42;
 
 export class Moth extends Bug {
+  static readonly terms =
+    'insect bug wings antennae feathery fuzzy fluffy cream white tan brown eyespots spots flutter fly light glow orb night dust nap';
+
   /** Held by the pointer, it flies after it. */
   readonly flies = true;
   private openS = new Spring(3, 0.7);

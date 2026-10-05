@@ -55,6 +55,9 @@ const GREYHOUND: Anatomy = {
 };
 
 export class Greyhound extends Hound {
+  static readonly terms =
+    'doggo pooch lurcher slender slim thin skinny tall long legs grey gray silver blue white orange vest racing sprint run fast zoomies';
+
   protected readonly anatomy = GREYHOUND;
   protected readonly build = { middle: 0.35, spring: 1.1, speed: 2 };
   /** The cuff lights: a flash per leg (FL FR BL BR). */

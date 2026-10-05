@@ -62,6 +62,9 @@ const bump = (x: number, width: number) => Math.max(0, 1 - Math.abs(x) / width);
 const cycle = (x: number) => x - Math.floor(x);
 
 export class Turtle extends Character {
+  static readonly terms =
+    'terrapin reptile marine ocean flippers flipper shell hexagon hexagonal plates teal mint green swim paddle row clumsy flat glowing seams bubbles';
+
   private env: Env | null = null;
   /** Height above the floor, in body heights: where she wants to be, and where she is. */
   private up = 0;

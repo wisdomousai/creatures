@@ -35,6 +35,9 @@ const BLUE = '#7fb0ff';
 const FLAG = { x: 0.32, y: -0.04 };
 
 export class Astronaut extends Jobbot {
+  static readonly terms =
+    'spaceman spacewoman cosmonaut space suit spacesuit helmet visor bubble white orange gold peach moon moonwalk float drift gravity stars flag backpack';
+
   private fx = {
     flag: 0, // 0..1 (size)
     drop: 0, // metres the flag is held above the ground

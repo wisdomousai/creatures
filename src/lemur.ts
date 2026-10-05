@@ -81,6 +81,9 @@ const fresh = (): Want => ({
 const mir = (a: Arm): Arm => [a[0], -a[1], a[2]];
 
 export class Lemur extends Character {
+  static readonly terms =
+    'madagascar primate monkey striped long tail grey gray white orange amber eyes dark mask sunbathe sun hop skip jig chatter climb cling';
+
   private want = fresh();
   private run = { n: 0, dir: 1 };
   private pokes: number[] = [];

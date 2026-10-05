@@ -48,6 +48,9 @@ const MUNCHKIN: Anatomy = {
 };
 
 export class Munchkin extends Moggy {
+  static readonly terms =
+    'kitty baby young small tiny short legs low stubby white cream peach orange teal mint green eyes big round head meerkat scamper';
+
   protected readonly anatomy = MUNCHKIN;
   protected readonly build = { middle: 0.15, spring: 1.1, speed: 2.1 };
 

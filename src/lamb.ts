@@ -41,6 +41,9 @@ const LAMB: Anatomy = {
 };
 
 export class Lamb extends Hoofed {
+  static readonly terms =
+    'sheep baby wool woolly fluffy fleece white cream brown grey gray dark floppy ears topknot short legs young bouncy pronk baa';
+
   protected readonly anatomy = LAMB;
   protected readonly build = { middle: 0.3, spring: 0.8, speed: 1 };
   /** How loud the baa is right now, 0..1: the lamp in her chest glows. */

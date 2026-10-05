@@ -52,6 +52,9 @@ const FOAL: Anatomy = {
 const LEGS = ['FL', 'FR', 'BL', 'BR'] as const;
 
 export class Foal extends Hoofed {
+  static readonly terms =
+    'pony horse colt baby newborn filly stilts long legs wobbly tan peach cream mane star forehead big ears huge eyes gallop skip';
+
   protected readonly anatomy = FOAL;
   protected readonly build = { middle: 0.5, spring: 0.8, speed: 1 };
   /** The star's brightness boost (0..1) from tricks. */

@@ -34,6 +34,9 @@ export const BEAVER_FACE: FaceLayout = {
 const TAIL = ['tail.1', 'tail.2'];
 
 export class Beaver extends Fluffy {
+  static readonly terms =
+    'dam builder rodent buck teeth brown chestnut cream belly paddle tail flat webbed feet gnaw log chew slap chatter round wood';
+
   private log = new Spring(6, 0.45, 1.3);
   private logGoal = 0;
   private logLen = 1;

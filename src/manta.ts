@@ -42,6 +42,9 @@ const SIDES = [
 ] as const;
 
 export class Manta extends Swimmer {
+  static readonly terms =
+    'ray stingray sea ocean light blue white wings fins glide flap soar fly flying swim loop barrel roll flat diamond tail';
+
   /** How hard the wings beat (degrees at the root), and how fast (Hz). */
   private amp = new FixedSpring(3, 0.7);
   private rate = new FixedSpring(3, 0.7);

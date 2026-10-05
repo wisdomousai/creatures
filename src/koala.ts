@@ -33,6 +33,9 @@ export const KOALA_FACE: FaceLayout = {
 };
 
 export class Koala extends Fluffy {
+  static readonly terms =
+    'bear marsupial grey gray silver leaf big pom ears dark oval nose sleepy dozes eucalyptus clings climbs hugs stocky strong arms round';
+
   /** 0..1 how deep in a doze he is, and the leaf's size. */
   private drowse = new Spring(2, 0.85);
   private drowseGoal = 0;

@@ -59,6 +59,9 @@ const bump = (t: number, at: number, length: number) =>
 const BELLY = 0.17;
 
 export class Penguin extends Character {
+  static readonly terms =
+    'tux tuxedo waddles slide toboggan flippers black navy blue grey gray white orange beak feet chubby antarctic ice cold pebbles dance squawk';
+
   private env: Env | null = null;
   private lieS = new Spring(3, 0.55, 1.2);
   private pebS = [new Spring(5, 0.5, 1.4), new Spring(5, 0.5, 1.4), new Spring(5, 0.5, 1.4)];

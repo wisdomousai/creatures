@@ -51,6 +51,9 @@ const FOLD: Anatomy = {
 };
 
 export class Scottishfold extends Kitty {
+  static readonly terms =
+    'kitty baby small tiny round ball folded ears flat fold grey gray silver white fluffy orange eyes chubby stubby bounce sit topple';
+
   protected readonly anatomy = FOLD;
   protected readonly build = { middle: 0.17, spring: 1.2, speed: 1.8 };
 

@@ -64,6 +64,9 @@ const KITTEN: Anatomy = {
 };
 
 export class Kitten extends Kitty {
+  static readonly terms =
+    'kitty baby young tiny small fluffy round black charcoal dark grey gray white pink cream stubby pom tail trot pounce stalk zoomies';
+
   protected readonly anatomy = KITTEN;
   protected readonly build = {
     middle: 0.15,

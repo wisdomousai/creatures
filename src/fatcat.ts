@@ -138,6 +138,9 @@ const span = (t: number, a: number, b: number, c: number, d: number) =>
   ease(t, a, b) * (1 - ease(t, c, d));
 
 export class Fatcat extends Pet {
+  static readonly terms =
+    'kitty chubby plump chonky round pear belly big heavy lazy waddle black charcoal dark grey gray white socks double chin thick tail';
+
   protected readonly anatomy: Anatomy = { ...FATCAT, drop: { ...FATCAT.drop } };
   private gaze = this.spec.gaze;
   private frame: Frame | null = null;

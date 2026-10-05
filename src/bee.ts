@@ -36,6 +36,9 @@ const BANDS = [0, 1, 2];
 const BASKETS = [3, 4];
 
 export class Bee extends Bug {
+  static readonly terms =
+    'bumblebee honeybee insect yellow gold black brown stripes striped wings buzz hover fly antennae pollen basket honey waggle dance flowers';
+
   /** Held by the pointer, it flies after it. */
   readonly flies = true;
   private buzzS = new Spring(6, 0.8);

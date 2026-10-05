@@ -37,6 +37,9 @@ const RINGS = 6;
 const CELL = 6;
 
 export class Dragonfly extends Bug {
+  static readonly terms =
+    'insect bug damselfly flying hover darts glides skims wings clear transparent blue teal green slim long tail big eyes rings';
+
   /** Held by the pointer, it flies after it. */
   readonly flies = true;
   private buzzS = new Spring(6, 0.8);

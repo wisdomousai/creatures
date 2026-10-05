@@ -85,6 +85,9 @@ const span = (t: number, a: number, b: number, c: number, d: number) =>
   ease(t, a, b) * (1 - ease(t, c, d));
 
 export class Crawler extends Character {
+  static readonly terms =
+    'tank tracks treads tracked bulldozer tan beige brown dome shell periscope scoop pincer claw pebbles rocks collector trundle shy slow rover digger';
+
   private env: Env | null = null;
   /** Periscope: -0.7 sunk into the shell, 0 resting on it, 1 fully stretched. */
   private ext = new Spring(3.2, 0.5, 1.4);

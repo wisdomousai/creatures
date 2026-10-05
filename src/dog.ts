@@ -131,6 +131,9 @@ const P = { wind: 1.4, leap: 1.8, land: 2.3, end: 3.1 };
 const LEAP = 0.45;
 
 export class Dog extends Pet {
+  static readonly terms =
+    'doggo doggy pup pooch hound tan beige cream brown tv screen floppy ears snout nose collar red tag tail wag trot sniff';
+
   protected readonly anatomy: Anatomy = { ...DOG, drop: { ...DOG.drop } };
   private gaze = this.spec.gaze;
   private frame: Frame | null = null;

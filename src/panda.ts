@@ -31,6 +31,9 @@ export const PANDA_FACE: FaceLayout = {
 };
 
 export class Panda extends Fluffy {
+  static readonly terms =
+    'bear cub black white round chubby clumsy bamboo munching somersault roll tumble wobbles ears visor sits cuddly plush short legs';
+
   private stalk = new Spring(5, 0.5, 1.2);
   private stalkGoal = 0;
   /** How much of the stalk is left (1 whole, 0.3 a stub). */

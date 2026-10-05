@@ -113,6 +113,9 @@ const blank = (): Pose => ({
 type Trick = (t: number, a: Pose, len: number) => void;
 
 export class Unicycle extends Character {
+  static readonly terms =
+    'monocycle circus acrobat juggler juggle balance one wheel rolling ride wobble sway top hat blue black arms tricks bow wave';
+
   private frame: Frame | null = null;
   private crew: readonly Character[] = [];
   private pokes: number[] = [];

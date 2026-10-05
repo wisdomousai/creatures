@@ -50,6 +50,9 @@ const PERSIAN: Anatomy = {
 };
 
 export class Persian extends Kitty {
+  static readonly terms =
+    'kitty old senior elderly aged grey gray silver white fluffy fuzzy flat face orange eyes round low bushy tail slow stiff creaky';
+
   protected readonly anatomy = PERSIAN;
   protected readonly build = { middle: 0.21, spring: 0.3, speed: 0.8 };
 

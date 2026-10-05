@@ -60,6 +60,9 @@ const trapezoid = (t: number, a: number, b: number, c: number, d: number) =>
   smooth((t - a) / (b - a)) * (1 - smooth((t - c) / (d - c)));
 
 export class Swan extends Character {
+  static readonly terms =
+    'white cream orange bill long neck graceful elegant lake pond glide paddle float wings flap honk hiss curtsey ballet preen proud';
+
   // The pose layers: reset each frame, filled in by the acts, applied in pose().
   /** Extra lean of each neck segment from its rest, and its sideways bend (degrees). */
   private nd = [0, 0, 0, 0, 0];

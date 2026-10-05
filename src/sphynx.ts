@@ -49,6 +49,9 @@ const SPHYNX: Anatomy = {
 };
 
 export class Sphynx extends Kitty {
+  static readonly terms =
+    'kitty hairless bald naked wrinkly wrinkles pink blush peach pale beige slender thin big ears yellow lemon eyes shiver cold bask';
+
   protected readonly anatomy = SPHYNX;
   protected readonly build = { middle: 0.35, spring: 1.0, speed: 1.7 };
   private nextBrr = 6 + Math.random() * 10;

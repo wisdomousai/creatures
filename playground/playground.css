@@ -134,13 +134,18 @@ a {
   box-sizing: border-box;
   width: min(50rem, 62vw, calc(100% - 2 * var(--frame-inset) - 2rem));
   overflow: auto;
-  padding: 1.6rem clamp(1rem, 4vw, 2.4rem) 1.2rem;
+  --pad: clamp(1rem, 4vw, 2.4rem);
+  --pad-top: 1.6rem;
+  padding: var(--pad-top) var(--pad) 1.2rem;
   background: var(--card);
   border: 1px solid var(--rule-strong);
   border-radius: 4px;
   box-shadow: 0 2px 6px var(--shade);
   scrollbar-width: thin;
   scrollbar-color: var(--rule-strong) transparent;
+}
+.head {
+  display: flow-root;
 }
 h1 {
   margin: 0;
@@ -159,6 +164,98 @@ h2 {
   margin: 0.3rem 0 0;
   color: var(--ink-soft);
   font-size: 0.85rem;
+}
+
+/* The search, across the sheet: it stays at the top as the sheet scrolls under it. While
+   something is typed in it, the ways to the other pages step aside. */
+.search {
+  position: sticky;
+  /* Stuck, flush with the sheet's top edge (not under its padding). */
+  top: calc(-1 * var(--pad-top));
+  z-index: 1;
+  margin: 0 calc(-1 * var(--pad)) 0.4rem;
+  padding: 0.5rem var(--pad);
+  background: var(--card);
+}
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.9rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink-faint);
+  cursor: text;
+}
+.search-box:focus-within {
+  border-color: var(--ink);
+  color: var(--ink-soft);
+}
+.search-box svg,
+.clear svg {
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+.search input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  /* 16px: a phone doesn't zoom in on it. */
+  font: inherit;
+  font-size: 1rem;
+  outline: none;
+  appearance: none;
+}
+.search input::placeholder {
+  color: var(--ink-faint);
+}
+.search input::-webkit-search-cancel-button,
+.search input::-webkit-search-decoration {
+  appearance: none;
+}
+.found {
+  flex: none;
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+[data-searching] .search-box {
+  padding-right: 2.6rem;
+}
+.clear {
+  position: absolute;
+  top: 50%;
+  right: calc(var(--pad) + 0.35rem);
+  translate: 0 -50%;
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--ink-soft);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.clear:hover {
+  background: var(--paper-deep);
+  color: var(--ink);
+}
+.clear[hidden],
+[data-searching] .ways {
+  display: none;
+}
+.nobody {
+  margin-top: 1.2rem;
 }
 
 /* Where to go: the playgrounds and the room's pages, by name. */

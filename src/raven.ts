@@ -73,6 +73,9 @@ interface Waypoint {
 type Kind = 'flyover' | 'swoop' | 'dive' | 'barrel';
 
 export class Raven extends Character {
+  static readonly terms =
+    'crow blackbird corvid black navy blue dark glossy beak wings fly glide swoop caw cheeky clever sly swagger shiny nut bury';
+
   /** Held by the pointer, it flies after it. */
   readonly flies = true;
   private env: Env | null = null;

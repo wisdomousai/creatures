@@ -62,6 +62,9 @@ const PUG: Anatomy = {
 };
 
 export class Pug extends Hound {
+  static readonly terms =
+    'doggo pooch small square flat face wrinkles wrinkly tan fawn beige cream brown black muzzle big eyes goggles curled tail waddle snort';
+
   protected readonly anatomy = PUG;
   protected readonly build = { middle: 0.2, spring: 1, speed: 1.2 };
   /** The paw lights: a flash per paw (FL FR BL BR). */

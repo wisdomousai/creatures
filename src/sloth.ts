@@ -57,6 +57,9 @@ const bump = (t: number, at: number, up: number, hold: number, down: number) =>
   smooth((t - at) / up) * smooth((at + up + hold + down - t) / down);
 
 export class Sloth extends Character {
+  static readonly terms =
+    'slow lazy sleepy tired hang upside down brown tan beige grey gray ceiling arms creep climb yawn nap battery solar charge';
+
   private pokes: number[] = [];
   private hover = 0;
   private light = new Color(BEACON.neutral);

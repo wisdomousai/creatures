@@ -55,6 +55,9 @@ const HIPPO: Anatomy = {
 };
 
 export class PygmyHippo extends Hoofed {
+  static readonly terms =
+    'hippopotamus calf small tiny green grey gray mint slate pink belly big mouth jaw yawn teeth chomp wade mud heavy slow ears';
+
   protected readonly anatomy = HIPPO;
   protected readonly build = { middle: 0.27, spring: 0.55, speed: 0.8 };
   /** How wide the jaw is opened beyond the usual (0..1), and how lit the teeth are. */

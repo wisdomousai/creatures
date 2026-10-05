@@ -35,6 +35,9 @@ export const GRASSHOPPER_FACE: FaceLayout = {
 const PAIRS = 2;
 
 export class Grasshopper extends Bug {
+  static readonly terms =
+    'locust cricket katydid insect bug green cream yellow long legs antennae hop jump leap chirp violin music wings stripe tall';
+
   private coverS = new Spring(6, 0.45);
   private wingS = new Spring(5, 0.5);
   private foldS = new Spring(6, 0.45);

@@ -66,6 +66,9 @@ const RAGDOLL: Anatomy = {
 };
 
 export class Ragdoll extends Moggy {
+  static readonly terms =
+    'kitty big large soft fluffy floppy limp white cream brown mask blue eyes mittens plume tail ruff slow sweet gentle sleepy';
+
   protected readonly anatomy = RAGDOLL;
   protected readonly build = { middle: 0.3, spring: 0.7, speed: 0.95 };
   /** How limp she is, 0..1: set by the flop, shown in every joint and the roll. */

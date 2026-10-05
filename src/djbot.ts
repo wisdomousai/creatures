@@ -47,6 +47,9 @@ const sm = (x: number) => {
 type Pair = [number, number];
 
 export class Djbot extends Bird {
+  static readonly terms =
+    'deejay disc jockey record vinyl turntable decks spin scratch music speaker woofers headphones beat bass dance lilac lavender purple pink cream';
+
   private dropS = new Spring(6, 0.5, 1.1, 0);
   private hopS = new Spring(6, 0.5, 1, 0);
   private walkK = new Spring(5, 1, 1, 0);

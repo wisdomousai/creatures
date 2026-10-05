@@ -12,6 +12,9 @@ import { sin } from './moves';
  * head-up pose, and nodding the horns.
  */
 export class Jackson extends Chameleons {
+  static readonly terms =
+    'chameleon lizard reptile triceratops dinosaur dino green lime bright horns three horned crest spiky plates shove nod walk colour color changing';
+
   constructor(model: Object3D) {
     super(model, {
       name: 'Trike',

@@ -65,6 +65,9 @@ const PUPPY: Anatomy = {
 };
 
 export class Puppy extends Hound {
+  static readonly terms =
+    'doggo pup pooch baby young small little cream white beige tan pink coral big flappy floppy ears paws clumsy bouncy bone fetch';
+
   protected readonly anatomy = PUPPY;
   protected readonly build = {
     middle: 0.2,

@@ -50,6 +50,9 @@ const POSE = {
 type Pose = keyof typeof POSE;
 
 export class Mantisshrimp extends Fishy {
+  static readonly terms =
+    'shrimp prawn crustacean colourful colorful rainbow teal mint green pink eyes stalks punch boxer boxing fist club lightning stripes segmented swim';
+
   private upper = { L: new FixedSpring(9, 0.5), R: new FixedSpring(9, 0.5) };
   private fore = { L: new FixedSpring(16, 0.42), R: new FixedSpring(16, 0.42) };
   /** Ages of the flashes of light so far (s). */

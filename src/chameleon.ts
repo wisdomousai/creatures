@@ -13,6 +13,9 @@ export { CHAMELEON_FACE };
  * bands between them, the crest and the tail tip.
  */
 export class Chameleon extends Chameleons {
+  static readonly terms =
+    'lizard reptile teal mint green cream gold casque helmet tall turret eyes tongue sticky colour color changes camouflage curly tail climb cling';
+
   constructor(model: import('three').Object3D) {
     super(model, {
       name: 'Hue',

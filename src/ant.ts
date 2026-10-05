@@ -34,6 +34,9 @@ export const ANT_FACE: FaceLayout = {
 };
 
 export class Ant extends Bug {
+  static readonly terms =
+    'insect bug worker colony red orange coral brown black six legs antennae mandibles strong carries crumb marches lifts weightlifter busy tiny small';
+
   private crumbS = new Spring(4, 0.6);
   private carryS = new Spring(4, 0.45);
   private liftS = new Spring(5, 0.45);

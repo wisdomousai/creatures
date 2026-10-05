@@ -33,6 +33,9 @@ export const MOUSE_FACE: FaceLayout = {
 const TAIL = ['tail.1', 'tail.2', 'tail.3', 'tail.4', 'tail.5'];
 
 export class Mouse extends Fluffy {
+  static readonly terms =
+    'mice rodent tiny small round grey gray pink big ears whiskers nose tail long cheese nibble sniff scurry freeze wiggle';
+
   private cheese = new Spring(6, 0.45, 1.3);
   private cheeseGoal = 0;
   private cheeseLeft = 1;

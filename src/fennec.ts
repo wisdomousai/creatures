@@ -34,6 +34,9 @@ export const FENNEC_FACE: FaceLayout = {
 const SAND = 4;
 
 export class Fennec extends Fluffy {
+  static readonly terms =
+    'desert sahara sand kit pup cream white beige pink big huge giant ears bushy tail black tip listen pounce dig spin';
+
   private dune = new Spring(4, 0.55, 1.2);
   private duneGoal = 0;
   private spray = new Spring(6, 0.8);

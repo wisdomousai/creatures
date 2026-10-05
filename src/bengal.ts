@@ -67,6 +67,9 @@ const BENGAL: Anatomy = {
 };
 
 export class Bengal extends Moggy {
+  static readonly terms =
+    'kitty spots spotted rosettes leopard wild tan golden gold orange brown cream green eyes athletic muscular restless prowl pounce leap';
+
   protected readonly anatomy = BENGAL;
   protected readonly build = { middle: 0.3, spring: 1.9, speed: 1.9 };
   /** The puddle, how far out it is (0 tucked away). */

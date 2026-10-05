@@ -63,6 +63,9 @@ const TONE: Partial<Record<Expression, string>> = {
 };
 
 export class Nova extends Character {
+  static readonly terms =
+    'girl skater roller skates skate skating glide twirl dance pigtails buns skirt heart pink white lilac yellow headband lashes cheeky juggle';
+
   /** Direct effects, set by the acts each frame (idle clears them). */
   private fx = {
     roll: 0, // whole-body tumble in the screen plane (radians)

@@ -76,6 +76,9 @@ const fresh = (): Want => ({
 });
 
 export class Frog extends Character {
+  static readonly terms =
+    'toad amphibian green hop hops leap jump croak ribbit tongue sticky toe pads climb squat bulging eyes throat swells snaps flies';
+
   private want = fresh();
   private cyc = 0;
   private run = { n: 0, dir: 1, leap: 0 };

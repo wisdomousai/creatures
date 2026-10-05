@@ -63,6 +63,9 @@ const span = (t: number, a: number, b: number, c: number, d: number) =>
   ease(t, a, b) * (1 - ease(t, c, d));
 
 export class Drone extends Character {
+  static readonly terms =
+    'quadcopter copter helicopter uav fly rotors propellers white blue grey gray claw searchlight camera photo deliver package loops barrel roll buzz follow';
+
   /** Held by the pointer, it flies after it. */
   readonly flies = true;
   /** It comes in its own way (flying or swimming), not jumping out of its picture. */

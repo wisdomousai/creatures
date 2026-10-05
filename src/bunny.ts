@@ -192,6 +192,9 @@ interface Leap {
 }
 
 export class Bunny extends Character {
+  static readonly terms =
+    'rabbit hare hop jump zoomies binky long ears grey gray white pink whiskers twitch nose carrot thump dig pounce cute';
+
   /** The odd ear out (the one that folds, or gets groomed), and the side he flops onto. */
   private odd: Side = 'L';
   /** Some spells of sitting about he spends with one ear folded over. */

@@ -49,6 +49,9 @@ interface Claw {
 const claw = (up = 0, bend = 0, jaw = 0.4, inw = 0): Claw => ({ up, bend, jaw, inw });
 
 export class Crab extends Character {
+  static readonly terms =
+    'crustacean claws pincers shell legs coral pink salmon sideways scuttle walk dig sand visor stalks eyes snap clap wave hide';
+
   private arms: Record<'L' | 'R', Record<keyof Claw, Spring>> = {
     L: this.clawSprings(),
     R: this.clawSprings(),

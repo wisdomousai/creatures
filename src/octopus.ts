@@ -102,6 +102,9 @@ type Throw = {
 };
 
 export class Octopus extends Character {
+  static readonly terms =
+    'tentacles tentacle arms eight legs suckers suction cups purple lilac lavender violet round dome ripple creep crawl ink cephalopod marine ocean';
+
   /** It comes in its own way (flying or swimming), not jumping out of its picture. */
   readonly jumpsOut = false;
   /** This frame's arm pose, per arm and bone: lift (+ curls up, toward the top) and

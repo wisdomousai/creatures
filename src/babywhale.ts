@@ -38,6 +38,9 @@ const SPOUT = ['spout.0', 'spout.1', 'spout.2', 'spout.3', 'spout.4'];
 const PLEATS = 5;
 
 export class BabyWhale extends Swimmer {
+  static readonly terms =
+    'whale calf small sing singing song blue teal white belly flukes tail fin spout blow blowhole round chubby swim breach splash cute';
+
   private blow = new FixedSpring(3, 0.8);
   private song = new FixedSpring(3, 0.7);
   private slap = new FixedSpring(9, 0.4);

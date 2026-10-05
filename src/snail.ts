@@ -71,6 +71,9 @@ interface Run {
 }
 
 export class Snail extends Character {
+  static readonly terms =
+    'five family coral pink mint green lavender purple butter yellow sky blue shell spiral slow glide crawl stalks spots rainbow colours colors';
+
   private coat = 0;
   /** 0 out and about, 1 all the way into the shell (sprung). */
   private tuck = new Spring(2.4, 0.7);

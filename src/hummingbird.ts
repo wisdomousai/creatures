@@ -39,6 +39,9 @@ const SIDES = [
 const GEMS = ['#ff4fa0', '#ffb347', '#6fdc8c', '#5ec8ff', '#c78bff', '#ffd23a'];
 
 export class Hummingbird extends Bird {
+  static readonly terms =
+    'hummer tiny smallest green teal pink throat needle beak bill wings hover flutter buzz dart sip nectar flower fly blur shimmer rainbow';
+
   /** Held by the pointer, it flies after it. */
   readonly flies = true;
   private liftS = new Spring(4, 0.55, 1.4);

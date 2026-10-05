@@ -58,6 +58,9 @@ const TAPIR: Anatomy = {
 };
 
 export class Tapir extends Hoofed {
+  static readonly terms =
+    'calf brown cream tan white spots stripes striped spotted watermelon snout trunk nose short bendy sniff mud trot jungle small round';
+
   protected readonly anatomy = TAPIR;
   protected readonly build = { middle: 0.28, spring: 0.7, speed: 1 };
   /** Snout turns this frame (pitch for each segment, degrees; - lifts it), and its wiggle. */

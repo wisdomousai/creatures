@@ -114,6 +114,9 @@ const vD2 = new Vector3();
 type V3 = [number, number, number];
 
 export class Hexapod extends Bird {
+  static readonly terms =
+    'insect bug walker six legs legged dome eye cyclops mint teal coral peach feet tripod gait walk scuttle tiptoe wave beacon';
+
   private dyS = new Spring(3.2, 0.5, 1.2, 0);
   private spreadS = new Spring(3, 0.65, 1, 1);
   private walkK = new Spring(5, 1, 1, 0);

@@ -71,6 +71,9 @@ const wave = (time: number, i: number, rate: number, width = 0.16) =>
 type Light = (i: number, time: number, t: number) => [number, string?];
 
 export class Hedgehog extends Character {
+  static readonly terms =
+    'spiky spikes spines prickly porcupine brown tan grey gray cream white wheels dash zip race wheelie curl ball roll sniff shy burrow';
+
   /** 0 out and about, 1 all the way into his shell. */
   private tuck = new Spring(2.6, 0.75, 1, 0);
   /** Spikes puffed up (+) or settled (-). */

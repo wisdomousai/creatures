@@ -84,6 +84,9 @@ const TIN: Tile = {
 };
 
 export class Duck extends Character {
+  static readonly terms =
+    'ducky quacker quack waddle march windup clockwork tin toy yellow butter cream orange bill webbed feet key rivets wag dabble nap pond';
+
   mood: Mood = 'calm';
   private env: Env | null = null;
   private posture: Posture = 'stand';

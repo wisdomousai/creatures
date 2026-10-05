@@ -35,6 +35,9 @@ const PELLETS = 6;
 const ANNOYED = '#ff6a4a';
 
 export class Wombat extends Fluffy {
+  static readonly terms =
+    'marsupial australian australia digger burrow dig dirt grey gray square blocky chunky stout stubby short legs claws rump bolt scamper dark nose';
+
   private bank = new Spring(4, 0.55, 1.2);
   private bankGoal = 0;
   private digging = new Spring(5, 0.8);

@@ -63,6 +63,9 @@ const SAINT: Anatomy = {
 };
 
 export class Saintbernard extends Hound {
+  static readonly terms =
+    'doggo pooch bernard big huge giant heavy large white cream brown orange red patches droopy jowls sad drool barrel rescue gentle slow';
+
   protected readonly anatomy = SAINT;
   protected readonly build = { middle: 0.5, spring: 0.45, speed: 0.9 };
   /** The oil drop: 0 gone, 1 swelling at the lip, 2 falling, 3 splatted. */

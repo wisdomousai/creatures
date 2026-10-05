@@ -47,6 +47,9 @@ const MAINECOON: Anatomy = {
 };
 
 export class Mainecoon extends Kitty {
+  static readonly terms =
+    'kitty coon giant big large huge gentle brown tan beige cream fluffy ruff tufts lynx plume tail snowshoe paws green eyes slow';
+
   protected readonly anatomy = MAINECOON;
   protected readonly build = { middle: 0.31, spring: 0.55, speed: 1.2 };
 

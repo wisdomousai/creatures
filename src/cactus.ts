@@ -130,6 +130,9 @@ interface Mote {
 }
 
 export class Cactus extends Character {
+  static readonly terms =
+    'succulent saguaro desert prickly spiky spines thorns green pot terracotta peach wheels roll arms bloom flower bud sun solar dance hug sulk';
+
   private fx: Fx = fresh();
   /** Spines pulled in (1) or bristling (-1). */
   private tuck = new Spring(2.2, 0.5, 1, 0);

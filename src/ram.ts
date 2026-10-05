@@ -51,6 +51,9 @@ const RAM: Anatomy = {
 const RIDGES = 4;
 
 export class Ram extends Hoofed {
+  static readonly terms =
+    'sheep horns spiral curled wool woolly fluffy cream white grey gray dark face heavy adult big charge clonk butt stamp baa';
+
   protected readonly anatomy = RAM;
   protected readonly build = { middle: 0.45, spring: 0.55, speed: 0.9 };
   /** The ridges' glow from tricks (0..1), and a flash (1 on a clonk) that dies away. */

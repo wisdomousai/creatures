@@ -36,6 +36,9 @@ export const CHINCHILLA_FACE: FaceLayout = {
 const PUFFS = 5;
 
 export class Chinchilla extends Fluffy {
+  static readonly terms =
+    'rodent fluffy soft grey gray silver white cream big round ears dish belly long tail rings dust bath popcorn hops listens';
+
   private puffs = Array.from({ length: PUFFS }, () => new Spring(5, 0.45, 1.3));
   private puffGoal = 0;
   private rollA = new Spring(2.2, 0.6, 1.2);

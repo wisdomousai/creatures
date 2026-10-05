@@ -36,6 +36,9 @@ const SINK = 0.035;
 const STEAM = 3;
 
 export class Capybara extends Fluffy {
+  static readonly terms =
+    'rodent giant largest guinea pig tan brown beige big barrel blunt square head calm chill relaxed slow sleepy bath steam';
+
   private orange = new Spring(5, 0.45, 1.3);
   private orangeGoal = 0;
   private bird = { on: false, x: 0, y: 0, z: 0, flap: 0, tilt: 0 };

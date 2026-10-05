@@ -61,6 +61,9 @@ interface Run {
 }
 
 export class Lizard extends Character {
+  static readonly terms =
+    'reptile green lime tail scuttle crawl climb cling wall tongue turret eyes dewlap bask colour color change rainbow sticky toes freeze';
+
   private run: Run = { phase: 0, at: 0, n: 0, dir: 1, stops: [] };
   /** The walk's stride amount held while frozen mid-step, and whether it is. */
   private holdAmt = 0;

@@ -43,6 +43,9 @@ const REAR_UP = [1, 0.8, 0.5, 0.2, 0.05, 0, 0];
 const REAR_BACK = [1, 0.9, 0.65, 0.3, 0.08, 0, 0];
 
 export class Caterpillar extends Bug {
+  static readonly terms =
+    'grub larva worm insect green peach orange segments segmented crawl ripple hump cocoon lamps lights munches leaf conga curls long chain';
+
   /** Each segment's offset from where it rests: [sideways, up, forward] (m), sprung. */
   private off = AT.map(() => [new Spring(5, 0.7), new Spring(5, 0.7), new Spring(5, 0.7)]);
   private lean = new Spring(2, 0.8);

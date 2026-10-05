@@ -34,6 +34,9 @@ const GOLD = '#ffd35c';
 const PLUME = '#ff7a5c';
 
 export class Knight extends Jobbot {
+  static readonly terms =
+    'armour armor tin metal medieval castle lance spear shield helmet visor plume red grey gray silver white blue gold brave charge salute';
+
   private fx = {
     visor: 0, // 0 closed .. 1 flipped up
     glint: 0, // the emblem and lance tip brighten

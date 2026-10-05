@@ -56,6 +56,9 @@ const FAWN: Anatomy = {
 const LEGS = ['FL', 'FR', 'BL', 'BR'] as const;
 
 export class Fawn extends Hoofed {
+  static readonly terms =
+    'bambi deer baby spots spotted tan brown cream white pink long legs thin hooves wobbly steps tail flag bound ears whitetail';
+
   protected readonly anatomy = FAWN;
   protected readonly build = { middle: 0.5, spring: 0.8, speed: 1 };
   /** The spots' brightness boost (0..1) from tricks. */

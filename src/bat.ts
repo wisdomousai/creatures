@@ -83,6 +83,9 @@ type Step =
   | { t: 'land' };
 
 export class Bat extends Character {
+  static readonly terms =
+    'ceiling hang upside down wings fly flit flutter swoop purple lilac lavender blue big ears dish satellite echo sonar radar fangs sleep';
+
   /** Held by the pointer, it flies after it. */
   readonly flies = true;
   private pokes: number[] = [];

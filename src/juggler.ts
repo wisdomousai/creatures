@@ -65,6 +65,9 @@ function cascade(
 }
 
 export class Juggler extends Jobbot {
+  static readonly terms =
+    'circus clown performer entertainer acrobat balls juggles toss throw four arms striped red white pink blue yellow shoes pompom drops balance';
+
   private balls: Ball[] = Array.from({ length: 5 }, () => ({ x: 0, z: REST.z, k: 0 }));
   private glow = 0;
 

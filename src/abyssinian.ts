@@ -61,6 +61,9 @@ const ABYSSINIAN: Anatomy = {
 };
 
 export class Abyssinian extends Moggy {
+  static readonly terms =
+    'kitty slender slim lithe thin long legs tail orange ginger red rust copper brown ticked striped stripes big ears yellow eyes curious';
+
   protected readonly anatomy = ABYSSINIAN;
   protected readonly build = { middle: 0.34, spring: 1.5, speed: 1.7 };
 

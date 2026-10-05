@@ -26,6 +26,9 @@ export const PYGMY_FACE: FaceLayout = {
  * herself), and a quick little scurry.
  */
 export class Pygmy extends Chameleons {
+  static readonly terms =
+    'chameleon lizard reptile leaf brown tan tiny small sway playing dead scurry flat pointed veins stubby tail camouflage colour color changing';
+
   constructor(model: Object3D) {
     super(model, {
       name: 'Twig',

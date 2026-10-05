@@ -33,6 +33,9 @@ export const FIREFLY_FACE: FaceLayout = {
 };
 
 export class Firefly extends Bug {
+  static readonly terms =
+    'lightning bug insect black dark peach orange yellow lamp glow lantern flash blink flicker pulse hover fly night wings antennae golden glass';
+
   /** Held by the pointer, it flies after it. */
   readonly flies = true;
   private openS = new Spring(5, 0.5);

@@ -41,6 +41,9 @@ const SIDES = [
 const DEG = 180 / Math.PI;
 
 export class SealPup extends Character {
+  static readonly terms =
+    'baby harbour harbor puppy grey gray white black round chubby flippers whiskers bark clap ball balance nose flop belly galumph clumsy bouncy';
+
   private ball = new FixedSpring(5, 0.5, 1, 0.001);
   private lift = new FixedSpring(5, 0.4);
   private roll = new FixedSpring(3, 0.7);
