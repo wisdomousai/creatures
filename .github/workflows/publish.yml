@@ -1,10 +1,10 @@
 name: Publish
 
-# A version tag (v0.2.0) publishes that version to npm, by trusted publishing (no token;
-# npm adds provenance). The first version went up by hand.
+# Publishing a release on GitHub (its tag is v0.2.1) puts that version on npm, by trusted
+# publishing (no token; npm adds provenance). The first version went up by hand.
 on:
-  push:
-    tags: ['v*']
+  release:
+    types: [published]
 
 permissions:
   contents: read
