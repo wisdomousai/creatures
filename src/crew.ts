@@ -174,6 +174,7 @@ import { Python } from './python';
  */
 type Maker = (model: Object3D) => Character;
 export interface Member {
+  /** Its model: a file in the models folder, or a whole address ('/my/mole.glb'). */
   file: string;
   make: Maker;
   /** How often it turns up, relative to the others. */
@@ -658,7 +659,11 @@ export class Crew {
   private async load(name: string) {
     let member = this.members.get(name);
     if (member) return member;
-    const model = await loadModel(this.opts.models + ROSTER[name].file);
+    // A file of the crew's is in the models folder; one of yours can be anywhere.
+    const file = ROSTER[name].file;
+    const model = await loadModel(
+      /^([a-z][a-z\d+.-]*:|\/)/i.test(file) ? file : this.opts.models + file,
+    );
     member = ROSTER[name].make(model);
     member.dress(this.look, this.opts.flame);
     this.stage.scene.add(member.holder);

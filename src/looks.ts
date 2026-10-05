@@ -52,7 +52,7 @@ export const LOOKS = {
 type Tone = 'shell' | 'joint' | 'visor' | 'bezel' | 'glow';
 /** A character's colours in the colour look: over the look's base, for parts with a
  * role of their own, and a blinking dot's colours, off then on. */
-interface Palette {
+export interface Palette {
   base?: Partial<Record<Tone, string>>;
   roles?: Record<string, string>;
   dots?: string[];
@@ -60,7 +60,9 @@ interface Palette {
    * per model, picked at random the first time it is dressed. */
   coats?: { base?: Partial<Record<Tone, string>>; roles?: Record<string, string> }[];
 }
-const PALETTE = PALETTES as unknown as Record<string, Palette>;
+/** Everyone's colours in the colour look, by model name: add yours to colour a creature of
+ * your own. */
+export const PALETTE = PALETTES as unknown as Record<string, Palette>;
 
 /**
  * Material maps on set pieces (public/robot/tex): which role gets which map, and how big a

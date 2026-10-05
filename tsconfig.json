@@ -13,5 +13,5 @@
     "noEmit": true,
     "paths": { "@wisdomousai/creatures": ["./src/index.ts"] }
   },
-  "include": ["src", "playground"]
+  "include": ["src", "playground", "skills/make-a-creature/example"]
 }

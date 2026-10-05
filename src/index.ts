@@ -17,6 +17,21 @@ export { DECOR, PAGES } from './decor';
 export { GAMES } from './play';
 export { VERSION };
 
+/*
+ * For making creatures of your own (docs/how-they-are-made.md): a Character subclass, a line
+ * in ROSTER and, for the colour look, a palette. These are what the crew themselves are made
+ * with.
+ */
+export { clamp, type Env } from './character';
+export { PALETTE as PALETTES, type Palette } from './looks';
+export { Puppet, type Feel, type Turn } from './puppet';
+export { EXPRESSIONS, type Expression, type FaceLayout } from './face';
+export { Spring, wobble } from './spring';
+export { FixedSpring, bump, cycle, ease } from './swimmer';
+export { sin, swish, trot } from './moves';
+/** The beacon's colour for each expression, and the party colours. */
+export { BEACON, RAINBOW } from './bolt';
+
 /** The models (and their textures and pictures) of this version, served by jsDelivr from
  * npm: pass it as `models`, or copy the package's models/ folder and serve it yourself. */
 export const MODELS = `https://cdn.jsdelivr.net/npm/@wisdomousai/creatures@${VERSION}/models/`;
