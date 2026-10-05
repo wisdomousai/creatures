@@ -70,6 +70,28 @@ and it goes soppy. Hold one down and it follows the pointer, flying if it can.
 `node_modules/@wisdomousai/creatures/models` into your public folder and pass
 `models: '/creatures/'`, trailing slash and all.
 
+### Only some of them
+
+All the models are about 46 MB, and you rarely want them all. Copy just the ones you use
+into your project (every card in the playground has this command to copy):
+
+```sh
+npx @wisdomousai/creatures add owl fox
+```
+
+That puts `owl.glb` and `fox.glb` in `public/creatures/`, with the textures and room
+pictures they share (about 3 MB in all), and prints the `Crew` options to match. Names work
+as well as keys: `add hoot` is `add owl`. `creatures list` shows who there is.
+
+| Option          | What it does                                                          |
+| --------------- | --------------------------------------------------------------------- |
+| `--to <folder>` | Copies there instead (`public/creatures`, else `./creatures`).        |
+| `--scenery`     | Also the hangings, props and set pieces the pages and games bring in. |
+| `--bare`        | Leaves out the shared textures and pictures.                          |
+| `--all`         | Every model, as the package ships them.                               |
+
+Set `roster: ['owl', 'fox']` so nobody else is sent for.
+
 ## Some things to ask of them
 
 ```ts
@@ -104,8 +126,12 @@ follows him from his first shape to his first dig, and his files are in
 Or have your coding agent do it:
 
 ```sh
-npx skills add wisdomousai/creatures
+npx @wisdomousai/creatures skill
 ```
+
+That copies the make-a-creature skill into `.claude/skills/` (`--global` for
+`~/.claude/skills`, `--to <folder>` for another agent's folder). `npx skills add
+wisdomousai/creatures` does the same from GitHub.
 
 and ask it for a robot armadillo that rolls into a ball.
 

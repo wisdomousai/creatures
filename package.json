@@ -29,9 +29,14 @@
     "./models/*": "./models/*",
     "./package.json": "./package.json"
   },
+  "bin": {
+    "creatures": "./bin/creatures.mjs"
+  },
   "files": [
+    "bin",
     "dist",
-    "models"
+    "models",
+    "skills"
   ],
   "scripts": {
     "dev": "vite",

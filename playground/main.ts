@@ -10,6 +10,7 @@ import {
   SECTIONS,
   SET,
   inFamily,
+  installCommand,
   type Family,
   type LookName,
 } from '@wisdomousai/creatures';
@@ -96,8 +97,40 @@ function crewmate(name: string) {
   b.dataset.crew = name;
   b.setAttribute('aria-label', `${c.name}, ${c.what.toLowerCase()}: call out to play`);
   b.addEventListener('click', () => callOut(b));
-  return b;
+  return el('div', 'crewmate-cell', b, installKey(name, c.name));
 }
+
+/** A small key that copies `text` (the command itself shows as its title); says so for a moment. */
+function copyKey(label: string, text: string, aria: string) {
+  const k = el('button', 'install', el('code', '', label));
+  k.type = 'button';
+  k.title = text;
+  k.setAttribute('aria-label', aria);
+  k.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      return; // no clipboard (an insecure page): the title still shows the command
+    }
+    k.classList.add('copied');
+    k.firstElementChild!.textContent = 'copied';
+    setTimeout(() => {
+      k.classList.remove('copied');
+      k.firstElementChild!.textContent = label;
+    }, 1400);
+  });
+  return k;
+}
+
+/** The key under one of the crew: the command that puts just this one in a project. */
+function installKey(name: string, who: string) {
+  return copyKey(`add ${name}`, installCommand(name), `Copy the install command for ${who}`);
+}
+
+// The foot of the sheet: the skill, for a coding agent that makes new ones.
+document
+  .querySelector('.agents')!
+  .append(copyKey('skill', 'npx @wisdomousai/creatures skill', 'Copy the command that installs the make-a-creature skill'));
 
 /** Everyone in a family who comes by (weight 0 never does, and has no picture). */
 function crewmates(family: Family) {

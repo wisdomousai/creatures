@@ -303,6 +303,49 @@ h2 {
 .tile:hover .crewmate-face {
   translate: 0 -4px;
 }
+.crewmate-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+/* The copy key under a picture: out of the way (shown on hover or focus) where there is a
+   pointer, always there on a touch screen. */
+.install {
+  align-self: center;
+  margin-top: -0.2rem;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: none;
+  color: var(--ink-soft);
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.install code {
+  font: 500 0.66rem/1.4 ui-monospace, 'SF Mono', Menlo, monospace;
+}
+.install:hover,
+.install:focus-visible,
+.install.copied {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.install:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+@media (hover: hover) {
+  .install {
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .crewmate-cell:hover .install,
+  .crewmate-cell:focus-within .install,
+  .install.copied {
+    opacity: 1;
+  }
+}
 .crewmate-name {
   margin-top: 0.1rem;
   font: 600 0.95rem/1.2 var(--serif);
@@ -328,4 +371,16 @@ h2 {
     grid-template-columns: repeat(auto-fill, minmax(5.4rem, 1fr));
     gap: 0.7rem 0.4rem;
   }
+}
+
+.agents {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.6rem;
+}
+.agents .install {
+  margin: 0;
+  opacity: 1;
 }

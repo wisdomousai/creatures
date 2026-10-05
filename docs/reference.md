@@ -60,6 +60,7 @@ some of them find room beside your content.
 | ----------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `ROSTER`                | Everyone, by key: `{ file, make, weight }`. Add your own before `new Crew`.                                    |
 | `CARDS`                 | Their names and what they are: `CARDS.owl` is `{ name: 'Hoot', what: 'Owl', family: 'bird' }`.                 |
+| `installCommand(name)`  | The command that copies one creature's model into a project: `installCommand('owl')` is `npx @wisdomousai/creatures add owl`. |
 | `SECTIONS`, `inFamily`  | The families (cats, dogs, birds, fluffy, farm, jungle, sea, bugs, robots and everyone else), and who's in one. |
 | `LOOKS`, `PALETTES`     | The three looks' base colours, and everyone's colour-look palette by model name.                               |
 | `SET`, `DECOR`, `GAMES` | The set pieces, the hangings and the games, by name.                                                           |

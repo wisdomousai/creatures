@@ -191,3 +191,8 @@ export const SECTIONS: { family: Family; label: string }[] = [
 export function inFamily(family: Family) {
   return Object.keys(CARDS).filter((n) => CARDS[n].family === family);
 }
+
+/** The command that copies one of the crew's model into a project (see bin/creatures.mjs). */
+export function installCommand(name: string) {
+  return `npx @wisdomousai/creatures add ${name}`;
+}

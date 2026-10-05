@@ -7,7 +7,15 @@ import { VERSION } from './version';
 
 export { Crew, ROSTER, readFrame, type CrewOptions, type Fixture, type Member } from './crew';
 export { Character, type Act, type Edge, type Frame, type Role, type Spec } from './character';
-export { CARDS, PLAYGROUNDS, SECTIONS, inFamily, type Card, type Family } from './families';
+export {
+  CARDS,
+  PLAYGROUNDS,
+  SECTIONS,
+  inFamily,
+  installCommand,
+  type Card,
+  type Family,
+} from './families';
 export { LOOKS, type FlameStyle, type LookName } from './looks';
 /** The set pieces there are, and which come out on each page (see Crew.page). */
 export { SET, SET_PAGES } from './set';
