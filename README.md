@@ -72,25 +72,26 @@ and it goes soppy. Hold one down and it follows the pointer, flying if it can.
 
 ### Only some of them
 
-All the models are about 46 MB, and you rarely want them all. Copy just the ones you use
-into your project (every card in the playground has this command to copy):
+The models come to 46 MB, and a page rarely wants a hundred and fifty robots. Take the ones
+you like:
 
 ```sh
 npx @wisdomousai/creatures add owl fox
 ```
 
-That puts `owl.glb` and `fox.glb` in `public/creatures/`, with the textures and room
-pictures they share (about 3 MB in all), and prints the `Crew` options to match. Names work
-as well as keys: `add hoot` is `add owl`. `creatures list` shows who there is.
+Hoot and the fox go into `public/creatures/`, with the textures they share, about 3 MB in
+all. When it's done it tells you what to put in `Crew`. You can ask by name as well as by
+key, so `add hoot` gets the owl, and `creatures list` says who's in the box.
 
 | Option          | What it does                                                          |
 | --------------- | --------------------------------------------------------------------- |
-| `--to <folder>` | Copies there instead (`public/creatures`, else `./creatures`).        |
-| `--scenery`     | Also the hangings, props and set pieces the pages and games bring in. |
-| `--bare`        | Leaves out the shared textures and pictures.                          |
-| `--all`         | Every model, as the package ships them.                               |
+| `--to <folder>` | Puts them there instead (`public/creatures`, or `./creatures`).       |
+| `--scenery`     | Brings the furniture, the props and the hangings too.                 |
+| `--bare`        | Leaves the shared textures and pictures behind.                       |
+| `--all`         | The whole box.                                                        |
 
-Set `roster: ['owl', 'fox']` so nobody else is sent for.
+Give `roster` the same names (`roster: ['owl', 'fox']`) or the crew will send for the others
+and find nobody home.
 
 ## Some things to ask of them
 
@@ -129,9 +130,8 @@ Or have your coding agent do it:
 npx @wisdomousai/creatures skill
 ```
 
-That copies the make-a-creature skill into `.claude/skills/` (`--global` for
-`~/.claude/skills`, `--to <folder>` for another agent's folder). `npx skills add
-wisdomousai/creatures` does the same from GitHub.
+The skill lands in `.claude/skills/`. Add `--global` for `~/.claude/skills`, or `--to` for
+another agent's folder. `npx skills add wisdomousai/creatures` does the same from GitHub.
 
 and ask it for a robot armadillo that rolls into a ball.
 
