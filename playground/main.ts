@@ -5,6 +5,7 @@ import {
   CARDS,
   Crew,
   DECOR,
+  GAMES,
   PLAYGROUNDS,
   ROSTER,
   SECTIONS,
@@ -32,26 +33,31 @@ const q = new URLSearchParams(location.search);
 const root = document.documentElement;
 const sheet = document.querySelector<HTMLElement>('#sheet')!;
 const content = document.querySelector<HTMLElement>('#page')!;
+/** On a small screen the sheet is folded away to this card, and opens over the box. */
+const opener = document.querySelector<HTMLButtonElement>('.opener')!;
+const small = matchMedia('(max-width: 40rem), (max-height: 32rem)');
 const everyone = Object.keys(ROSTER);
-/** How many at once, on a small screen and a big one. */
-const crowd = () => (innerWidth < 720 ? 3 : 5);
+/** How many at once, on a small screen and a big one: a few, so each can be watched. */
+const crowd = () => (small.matches ? 2 : 3);
 
 const crew = new Crew({
   canvas: document.querySelector<HTMLCanvasElement>('#crew')!,
   hits: document.querySelector<HTMLElement>('#hits')!,
   models: MODELS,
+  look: (q.get('look') as LookName | null) ?? 'colour',
   max: crowd(),
-  every: [2, 7],
+  every: [8, 20],
   clear: () => column(),
 });
-// The box's drawing goes in just before the crew's canvas: the sheet hangs between.
-crew.box?.el.after(sheet);
-if (q.get('look')) crew.look = q.get('look') as LookName;
+// The box's drawing goes in just before the crew's canvas: the sheet (or the card it folds
+// to) hangs between.
+crew.box?.el.after(opener, sheet);
 if (q.get('theme') === 'dark') root.dataset.theme = 'dark';
 
-/** The sheet's column, which the hangings keep clear of. */
+/** The sheet's column (on a small screen, the card it folds to), which the hangings keep
+ * clear of. */
 function column() {
-  const r = sheet.getBoundingClientRect();
+  const r = (small.matches ? opener : sheet).getBoundingClientRect();
   return { left: r.left, right: r.right, top: r.top };
 }
 
@@ -76,7 +82,7 @@ function face(name: string, cls: string) {
   return img;
 }
 
-function faces(within: ParentNode = sheet) {
+function faces(within: ParentNode = document) {
   for (const img of within.querySelectorAll<HTMLImageElement>('img[data-crew]')) {
     const src = `${MODELS}thumbs/${img.dataset.crew}-${crew.look}.webp`;
     if (img.getAttribute('src') !== src) img.src = src;
@@ -162,10 +168,11 @@ function callOut(tile: HTMLElement) {
   const m = crew.members.get(name);
   if (m?.state === 'here') return m.trick();
   if ((m && m.state !== 'gone') || crew.coming(name)) return;
-  const img = tile.querySelector('img')!;
+  // On a small screen the sheet shuts as it's picked: it comes out of the folded card.
+  const from = small.matches ? opener.querySelector('.card-faces')! : tile.querySelector('img')!;
   const feet = () => {
-    const r = img.getBoundingClientRect();
-    return img.isConnected && r.width
+    const r = from.getBoundingClientRect();
+    return from.isConnected && r.width
       ? { x: r.left + r.width / 2, y: r.top + r.height * 0.86 }
       : null;
   };
@@ -264,12 +271,20 @@ function show() {
       roomPage(room.key, world),
     );
   else content.replaceChildren(...everyonePage());
-  faces(content);
+  // The folded card has three of the page's pictures on it.
+  const pictures = ground
+    ? inFamily(ground.family).slice(0, 3)
+    : (room?.faces ?? PLAYGROUNDS.map((p) => inFamily(p.family)[0]));
+  opener
+    .querySelector('.card-faces')!
+    .replaceChildren(...pictures.map((n) => face(n, 'card-face')));
+  faces();
   sheet.scrollTop = 0;
 
-  // The room follows: a family's playground has only that family come, more of them and
-  // more often; the others there go, one after another.
-  crew.page(place ? `creatures/${place}` : 'creatures');
+  // The room stays as it is on every page (bare, till something is put in it from the
+  // Furniture or Hanging page). A family's playground has its own games, and only that
+  // family come, more of them and more often; the others there go, one after another.
+  crew.play?.favour(ground ? (GAMES[`creatures/${place}`] ?? []) : []);
   crew.roster = ground ? inFamily(ground.family).filter((n) => ROSTER[n]) : everyone;
   if (!ground) return;
   let i = 0;
@@ -279,7 +294,33 @@ function show() {
 addEventListener('hashchange', show);
 show();
 
-// ---------- Look, lights, send out ----------
+// ---------- The settings (look and lights), and send out ----------
+
+// The look and the lights are on a card of their own, which the key in the box's top
+// corner opens; the key again, a click anywhere else, or Escape shuts it.
+const settingsKey = document.querySelector<HTMLButtonElement>('.settings-key')!;
+const settings = document.querySelector<HTMLElement>('#settings')!;
+
+function showSettings(open: boolean) {
+  settings.hidden = !open;
+  settingsKey.setAttribute('aria-expanded', String(open));
+}
+settingsKey.addEventListener('click', () => showSettings(!!settings.hidden));
+addEventListener(
+  'pointerdown',
+  (e) => {
+    const at = e.target as Node;
+    if (!settings.hidden && !settings.contains(at) && !settingsKey.contains(at))
+      showSettings(false);
+  },
+  true,
+);
+addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape' || settings.hidden) return;
+  e.preventDefault();
+  showSettings(false);
+  settingsKey.focus({ preventScroll: true });
+});
 
 function choice<T extends string>(
   name: string,
@@ -287,7 +328,7 @@ function choice<T extends string>(
   current: () => T,
   pick: (value: T) => void,
 ) {
-  const g = sheet.querySelector<HTMLElement>(`[data-choice="${name}"]`)!;
+  const g = document.querySelector<HTMLElement>(`[data-choice="${name}"]`)!;
   const buttons = options.map((o) => {
     const b = el('button', '', o.label);
     b.type = 'button';
@@ -341,7 +382,39 @@ choice<'day' | 'night'>(
 );
 dark.addEventListener('change', () => faces());
 
-sheet.querySelector('.send')!.addEventListener('click', () => crew.dismiss());
+sheet.querySelector('.send')!.addEventListener('click', () => {
+  crew.dismiss();
+  unfold(false);
+});
+
+// ---------- On a small screen ----------
+
+// There the sheet would fill the box and leave the crew no room to play: it's folded away
+// to a card pinned in the middle of the back wall. Picked, the card opens the sheet over
+// the box; a picture picked shuts it again, and out that one jumps, from the card.
+const shut = document.querySelector<HTMLButtonElement>('.shut')!;
+
+/** Open the sheet over the box, or fold it away again. */
+function unfold(open: boolean) {
+  const was = root.hasAttribute('data-unfolded');
+  if (open === was || (open && !small.matches)) return;
+  root.toggleAttribute('data-unfolded', open);
+  opener.setAttribute('aria-expanded', String(open));
+  if (open) shut.focus({ preventScroll: true });
+  else if (sheet.contains(document.activeElement) || document.activeElement === shut)
+    opener.focus({ preventScroll: true });
+}
+opener.addEventListener('click', () => unfold(true));
+shut.addEventListener('click', () => unfold(false));
+document.querySelector('.scrim')!.addEventListener('click', () => unfold(false));
+document.querySelector('.skip')!.addEventListener('click', () => unfold(true));
+content.addEventListener('click', (e) => {
+  if ((e.target as Element).closest('.crewmate, .tile')) unfold(false);
+});
+addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !e.defaultPrevented) unfold(false);
+});
+small.addEventListener('change', () => unfold(false));
 
 // ---------- Tricks ----------
 

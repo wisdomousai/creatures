@@ -18,7 +18,8 @@
   /* The frame the crew read: its inset and corners, and their size (--bot, px). */
   --frame-inset: 8px;
   --frame-radius: 16px;
-  --bot: 72px;
+  /* Only two at once on a small screen: they can be bigger. */
+  --bot: 88px;
   --serif: 'Newsreader Variable', Georgia, serif;
   --sans: 'Schibsted Grotesk Variable', system-ui, sans-serif;
   color-scheme: light;
@@ -35,6 +36,14 @@
     --frame-inset: 12px;
     --frame-radius: 24px;
     --bot: 120px;
+  }
+}
+/* A phone on its side: a box (and a crew) as one held upright. */
+@media (max-height: 32rem) {
+  :root {
+    --frame-inset: 8px;
+    --frame-radius: 16px;
+    --bot: 88px;
   }
 }
 @media (prefers-color-scheme: dark) {
@@ -312,6 +321,7 @@ h2 {
    pointer, always there on a touch screen. */
 .install {
   align-self: center;
+  max-width: 100%;
   margin-top: -0.2rem;
   padding: 0.1rem 0.45rem;
   border: 1px solid var(--rule);
@@ -323,6 +333,11 @@ h2 {
   touch-action: manipulation;
 }
 .install code {
+  /* On one line, cut short where the column is narrow (its title has the whole command). */
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font: 500 0.66rem/1.4 ui-monospace, 'SF Mono', Menlo, monospace;
 }
 .install:hover,
@@ -371,6 +386,151 @@ h2 {
     grid-template-columns: repeat(auto-fill, minmax(5.4rem, 1fr));
     gap: 0.7rem 0.4rem;
   }
+}
+
+/* On a small screen the sheet would fill the box: it's folded away to a card pinned in the
+   middle of the back wall, and opened over the box (a picture picked shuts it again). */
+.opener,
+.scrim,
+.shut {
+  display: none;
+}
+@media (max-width: 40rem), (max-height: 32rem) {
+  .opener {
+    display: block;
+    position: fixed;
+    z-index: 6;
+    inset: 0;
+    width: 13rem;
+    height: fit-content;
+    margin: auto;
+    background: var(--card);
+    font: inherit;
+    text-align: center;
+    cursor: pointer;
+    touch-action: manipulation;
+    --turn: -1.5deg;
+  }
+  .opener .card-face {
+    width: 4.6rem;
+  }
+  .scrim {
+    display: block;
+    position: fixed;
+    z-index: 8;
+    inset: 0;
+    background: rgb(0 0 0 / calc(0.2 + 0.25 * var(--dim)));
+  }
+  #sheet {
+    z-index: 9;
+    top: calc(var(--frame-inset) + 1rem);
+    bottom: calc(var(--frame-inset) + 3.8rem);
+    width: min(36rem, calc(100% - 2 * var(--frame-inset) - 1rem));
+    border-radius: 6px;
+    box-shadow: 0 14px 40px -14px rgb(0 0 0 / 0.55);
+    scale: 0.94;
+  }
+  .shut {
+    display: block;
+    position: fixed;
+    z-index: 9;
+    left: 50%;
+    bottom: calc(var(--frame-inset) + 0.8rem);
+    translate: -50% 0;
+    padding: 0.45rem 1.4rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: 999px;
+    background: var(--card);
+    box-shadow: 0 4px 14px -6px rgb(0 0 0 / 0.45);
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  /* Folded, the sheet and all that goes with it are out of sight (and out of reach). */
+  .scrim,
+  #sheet,
+  .shut {
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.18s,
+      scale 0.18s,
+      visibility 0s 0.18s;
+  }
+  [data-unfolded] :is(.scrim, #sheet, .shut) {
+    opacity: 1;
+    visibility: visible;
+    scale: 1;
+    transition:
+      opacity 0.18s,
+      scale 0.22s cubic-bezier(0.3, 1.4, 0.5, 1);
+  }
+}
+
+/* The settings: a key in the box's top corner, and the look and the lights on a small card
+   it opens just under it, as big as the two rows on it. */
+.settings-key {
+  position: fixed;
+  z-index: 7;
+  top: calc(var(--frame-inset) + 0.6rem);
+  right: calc(var(--frame-inset) + 0.6rem);
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid var(--rule-strong);
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--ink-soft);
+  box-shadow: 0 1px 2px var(--shade);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.settings-key:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.settings-key svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.settings-key circle {
+  fill: var(--card);
+}
+.settings {
+  position: fixed;
+  z-index: 10;
+  top: calc(var(--frame-inset) + 3.3rem);
+  right: calc(var(--frame-inset) + 0.6rem);
+  bottom: auto;
+  left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  box-sizing: border-box;
+  width: max-content;
+  height: auto;
+  max-width: calc(100vw - 2 * var(--frame-inset) - 1.2rem);
+  margin: 0;
+  padding: 0.75rem 0.8rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 0.55rem;
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: 0 10px 28px -12px rgb(0 0 0 / 0.35);
+  font-size: 0.85rem;
+}
+.settings[hidden] {
+  display: none;
+}
+.settings .choice {
+  flex-wrap: wrap;
+}
+.settings .choice-name {
+  min-width: 3.1rem;
 }
 
 .agents {
