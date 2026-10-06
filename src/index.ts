@@ -17,6 +17,8 @@ export {
   type Family,
 } from './families';
 export { LOOKS, type FlameStyle, type LookName } from './looks';
+/** A speech bubble over one of them, that follows them calmly. */
+export { Bubble, headTop, type BubbleOptions, type Bounds, type Point } from './bubble';
 /** The set pieces there are, and which come out on each page (see Crew.page). */
 export { SET, SET_PAGES } from './set';
 /** The hangings there are, and which hang on each page. */

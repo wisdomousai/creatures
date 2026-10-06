@@ -66,6 +66,35 @@ some of them find room beside your content.
 | `SET`, `DECOR`, `GAMES` | The set pieces, the hangings and the games, by name.                                                           |
 | `MODELS`, `VERSION`     | This version's models on jsDelivr, and the version.                                                            |
 
+## Speech bubbles
+
+`new Bubble(host, { at })` puts a speech bubble in `host`, its tail pointing at `at()`, the
+point it's asked for every frame (viewport px; null while there's nothing to point at).
+`headTop(creature, crew.frame)` is the top of a creature's head, whichever way up they are.
+
+```js
+const owl = crew.members.get('owl');
+const bubble = new Bubble(document.body, {
+  at: () => headTop(owl, crew.frame),
+  bounds: () => crew.frame,
+});
+const answer = await bubble.ask('Shall we play?', [['yes', 'Yes'], ['no', 'No']]);
+bubble.remove();
+```
+
+It follows calmly: it keeps over where they are on average, and over the highest their head
+has been in the last second and a half, so a sway or a hover's bob leaves it still and it
+never sits on them. When they really move off it eases over after them.
+
+- `say(line)` says something; `ask(line, answers)` asks, with `[value, label]` answers, and
+  resolves with the value picked (null if it's hidden first). It stays up after an answer.
+- `hide()` fades it out, `remove()` takes it out of the page too; `shown` says if it's up.
+- Options: `bounds` (kept inside these, the window unless given), `gap` (6px, from the point
+  to the tail's tip), `slack` (24px, how far they wander before it goes after them),
+  `className` (`say`) and `label` (the answers' group, read out with them).
+- Its styles are a default under the page's own: `.say`, `.say-text`, `.say-answers`,
+  `.say.on` and `.say.asking`, in the box's colours (`--card`, `--ink`, `--rule-strong`).
+
 ## Making a creature
 
 [How a creature is made](how-they-are-made.md) explains all of this with an example.
