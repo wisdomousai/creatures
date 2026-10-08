@@ -925,8 +925,10 @@ export class Crew {
 
   /**
    * Ask one of them to hold a tool up (tools.ts): `tool` is a tool's name, or `sign` for the
-   * kind of sign that suits their body. Null if they can't, or aren't here. Let go with
-   * release(), or send them off with it, lead().
+   * kind of sign that suits their body. Null if they can't, or aren't on the page. Asked
+   * of someone still coming in, it waits for them: you get the handle at once, and its
+   * `ready` is kept once they're on stage and holding it (false if they can't after all).
+   * Let go with release(), or send them off with it, lead().
    */
   holdUp(who: string | Character, tool: string, options: HoldOptions = {}): Held | null {
     const member = typeof who === 'string' ? this.members.get(who) : who;
