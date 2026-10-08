@@ -213,6 +213,10 @@ export interface HoldOptions {
   /** Where a flier hovers to hold it, its feet there (viewport px; `n` out toward the
    * reader); a little up from where it is, unless given. */
   hover?: { x: number; y: number; n?: number };
+  /** Where on the floor to stand and hold it (`s` along the front of the box, px; `depth`
+   * back into it, 0..1): it walks there holding it, and stays. Else it holds it where it
+   * is. */
+  at?: { s: number; depth?: number };
 }
 
 /** What a page needs of its stage to put a button over a tool. */
@@ -418,9 +422,10 @@ class Holding implements Held, Carried {
     c.carried.add(this);
     c.direct(this.role);
     const mid = this.view.frame();
-    this.side = c.s < (mid.left + mid.right) / 2 ? 1 : -1;
-    // Standing still where it is.
-    if (!c.free && c.inBox) c.walkTo(c.s, c.depth);
+    const at = this.opts.at;
+    this.side = (at?.s ?? c.s) < (mid.left + mid.right) / 2 ? 1 : -1;
+    // Off to where it was asked to stand, or standing still where it is.
+    if (!c.free && c.inBox) c.walkTo(at?.s ?? c.s, at?.depth ?? c.depth);
     if (this.def.mount === 'feet') {
       const f = this.view.frame();
       const at = c.free ?? c.foot(f);

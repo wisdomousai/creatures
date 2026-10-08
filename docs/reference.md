@@ -73,7 +73,7 @@ returns a handle, or `null` if they can't (or aren't on the page at all). Someon
 a key of `TOOLS`, or `'sign'` to have the kind chosen for their body.
 
 - Options: `label` (the lettering), `font` (a CSS font family; the size is fitted to the board), `onPick` (puts a button over the board), `host` (where the button goes),
-  `point` (`'left'` or `'right'`, for an arrow), `hover` (an owl's spot: `{ x, y }`, px).
+  `point` (`'left'` or `'right'`, for an arrow), `hover` (an owl's spot: `{ x, y }`, px), `at` (where on the floor to stand and hold it: `{ s, depth }`; it walks there with it and stays).
 - The handle: `label` (settable), `button`, `ready` (resolves when it's up),
   `released`, `lead(toward)` (`'left'`, `'right'` or a door: they walk or fly off holding it, and the
   promise resolves once they're gone) and `release()`.
