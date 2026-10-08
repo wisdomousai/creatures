@@ -8,8 +8,8 @@ corner, and on its front a paper face (Board) the page paints with what it says.
 
 Each is built about its grip, at the origin (where the hands, the mouth or the talons
 are), and faces front (-Y). The Board face has UVs over its whole front, 0..1 left to
-right and bottom to top, for the lettering. Exported as sign-placard, sign-picket
-and sign-hanger (blender/build.sh sign-placard ...), each on one bone, root.
+right and bottom to top, for the lettering. Exported as tool-placard, tool-picket
+and tool-hanger (blender/build.sh tool-placard ...), each on one bone, root.
 """
 
 import math

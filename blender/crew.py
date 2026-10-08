@@ -57,8 +57,9 @@ PROPS = ('yarn', 'bone', 'ball', 'cushion', 'crate', 'table', 'balloon', 'frisbe
 # The living set pieces, plants and furniture in the back of the box (set.py), exported as set-NAME.
 SET = ('fern', 'sunflower', 'lamp', 'armchair', 'bookshelf', 'rug', 'stool', 'radio', 'fireplace', 'bookcase', 'cattree', 'kennel', 'birdbath', 'perch', 'gramophone', 'libcase', 'librug')
 # The old computer in the middle of the box that the site's pages play on (monitor.py).
-# The signs the crew hold up for the site's welcome (signs.py), exported as sign-NAME.
-SIGNS = ('placard', 'picket', 'hanger')
+# The tools the crew hold (signs.py for the signs, tools.py for the rest), exported as
+# tool-NAME.
+TOOLS = ('placard', 'picket', 'hanger')
 
 
 def module(name):
@@ -68,8 +69,10 @@ def module(name):
         return importlib.import_module('props').kind(name[len('prop-'):])
     if name.startswith('set-'):
         return importlib.import_module('set').kind(name[len('set-'):])
-    if name.startswith('sign-'):
-        return importlib.import_module('signs').kind(name[len('sign-'):])
+    if name.startswith('tool-'):
+        tool = name[len('tool-'):]
+        signs = importlib.import_module('signs')
+        return (signs if tool in signs.KINDS else importlib.import_module('tools')).kind(tool)
     return importlib.import_module(MODULES.get(name, name))
 
 
