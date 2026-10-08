@@ -26,7 +26,7 @@ import {
 } from './character';
 import { CARDS } from './families';
 import { dress, type FlameStyle, type LookName, type Outfit } from './looks';
-import { type Grip, gripOf, gripOn } from './props';
+import { type Grip, gripOf, gripOn, handy } from './props';
 import { Puppet } from './puppet';
 import { pixelRatio } from './stage';
 import { ease, FixedSpring } from './swimmer';
@@ -76,6 +76,9 @@ export interface Tool {
   /** Bones that ripple when it's held (a flag's cloth, a balloon's string, named `prefix` then
    * 0, 1, 2...): how far each turns, in degrees, and about which axis. */
   flutter?: { prefix: string; pitch?: number; yaw?: number; roll?: number };
+  /** Held in a mouth or a beak, it stands off to one side of the face and tips out, so it
+   * never covers it (and is made at least as wide as the head). */
+  clear?: boolean;
   /** Modelled pointing this way (viewer's side); asked to point the other way it's mirrored. */
   points?: 'left' | 'right';
 }
@@ -88,11 +91,11 @@ export interface Tool {
 export const TOOLS: Record<string, Tool> = {
   // The signs: kinds of one family (see FAMILIES for which a body gets).
   placard: { model: 'tool-placard', mount: 'hands', family: 'sign', grips: [-0.231, 0.231] },
-  picket: { model: 'tool-picket', mount: 'grip', family: 'sign' },
+  picket: { model: 'tool-picket', mount: 'grip', family: 'sign', clear: true },
   hanger: { model: 'tool-hanger', mount: 'feet', family: 'sign' },
-  card: { model: 'tool-card', mount: 'grip', family: 'sign' },
-  paddle: { model: 'tool-paddle', mount: 'grip', family: 'sign' },
-  arrow: { model: 'tool-arrow', mount: 'grip', family: 'sign', points: 'right' },
+  card: { model: 'tool-card', mount: 'grip', family: 'sign', clear: true },
+  paddle: { model: 'tool-paddle', mount: 'grip', family: 'sign', clear: true },
+  arrow: { model: 'tool-arrow', mount: 'grip', family: 'sign', points: 'right', clear: true },
   // (Its right grip is as far from the left as signs.py says.)
   banner: { model: 'tool-banner', mount: 'hands', family: 'sign', grips: [0, 0.9] },
   tag: { model: 'tool-tag', mount: 'neck', family: 'sign', nudge: [0, 0, 0.2] },
@@ -110,6 +113,8 @@ export const TOOLS: Record<string, Tool> = {
 
 /** Models no taller than this (metres) are small, and get the small things. */
 const SMALL = 0.45;
+/** How far a sign held in a mouth tips out, in radians. */
+const TIP = 0.3;
 
 /**
  * Families of tools: asking for one by its name gets the kind that suits the body, or null if
@@ -143,6 +148,21 @@ function pair(c: Character, mount: 'hands' | 'feet'): [Grip, Grip] | null {
   return l && r ? [l, r] : null;
 }
 
+/** Are their hands as far apart as a tool's grips (a banner's two poles)? They can't take one
+ * wider than they can reach, however they stand. */
+function spans(c: Character, tool: Tool) {
+  const [l, r] = pair(c, 'hands') ?? [];
+  const [a, b] = tool.grips ?? [];
+  if (!l || !r || a === undefined || b === undefined) return false;
+  c.model.updateWorldMatrix(true, true);
+  const p = c.model.worldToLocal(l.bone.localToWorld(l.at.clone()));
+  const q = c.model.worldToLocal(r.bone.localToWorld(r.at.clone()));
+  return p.distanceTo(q) >= (b - a) * REACH;
+}
+
+/** How near a tool's grip span their hands must be (the share of it). */
+const REACH = 0.8;
+
 /** Has this body a way to hold something in this mount? */
 function suits(c: Character, mount: Mount) {
   switch (mount) {
@@ -169,6 +189,7 @@ export function toolFor(c: Character, name: string): string | null {
   if (family) return family(c);
   const tool = TOOLS[name];
   if (!tool || !suits(c, tool.mount)) return null;
+  if (tool.grips && !spans(c, tool)) return null;
   return tool.family || CARDS[c.spec.model]?.tools?.includes(name) ? name : null;
 }
 
@@ -239,11 +260,77 @@ const holding = new WeakMap<Character, Holding>();
  * isn't on stage. Crew.holdUp is this, on the stage the crew are on.
  */
 export function holdUp(c: Character, name: string, options: HoldOptions, view: View): Held | null {
+  // Still coming on: the handle is given now, and the tool comes out once they're here.
+  if (c.state === 'entering' && (FAMILIES[name] || TOOLS[name])) return new Waiting(c, name, options, view);
   const tool = toolFor(c, name);
   if (!tool || c.state !== 'here' || c.anchored) return null;
   holding.get(c)?.release();
   const held = new Holding(c, tool, options, view);
   return held.begin() ? held : null;
+}
+
+/** A hold-up asked of someone still coming in: kept until they're on stage, then handed over to
+ * the real one (and a no, if it turns out they can't). */
+class Waiting implements Held {
+  readonly ready: Promise<boolean>;
+  private inner: Held | null = null;
+  private gone = false;
+  private text: string;
+  private timer: ReturnType<typeof setInterval>;
+  private settle!: (ok: boolean) => void;
+
+  constructor(
+    private c: Character,
+    private name: string,
+    private options: HoldOptions,
+    private view: View,
+  ) {
+    this.text = options.label ?? '';
+    this.ready = new Promise<boolean>((done) => (this.settle = done));
+    this.timer = setInterval(() => this.check(), 50);
+  }
+
+  private check() {
+    if (this.gone) return;
+    const c = this.c;
+    if (c.state === 'entering') return;
+    clearInterval(this.timer);
+    const inner = c.state === 'here' ? holdUp(c, this.name, { ...this.options, label: this.text }, this.view) : null;
+    if (!inner) {
+      this.gone = true;
+      return this.settle(false);
+    }
+    this.inner = inner;
+    void inner.ready.then(this.settle);
+  }
+
+  get tool() {
+    return this.inner?.tool ?? this.name;
+  }
+  get label() {
+    return this.inner?.label ?? this.text;
+  }
+  set label(label: string) {
+    this.text = label;
+    if (this.inner) this.inner.label = label;
+  }
+  get button() {
+    return this.inner?.button ?? null;
+  }
+  get released() {
+    return this.gone || !!this.inner?.released;
+  }
+  lead(toward: 'left' | 'right' | Door): Promise<void> {
+    if (this.inner) return this.inner.lead(toward);
+    return this.ready.then((ok) => (ok && this.inner ? this.inner.lead(toward) : undefined));
+  }
+  release() {
+    if (this.inner) return this.inner.release();
+    if (this.gone) return;
+    this.gone = true;
+    clearInterval(this.timer);
+    this.settle(false);
+  }
 }
 
 const v1 = new Vector3();
@@ -289,6 +376,8 @@ class Holding implements Held, Carried {
   private finish: () => void = () => {};
   private fading = false;
   private flipped = false;
+  /** Which side of the face a mouth-held sign stands on: the one toward the page's middle. */
+  private side = 1;
   private written = '';
   private done: (ok: boolean) => void = () => {};
 
@@ -328,6 +417,8 @@ class Holding implements Held, Carried {
     holding.set(c, this);
     c.carried.add(this);
     c.direct(this.role);
+    const mid = this.view.frame();
+    this.side = c.s < (mid.left + mid.right) / 2 ? 1 : -1;
     // Standing still where it is.
     if (!c.free && c.inBox) c.walkTo(c.s, c.depth);
     if (this.def.mount === 'feet') {
@@ -592,7 +683,17 @@ class Holding implements Held, Carried {
       model.worldToLocal(at);
       // The lanyard is cut for a person's neck, 1 m up; a short creature gets a short one.
       size = clamp(at.y * 1.3, 0.3, 1);
-    } else this.in(gripOf(c)!, at);
+    } else {
+      this.in(gripOf(c)!, at);
+      if (mount === 'grip' && this.def.clear && this.board && !handy(c)) {
+        // In the mouth: held at the corner of it, the rod tipped out, the board rising beside
+        // and above the head, and big enough to read.
+        const wide = Math.min(c.spec.width * 0.75, c.spec.metres * 0.5);
+        size = clamp((1.5 * wide) / this.board.w, 1, 2);
+        at.x += this.side * 0.42 * wide;
+        roll -= this.side * TIP;
+      }
+    }
     const n = this.def.nudge;
     if (n) at.add(v2.set(n[0], n[1], n[2]));
     const o = mount === 'hands' || mount === 'feet' || mount === 'grip' ? c.holdOffset[mount] : null;
