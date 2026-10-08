@@ -12,10 +12,16 @@ export interface Card {
   /** What it is, in a word or two. */
   what: string;
   family: Family;
+  /**
+   * The tools that suit its body and character (tools.ts), by name, besides the signs, which
+   * anyone with a way to hold one may. A creature without a list holds nothing else: the wave
+   * that gives each its tools adds them here, one line at a time.
+   */
+  tools?: string[];
 }
 
 export const CARDS: Record<string, Card> = {
-  cat: { name: 'Pixel', what: 'Cat', family: 'cat' },
+  cat: { name: 'Pixel', what: 'Cat', family: 'cat', tools: ['balloon', 'magnifier', 'umbrella'] },
   kitten: { name: 'Bit', what: 'Kitten', family: 'cat' },
   scamp: { name: 'Scamp', what: 'Lanky kitten', family: 'cat' },
   shorthair: { name: 'Bun', what: 'British shorthair', family: 'cat' },
@@ -44,7 +50,7 @@ export const CARDS: Record<string, Card> = {
   pug: { name: 'Nugget', what: 'Pug', family: 'dog' },
   bordercollie: { name: 'Scout', what: 'Border collie', family: 'dog' },
   beagle: { name: 'Penny', what: 'Beagle puppy', family: 'dog' },
-  owl: { name: 'Hoot', what: 'Owl', family: 'bird' },
+  owl: { name: 'Hoot', what: 'Owl', family: 'bird', tools: ['lantern', 'map', 'telescope'] },
   duck: { name: 'Rivet', what: 'Wind-up duck', family: 'bird' },
   raven: { name: 'Nib', what: 'Raven', family: 'bird' },
   swan: { name: 'Grace', what: 'Swan', family: 'bird' },
@@ -55,7 +61,12 @@ export const CARDS: Record<string, Card> = {
   toucan: { name: 'Mango', what: 'Toucan', family: 'bird' },
   robin: { name: 'Cheep', what: 'Robin', family: 'bird' },
   hen: { name: 'Biddy', what: 'Hen', family: 'bird' },
-  bolt: { name: 'Bolt', what: 'Rocket-booted robot', family: 'robot' },
+  bolt: {
+    name: 'Bolt',
+    what: 'Rocket-booted robot',
+    family: 'robot',
+    tools: ['flag', 'lantern', 'magnifier', 'map', 'megaphone', 'telescope', 'umbrella'],
+  },
   nova: { name: 'Nova', what: 'Robot girl', family: 'robot' },
   ladybug: { name: 'Dot', what: 'Ladybug', family: 'bug' },
   plant: { name: 'Sprout', what: 'Houseplant', family: 'other' },

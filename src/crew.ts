@@ -26,6 +26,7 @@ import { GAMES, Play } from './play';
 import { Set as SetPieces, SET_PAGES } from './set';
 import { type FlameStyle, glowColour, type LookName } from './looks';
 import { Stage } from './stage';
+import { canHold, type Held, type HoldOptions, holdUp } from './tools';
 import { setAssets } from './assets';
 import { Vacuum } from './vacuum';
 import { Bunny } from './bunny';
@@ -920,6 +921,27 @@ export class Crew {
   watch(point: { x: number; y: number } | (() => { x: number; y: number } | null), seconds = 2.5) {
     const read = typeof point === 'function' ? point : () => point;
     this.show = { point: read, at: this.time, until: this.time + seconds };
+  }
+
+  /**
+   * Ask one of them to hold a tool up (tools.ts): `tool` is a tool's name, or `sign` for the
+   * kind of sign that suits their body. Null if they can't, or aren't here. Let go with
+   * release(), or send them off with it, lead().
+   */
+  holdUp(who: string | Character, tool: string, options: HoldOptions = {}): Held | null {
+    const member = typeof who === 'string' ? this.members.get(who) : who;
+    if (!member) return null;
+    return holdUp(member, tool, options, {
+      stage: this.stage,
+      host: this.opts.hits,
+      frame: () => this.frame,
+    });
+  }
+
+  /** Could they hold this up (a tool's name, or `sign`)? */
+  canHold(who: string | Character, tool: string) {
+    const member = typeof who === 'string' ? this.members.get(who) : who;
+    return !!member && canHold(member, tool);
   }
 
   /** Send everyone (or one) off. */

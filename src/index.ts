@@ -19,6 +19,23 @@ export {
 export { LOOKS, type FlameStyle, type LookName } from './looks';
 /** A speech bubble over one of them, that follows them calmly. */
 export { Bubble, headTop, type BubbleOptions, type Bounds, type Point } from './bubble';
+/**
+ * Tools the crew hold up: signs to read and lead the way with, and the rest (tools.ts). Ask with
+ * crew.holdUp(); canHold() says whether a body can.
+ */
+export {
+  TOOLS,
+  canHold,
+  holdUp,
+  toolFor,
+  type Held,
+  type HoldOptions,
+  type Mount,
+  type Tool,
+  type View,
+} from './tools';
+export { gripOf, gripOn, handy, type Grip, type GripPart } from './props';
+export type { Hold } from './character';
 /** The set pieces there are, and which come out on each page (see Crew.page). */
 export { SET, SET_PAGES } from './set';
 /** The hangings there are, and which hang on each page. */
