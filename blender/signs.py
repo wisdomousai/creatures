@@ -31,7 +31,7 @@ import math
 
 import kit
 import looks
-from decor import slab
+from decor import bevel
 from set import bolt, box
 
 PI = math.pi
@@ -129,6 +129,43 @@ def grip(add, m, shell, z0, z1, r, x=0.0, y=0.0, n=5):
         add(kit.torus('Ridge', r + 0.0005, 0.0026, seg=(14, 4), location=(x, y, z)), m['joint'])
 
 
+def rounded_poly(outline, r, n=3):
+    """A polygon (counter-clockwise (x, z) points) with each corner cut round: a small
+    quadratic arc of n steps, up to r back along each edge."""
+    m = len(outline)
+    out = []
+    for i in range(m):
+        p0, p1, p2 = outline[i - 1], outline[i], outline[(i + 1) % m]
+        a = (p0[0] - p1[0], p0[1] - p1[1])
+        b = (p2[0] - p1[0], p2[1] - p1[1])
+        la, lb = math.hypot(*a), math.hypot(*b)
+        ra, rb = min(r, la * 0.45), min(r, lb * 0.45)
+        s0 = (p1[0] + a[0] / la * ra, p1[1] + a[1] / la * ra)
+        s1 = (p1[0] + b[0] / lb * rb, p1[1] + b[1] / lb * rb)
+        for k in range(n + 1):
+            t = k / n
+            out.append(((1 - t) ** 2 * s0[0] + 2 * t * (1 - t) * p1[0] + t * t * s1[0],
+                        (1 - t) ** 2 * s0[1] + 2 * t * (1 - t) * p1[1] + t * t * s1[1]))
+    return out
+
+
+def prism(name, outline, thickness, at):
+    """One board of any outline (a counter-clockwise polygon in the XZ plane, concave
+    is fine) extruded `thickness` deep about y = at[1], its edges bevelled; the two big
+    faces are single polygons, flat shaded."""
+    t = thickness / 2
+    n = len(outline)
+    verts = [(x, -t, z) for x, z in outline] + [(x, t, z) for x, z in outline]
+    faces = [tuple(range(n - 1, -1, -1)), tuple(range(n, 2 * n))]
+    faces += [(i, (i + 1) % n, n + (i + 1) % n, n + i) for i in range(n)]
+    obj = kit.mesh_object(name, verts, faces, location=at)
+    bevel(obj, thickness * 0.3)
+    flat = [abs(p.normal.y) > 0.9 for p in obj.data.polygons]
+    obj.data.polygons.foreach_set('use_smooth', [not f for f in flat])
+    obj.data.update()
+    return obj
+
+
 def arrow(m, add, paper, shell, s):
     """A fingerpost's arrow on a short pole, pointing +X: the board's body is the paper
     face, the head the point. The pole stands behind the board, its collar and ridged
@@ -138,11 +175,10 @@ def arrow(m, add, paper, shell, s):
     outline = [(x0, mid - hh), (x1, mid - hh), (x1, mid - fl), (tip, mid), (x1, mid + fl), (x1, mid + hh),
                (x0, mid + hh)]
     cx = (x0 + x1) / 2
-    for obj, mat in ((slab('SignBoard', outline, THICK * 2, at=(0, yb, 0), centre=(cx, mid)), shell),
-                     (slab('SignBumper', inflate(outline, BUMPER), THICK * 1.4, at=(0, yb + 0.004, 0), centre=(cx, mid)),
-                      m['joint'])):
-        obj.data.polygons.foreach_set('use_smooth', [False] * len(obj.data.polygons))  # flat: a fan from the middle
-        add(obj, mat)
+    board = rounded_poly(outline, 0.03)
+    add(prism('SignBoard', board, THICK * 2, (0, yb, 0)), shell)
+    add(prism('SignBumper', rounded_poly(inflate(outline, BUMPER), 0.04), THICK * 1.4, (0, yb + 0.004, 0)),
+        m['joint'])
     add(face((x1 - x0) / 2 - INSET, hh - INSET, mid, cx, y0=yb), paper)
     for sx in (x0 + INSET * 0.45, x1 - INSET * 0.45):
         for sz in (-1, 1):
