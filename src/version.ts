@@ -1,2 +1,2 @@
 /** The crew's version as a package (@wisdomousai/creatures); a release bumps it. */
-export const VERSION = '0.3.0';
+export const VERSION = '0.4.0';
