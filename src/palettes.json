@@ -2836,5 +2836,177 @@
       "Spot": "#e3ecc4"
     },
     "dots": ["#4e6b52", "#ffd166"]
+  },
+  "tool-placard": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Sign": "#e8b04a"
+    },
+    "dots": ["#4a2f2a", "#ffd27a"]
+  },
+  "tool-picket": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Sign": "#e8b04a"
+    },
+    "dots": ["#4a2f2a", "#ffd27a"]
+  },
+  "tool-hanger": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Sign": "#e8b04a"
+    },
+    "dots": ["#4a2f2a", "#ffd27a"]
+  },
+  "tool-arrow": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Sign": "#e8b04a"
+    },
+    "dots": ["#4a2f2a", "#ffd27a"]
+  },
+  "tool-paddle": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Sign": "#e8b04a"
+    },
+    "dots": ["#4a2f2a", "#ffd27a"]
+  },
+  "tool-easel": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Sign": "#e8b04a"
+    },
+    "dots": ["#4a2f2a", "#ffd27a"]
+  },
+  "tool-banner": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Sign": "#e8b04a"
+    },
+    "dots": ["#4a2f2a", "#ffd27a"]
+  },
+  "tool-card": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Sign": "#e8b04a"
+    },
+    "dots": ["#4a2f2a", "#ffd27a"]
+  },
+  "tool-tag": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Sign": "#e8b04a"
+    },
+    "dots": ["#4a2f2a", "#ffd27a"]
+  },
+  "tool-magnifier": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Tool": "#e8a23c"
+    },
+    "dots": ["#4a2f2a", "#ffd27a"]
+  },
+  "tool-lantern": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Tool": "#d9822b"
+    },
+    "dots": ["#4a2f2a", "#ffd27a"]
+  },
+  "tool-map": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Tool": "#c9a56a"
+    },
+    "dots": ["#4a2f2a", "#ffd27a"]
+  },
+  "tool-telescope": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Tool": "#b8863b"
+    },
+    "dots": ["#4a2f2a", "#ffd27a"]
+  },
+  "tool-flag": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Tool": "#8a8f98",
+      "Cloth": "#d8483f"
+    },
+    "dots": ["#4a2f2a", "#ffd27a"]
+  },
+  "tool-umbrella": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Tool": "#d8483f",
+      "Panel": "#f4e3c0"
+    },
+    "dots": ["#4a2f2a", "#ffd27a"]
+  },
+  "tool-balloon": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Tool": "#e2463f"
+    },
+    "dots": ["#4a2f2a", "#ffd27a"]
+  },
+  "tool-megaphone": {
+    "base": {
+      "joint": "#8a8f98",
+      "bezel": "#2f3a4a"
+    },
+    "roles": {
+      "Tool": "#3a8fd0"
+    },
+    "dots": ["#4a2f2a", "#ffd27a"]
   }
 }

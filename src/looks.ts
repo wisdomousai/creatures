@@ -128,7 +128,14 @@ export interface Outfit {
 export function dress(
   root: Object3D,
   look: LookName,
-  opts: { screen?: Texture; flame?: FlameStyle; beacon?: string; model?: string } = {},
+  opts: {
+    screen?: Texture;
+    /** What is painted on a tool's Board, the paper face of a sign (tools.ts). */
+    board?: Texture;
+    flame?: FlameStyle;
+    beacon?: string;
+    model?: string;
+  } = {},
 ): Outfit {
   let palette: Palette = look === 'colour' ? (PALETTE[opts.model ?? ''] ?? {}) : {};
   if (palette.coats?.length) {
@@ -164,6 +171,22 @@ export function dress(
       emissiveMap: opts.screen ?? null,
     }),
   };
+  // A sign's face is paper in every look, with its lettering painted on it.
+  shared.Board = new MeshStandardMaterial({
+    color: opts.board ? 0xffffff : '#f4f4f1',
+    roughness: 0.85,
+    metalness: 0,
+    map: opts.board ?? null,
+  });
+  // The magnifier's lens (pale glass) and the map's paper.
+  shared.Lens = new MeshStandardMaterial({
+    color: '#d3e6ee',
+    roughness: 0.15,
+    metalness: 0,
+    transparent: true,
+    opacity: 0.55,
+  });
+  shared.Map = new MeshStandardMaterial({ color: '#f4f1e6', roughness: 0.85, metalness: 0 });
   shared.VisorFace = shared.Screen;
   shared.Flame = opts.flame === 'beacon' ? shared.Beacon : new MeshBasicMaterial({ color: glow });
   for (const [role, colour] of Object.entries(palette.roles ?? {}))
