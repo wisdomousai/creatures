@@ -1,6 +1,7 @@
 import {
   CanvasTexture,
   Group,
+  type Material,
   Mesh,
   MeshBasicMaterial,
   type Object3D,
@@ -103,6 +104,19 @@ export interface Role {
   /** Its acts (a poke's, a trick) run their length and end, as on its own; else one begun
    * under direction lasts till it's told otherwise. */
   ending?: boolean;
+}
+
+/** How a tool is held up (tools.ts): in both hands, in the one grip it carries by (a mouth
+ * or a hand), or by the feet, hanging. */
+export type Hold = 'hands' | 'grip' | 'feet';
+
+/**
+ * Something it holds (tools.ts): dressed with it, and put into its hands (or mouth, or feet)
+ * each frame once the joints are posed and it has been placed.
+ */
+export interface Carried {
+  dress(look: LookName, flame?: FlameStyle): void;
+  follow(dt: number, env: Env): void;
 }
 
 export interface Act {
@@ -288,8 +302,12 @@ export abstract class Character {
   /** Which doors it may come in by (all, unless a subclass says), and whether it leaves by one. */
   doorKinds: readonly DoorKind[] | null = null;
   protected leavesByDoor = true;
+  /** Which side it leaves toward when it walks off, if it was told (leaveToward). */
+  protected leaveSide: 'left' | 'right' | null = null;
   /** Given a part to play (play.ts), and for how long. */
   role: Role | null = null;
+  /** What it holds up (tools.ts). */
+  readonly carried = new Set<Carried>();
   /** Holding something up for the scene (Bolt the phone): it can't be taken hold of, and
    * goes only when it's told which door (leave(door)), not when it's sent out. */
   anchored = false;
@@ -367,11 +385,31 @@ export abstract class Character {
     });
     for (const m of this.outfit.materials) m.clippingPlanes = this.planes;
     this.face?.setGlow(glowColour.value ?? '#f4f4f1');
+    for (const held of this.carried) held.dress(look, flame);
   }
 
   get lookName() {
     return this.look;
   }
+
+  /** Clip what it holds as it is clipped itself: at the frame line, at a doorway. */
+  clip(materials: Iterable<Material>) {
+    for (const m of materials) m.clippingPlanes = this.planes;
+  }
+
+  /** The ways it has of holding something up, each with a pose of its own in holdPose(). */
+  readonly holdsUp: readonly Hold[] = [];
+  /** Where a tool sits from its grip when it holds it up this way, in metres (across, up,
+   * toward us): a family whose arms are short holds a board low and in front of its face. */
+  readonly holdOffset: Partial<Record<Hold, [number, number, number]>> = {};
+
+  /**
+   * Raise its arms, or let its legs hang, to hold something up (`hold`; one of holdsUp), with
+   * `k` how far it has got (0 to 1) and `t` seconds since it began. Added to its pose, so it
+   * does this where it stands. A family with its own way says so in holdsUp; the rest are
+   * posed by their grip (tools.ts), a head lifted for a mouth.
+   */
+  holdPose(_hold: Hold, _k: number, _t: number) {}
 
   // ---------- Coming and going ----------
 
@@ -379,6 +417,7 @@ export abstract class Character {
    * up from below the front lip there, though it walks). */
   enter(frame: Frame, edge: Edge, s: number, from?: 'start' | 'end' | 'below', depth?: number) {
     this.edge = edge;
+    this.leaveSide = null;
     this.state = 'entering';
     this.t = 0;
     this.stay = rand(this.spec.stay);
@@ -476,7 +515,7 @@ export abstract class Character {
     this.state = 'leaving';
     this.leaveBy = by === 'rise' ? 'rise' : this.spec.entrance;
     this.depthGoal = 0;
-    const door = by === 'rise' ? null : (by ?? this.exitDoor());
+    const door = by === 'rise' ? null : (by ?? (this.leaveSide ? null : this.exitDoor()));
     if (door) {
       this.door = door;
       door.user = this;
@@ -486,6 +525,21 @@ export abstract class Character {
       this.leaveBy = 'door';
     }
     this.onLeave();
+  }
+
+  /** Is it going out at the start of the edge (the left, on the floor)? Where it was told, else
+   * the nearer end. */
+  private startSide(lo: number, hi: number) {
+    if (this.state === 'leaving' && this.leaveSide && (this.edge === 'bottom' || this.edge === 'top'))
+      return this.leaveSide === 'left';
+    return this.s - lo < hi - this.s;
+  }
+
+  /** Off it goes toward a side of the frame (walking, flying, or sinking if that's how it
+   * leaves), or out by that door; the scene it's in has it gone when it's out of sight. */
+  leaveToward(to: 'left' | 'right' | Door) {
+    this.leaveSide = typeof to === 'string' ? to : null;
+    this.leave(typeof to === 'string' ? undefined : to);
   }
 
   /** Now and then it goes out by the nearest free door on its floor (or ceiling). */
@@ -1065,6 +1119,7 @@ export abstract class Character {
     this.puppet.update(dt);
     this.after(dt, env);
     this.place(env.frame);
+    for (const held of this.carried) held.follow(dt, env);
     if (this.face) {
       this.face.expression = this.role?.face ?? this.acts[this.act]?.face ?? this.expression;
       this.face.update(env.time);
@@ -1093,7 +1148,7 @@ export abstract class Character {
     if (this.state === 'leaving') {
       if (this.leaveBy === 'walk') {
         if (this.goal === null || (this.goal > lo && this.goal < hi)) {
-          const toStart = this.s - lo < hi - this.s;
+          const toStart = this.startSide(lo, hi);
           this.goal = toStart ? lo - this.widthPx() * 1.2 : hi + this.widthPx() * 1.2;
         }
         if (this.s < lo - this.widthPx() || this.s > hi + this.widthPx()) this.gone();
@@ -1617,7 +1672,7 @@ export abstract class Character {
     edgePlane.constant = c;
     if (this.state !== 'here' && this.spec.entrance === 'walk' && !this.door) {
       const [lo, hi] = this.span(frame);
-      const nearStart = this.s - lo < hi - this.s;
+      const nearStart = this.startSide(lo, hi);
       if (this.edge === 'bottom' || this.edge === 'top') {
         sidePlane.normal.set(nearStart ? 1 : -1, 0, 0);
       } else {

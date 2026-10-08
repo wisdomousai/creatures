@@ -1,7 +1,7 @@
 import { Color, type Object3D } from 'three';
 import type { Puppet } from './puppet';
 import type { Door } from './box';
-import { type Act, Character, clamp, type Env, type Frame } from './character';
+import { type Act, Character, clamp, type Env, type Frame, type Hold } from './character';
 import { BOLT_FACE, type Expression } from './face';
 import { glowColour } from './looks';
 import { Spring, wobble } from './spring';
@@ -83,6 +83,9 @@ export class Bolt extends Character {
   private chest = 0; // 0..1, the chest lens's glow beyond its heartbeat (proud, pleased)
   private ears = new Spring(4, 0.6); // the ear lights: up when he listens
   private pending = false;
+  /** He holds a sign up over his head in both hands. */
+  readonly holdsUp: readonly Hold[] = ['hands', 'grip'];
+  readonly holdOffset: Partial<Record<Hold, [number, number, number]>> = { hands: [0, -0.15, 0.14], grip: [-0.05, 0, 0.12] };
   private chestLevel = new Spring(3, 0.8);
 
   constructor(model: Object3D) {
@@ -173,6 +176,14 @@ export class Bolt extends Character {
   private arms(raise: number, forward = 0, bend = 0) {
     this.arm(1, raise, forward, bend);
     this.arm(-1, raise, forward, bend);
+  }
+
+  /** His arms are too short to hold a board over a head as big as his: it's held out in front
+   * of his middle, in both hands, below his screen. */
+  holdPose(hold: Hold, k: number) {
+    if (hold === 'hands') this.arms(0, 40 * k, 0);
+    // Anything else is held out in his right hand, up where it shows.
+    else if (hold === 'grip') this.arm(-1, 14 * k, 46 * k, 54 * k);
   }
 
   /** The nearest crewmate on this floor, standing about, if any. */

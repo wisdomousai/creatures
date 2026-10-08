@@ -1,6 +1,7 @@
 import { Color, type Material, type Mesh, type Object3D, type Vector3 } from 'three';
 import { BEACON, RAINBOW } from './bolt';
-import { type Act, Character, clamp, envelope, type Env, type Frame } from './character';
+import type { Door } from './box';
+import { type Act, Character, clamp, envelope, type Env, type Frame, type Hold } from './character';
 import { type Detail, type Tile, withDetail } from './detail';
 import type { FaceLayout } from './face';
 import type { FlameStyle, LookName } from './looks';
@@ -143,6 +144,8 @@ export class Owl extends Character {
 
   /** Held by the pointer, it flies after it. */
   readonly flies = true;
+  /** He holds a sign by a bar under his feet, hovering. */
+  readonly holdsUp: readonly Hold[] = ['feet'];
   private env: Env | null = null;
   private pokes: number[] = [];
   private hover = 0;
@@ -189,6 +192,8 @@ export class Owl extends Character {
   } | null = null;
   /** Hovering somewhere for the site (hoverAt()): the spot, kept for when he's up. */
   private errand: Waypoint | null = null;
+  /** Flying off out of the box and out of sight (leaveToward()). */
+  private offstage = false;
   private forthV = 0;
   private tilt = new Spring(1.6, 0.8);
   private flip = new Spring(1.6, 0.6);
@@ -910,6 +915,35 @@ export class Owl extends Character {
     return true;
   }
 
+  /** Holding something by his feet, hovering: they hang straight down, a little forward, with the
+   * talons open (the beating wings are his own). */
+  holdPose(hold: Hold, k: number) {
+    if (hold !== 'feet') return;
+    this.puppet.add('leg.L', -24 * k);
+    this.puppet.add('leg.R', -24 * k);
+  }
+
+  /** Off the side of the frame, in the air if he's up (else on foot, as ever). */
+  leaveToward(to: 'left' | 'right' | Door) {
+    const env = this.env;
+    if (typeof to !== 'string' || !this.free || !env || this.state !== 'here') return super.leaveToward(to);
+    const H = this.heightPx;
+    this.errand = null;
+    this.offstage = true;
+    this.state = 'leaving';
+    this.route = [
+      {
+        x: to === 'left' ? env.frame.left - H * 2 : env.frame.right + H * 2,
+        y: this.free.y - H * 0.8,
+        d: 0,
+        n: 0,
+        mode: 'glide',
+        v: 5,
+      },
+    ];
+    this.holdT = 0;
+  }
+
   /** Is he hovering at hoverAt()'s spot (or on his way)? */
   get onErrand() {
     return !!this.errand && this.state === 'here';
@@ -1070,6 +1104,13 @@ export class Owl extends Character {
     const H = this.heightPx;
     const wp = this.route[0];
     const last = this.route.length === 1;
+    if (this.offstage && (pos.x < env.frame.left - H * 1.2 || pos.x > env.frame.right + H * 1.2)) {
+      this.offstage = false;
+      this.free = null;
+      this.flight = 'no';
+      this.route = [];
+      return this.gone();
+    }
     // Out toward the reader, or back into the box, as the waypoint has it.
     this.forthV += (((wp?.n ?? 0) - this.forth) * 2.5 - this.forthV) * Math.min(1, dt * 4);
     this.forth += this.forthV * dt;

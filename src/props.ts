@@ -1290,8 +1290,12 @@ export interface Grip {
   at: Vector3;
 }
 
+/** Which part of a bone holds: the tip of a jaw, the palm of a hand, the far end of a limb,
+ * or the chin of a head. */
+export type GripPart = 'tip' | 'palm' | 'end' | 'chin';
+
 /** Which bone carries, in order of preference, and which part of it holds. */
-const GRIPS: [bone: string, part: 'tip' | 'palm' | 'end' | 'chin'][] = [
+const GRIPS: [bone: string, part: GripPart][] = [
   ['jaw', 'tip'],
   ['mouth', 'tip'],
   ['hand.R', 'palm'],
@@ -1304,10 +1308,15 @@ const GRIPS: [bone: string, part: 'tip' | 'palm' | 'end' | 'chin'][] = [
 ];
 
 const grips = new WeakMap<Character, Grip | null>();
+const spots = new WeakMap<Character, Map<string, Grip | null>>();
 
 /** Where c carries things: found once from its model's skin. */
 export function gripOf(c: Character): Grip | null {
-  if (!grips.has(c)) grips.set(c, findGrip(c));
+  if (!grips.has(c)) {
+    let found: Grip | null = null;
+    for (const [name, part] of GRIPS) if ((found = gripOn(c, name, part))) break;
+    grips.set(c, found);
+  }
   return grips.get(c) ?? null;
 }
 
@@ -1317,53 +1326,59 @@ export function handy(c: Character) {
   return !!g && /hand|fore|arm/.test(g.bone.name);
 }
 
-function findGrip(c: Character): Grip | null {
-  for (const [name, part] of GRIPS) {
-    if (!c.puppet.has(name)) continue;
-    const bone = c.puppet.bone(name);
-    // The skin that moves with the bone, at rest (model space: +Z its front, +Y up).
-    const pts: Vector3[] = [];
-    let inverse: Matrix4 | null = null;
-    c.model.traverse((obj) => {
-      const mesh = obj as SkinnedMesh;
-      if (!mesh.isSkinnedMesh) return;
-      const j = mesh.skeleton.bones.findIndex((b) => b.name === sanitize(name));
-      if (j < 0) return;
-      inverse ??= mesh.skeleton.boneInverses[j];
-      const pos = mesh.geometry.attributes.position;
-      const idx = mesh.geometry.attributes.skinIndex;
-      const wt = mesh.geometry.attributes.skinWeight;
-      for (let i = 0; i < pos.count; i++) {
-        let weight = 0;
-        for (let k = 0; k < 4; k++)
-          if (idx.getComponent(i, k) === j) weight += wt.getComponent(i, k);
-        if (weight > 0.5)
-          pts.push(new Vector3().fromBufferAttribute(pos, i).applyMatrix4(mesh.bindMatrix));
-      }
-    });
-    if (!inverse || pts.length < 4) continue;
-    const inv = inverse as Matrix4;
-    let region = pts;
-    const range = (key: 'x' | 'y' | 'z', list: Vector3[]) => {
-      const vals = list.map((p) => p[key]);
-      return [Math.min(...vals), Math.max(...vals)];
-    };
-    if (part === 'tip' || part === 'chin') {
-      // The front of it (a jaw's tip); for a head, the front of its lower half.
-      if (part === 'chin') {
-        const [lo, hi] = range('y', region);
-        region = region.filter((p) => p.y < lo + (hi - lo) * 0.45);
-      }
-      const [lo, hi] = range('z', region);
-      region = region.filter((p) => p.z > hi - (hi - lo) * 0.2);
-    } else if (part === 'end') {
-      // The far end of the bone (a hand at the end of an arm).
-      const local = region.map((p) => p.clone().applyMatrix4(inv));
-      const [lo, hi] = range('y', local);
-      region = region.filter((_, i) => local[i].y > hi - (hi - lo) * 0.25);
+/** The hold on one named bone (the owl's feet; the other hand), found once from the skin
+ * and kept; null if there's no such bone, or no skin on it. */
+export function gripOn(c: Character, name: string, part: GripPart): Grip | null {
+  let found = spots.get(c);
+  if (!found) spots.set(c, (found = new Map()));
+  const key = `${name}/${part}`;
+  if (!found.has(key)) found.set(key, c.puppet.has(name) ? findGrip(c, name, part) : null);
+  return found.get(key) ?? null;
+}
+
+function findGrip(c: Character, name: string, part: GripPart): Grip | null {
+  const bone = c.puppet.bone(name);
+  // The skin that moves with the bone, at rest (model space: +Z its front, +Y up).
+  const pts: Vector3[] = [];
+  let inverse: Matrix4 | null = null;
+  c.model.traverse((obj) => {
+    const mesh = obj as SkinnedMesh;
+    if (!mesh.isSkinnedMesh) return;
+    const j = mesh.skeleton.bones.findIndex((b) => b.name === sanitize(name));
+    if (j < 0) return;
+    inverse ??= mesh.skeleton.boneInverses[j];
+    const pos = mesh.geometry.attributes.position;
+    const idx = mesh.geometry.attributes.skinIndex;
+    const wt = mesh.geometry.attributes.skinWeight;
+    for (let i = 0; i < pos.count; i++) {
+      let weight = 0;
+      for (let k = 0; k < 4; k++)
+        if (idx.getComponent(i, k) === j) weight += wt.getComponent(i, k);
+      if (weight > 0.5)
+        pts.push(new Vector3().fromBufferAttribute(pos, i).applyMatrix4(mesh.bindMatrix));
     }
-    const mid = region.reduce((a, p) => a.add(p), new Vector3()).divideScalar(region.length);
-    return { bone, at: mid.applyMatrix4(inv) };
+  });
+  if (!inverse || pts.length < 4) return null;
+  const inv = inverse as Matrix4;
+  let region = pts;
+  const range = (key: 'x' | 'y' | 'z', list: Vector3[]) => {
+    const vals = list.map((p) => p[key]);
+    return [Math.min(...vals), Math.max(...vals)];
+  };
+  if (part === 'tip' || part === 'chin') {
+    // The front of it (a jaw's tip); for a head, the front of its lower half.
+    if (part === 'chin') {
+      const [lo, hi] = range('y', region);
+      region = region.filter((p) => p.y < lo + (hi - lo) * 0.45);
+    }
+    const [lo, hi] = range('z', region);
+    region = region.filter((p) => p.z > hi - (hi - lo) * 0.2);
+  } else if (part === 'end') {
+    // The far end of the bone (a hand at the end of an arm).
+    const local = region.map((p) => p.clone().applyMatrix4(inv));
+    const [lo, hi] = range('y', local);
+    region = region.filter((_, i) => local[i].y > hi - (hi - lo) * 0.25);
   }
-  return null;
+  const mid = region.reduce((a, p) => a.add(p), new Vector3()).divideScalar(region.length);
+  return { bone, at: mid.applyMatrix4(inv) };
 }
