@@ -19,7 +19,7 @@ import kit  # noqa: E402
 
 # Each is exported in the ink look with its own Flame material, so the site can colour
 # the flames either way; the site draws the paper look's outline itself.
-CHARACTERS = crew.NAMES + tuple(f'decor-{d}' for d in crew.DECOR) + tuple(f'prop-{p}' for p in crew.PROPS) + tuple(f'set-{p}' for p in crew.SET) + ('monitor', 'phone')
+CHARACTERS = crew.NAMES + tuple(f'decor-{d}' for d in crew.DECOR) + tuple(f'prop-{p}' for p in crew.PROPS) + tuple(f'set-{p}' for p in crew.SET) + ('monitor', 'phone') + tuple(f'sign-{p}' for p in crew.SIGNS)
 
 
 def join(rig, parts):
