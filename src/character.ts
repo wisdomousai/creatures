@@ -106,9 +106,9 @@ export interface Role {
   ending?: boolean;
 }
 
-/** How a tool is held up (tools.ts): in both hands, in the one grip it carries by (a mouth
- * or a hand), or by the feet, hanging. */
-export type Hold = 'hands' | 'grip' | 'feet';
+/** How a tool is held up (tools.ts): in both hands, in one hand raised high (a paw, a mitt),
+ * in the one grip it carries by (a mouth or a hand), or by the feet, hanging. */
+export type Hold = 'hands' | 'hand' | 'grip' | 'feet';
 
 /**
  * Something it holds (tools.ts): dressed with it, and put into its hands (or mouth, or feet)
@@ -399,6 +399,21 @@ export abstract class Character {
 
   /** The ways it has of holding something up, each with a pose of its own in holdPose(). */
   readonly holdsUp: readonly Hold[] = [];
+  /**
+   * Where the tool's grip goes on its body for each way of holding, a point on a bone: a pair,
+   * left then right, for `hand` (the one raised: the left if the sign is to stand on its left,
+   * see holdSide), `hands` and `feet`. Each says its bone and, if the skin's guess isn't good,
+   * a place on the model as it was made (metres: x across, y up, z toward us), kept on its
+   * bone; with no place it is the far end of the bone (a paw's, a hand's), found from its
+   * skin. A body with none has the guess of props.ts (a hand's palm or the end of its arm, an
+   * owl's talons).
+   */
+  readonly holdGrips: Partial<Record<Hold, [bone: string, at?: [number, number, number]][]>> = {};
+  /** Which side of itself it raises a hand to hold something up (1 its left, -1 its right),
+   * the side toward the middle of the page: set when it is asked. */
+  holdSide: 1 | -1 = 1;
+  /** The one hand it always raises, when the other has something of its own in it (a trowel). */
+  readonly holdWith?: 1 | -1;
   /** Where a tool sits from its grip when it holds it up this way, in metres (across, up,
    * toward us): a family whose arms are short holds a board low and in front of its face. */
   readonly holdOffset: Partial<Record<Hold, [number, number, number]>> = {};

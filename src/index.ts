@@ -24,17 +24,19 @@ export { Bubble, headTop, type BubbleOptions, type Bounds, type Point } from './
  * crew.holdUp(); canHold() says whether a body can.
  */
 export {
+  GRIP_GAP,
   TOOLS,
   canHold,
   holdUp,
   toolFor,
   type Held,
   type HoldOptions,
+  type Stand,
   type Mount,
   type Tool,
   type View,
 } from './tools';
-export { gripOf, gripOn, handy, type Grip, type GripPart } from './props';
+export { gripAt, gripOf, gripOn, handy, type Grip, type GripPart } from './props';
 export type { Hold } from './character';
 /** The set pieces there are, and which come out on each page (see Crew.page). */
 export { SET, SET_PAGES } from './set';

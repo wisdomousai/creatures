@@ -1,5 +1,6 @@
 import {
   type Bone,
+  Box3,
   CanvasTexture,
   CatmullRomCurve3,
   Euler,
@@ -1334,6 +1335,45 @@ export function gripOn(c: Character, name: string, part: GripPart): Grip | null 
   const key = `${name}/${part}`;
   if (!found.has(key)) found.set(key, c.puppet.has(name) ? findGrip(c, name, part) : null);
   return found.get(key) ?? null;
+}
+
+/**
+ * The skin that moves with a bone, as a box on the model as it was made (metres, as for
+ * gripAt). Null if there's no such bone, or nothing is skinned to it.
+ */
+export function skinBox(c: Character, name: string): Box3 | null {
+  if (!c.puppet.has(name)) return null;
+  const rest = c.puppet.restMatrix(name);
+  const box = new Box3();
+  const p = new Vector3();
+  c.model.traverse((obj) => {
+    const mesh = obj as SkinnedMesh;
+    if (!mesh.isSkinnedMesh) return;
+    const j = mesh.skeleton.bones.findIndex((b) => b.name === sanitize(name));
+    if (j < 0) return;
+    const to = rest.clone().multiply(mesh.skeleton.boneInverses[j]).multiply(mesh.bindMatrix);
+    const pos = mesh.geometry.attributes.position;
+    const idx = mesh.geometry.attributes.skinIndex;
+    const wt = mesh.geometry.attributes.skinWeight;
+    for (let i = 0; i < pos.count; i++) {
+      let weight = 0;
+      for (let k = 0; k < 4; k++) if (idx.getComponent(i, k) === j) weight += wt.getComponent(i, k);
+      if (weight > 0.5) box.expandByPoint(p.fromBufferAttribute(pos, i).applyMatrix4(to));
+    }
+  });
+  return box.isEmpty() ? null : box;
+}
+
+/**
+ * A hold at a place you choose, for a body whose skin gives no good guess: the point is
+ * where it goes on the model as it was made (metres, from its feet: x across, y up, z toward
+ * us), and it is kept on this bone from then on, so it goes where the bone goes. Null if
+ * there's no such bone.
+ */
+export function gripAt(c: Character, name: string, rest: [number, number, number]): Grip | null {
+  if (!c.puppet.has(name)) return null;
+  const at = new Vector3(...rest).applyMatrix4(c.puppet.restMatrix(name).invert());
+  return { bone: c.puppet.bone(name), at };
 }
 
 function findGrip(c: Character, name: string, part: GripPart): Grip | null {

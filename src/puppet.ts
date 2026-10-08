@@ -1,4 +1,4 @@
-import { type Bone, type Object3D, PropertyBinding, Quaternion, Vector3 } from 'three';
+import { type Bone, Matrix4, type Object3D, PropertyBinding, Quaternion, Vector3 } from 'three';
 import { Spring } from './spring';
 
 /**
@@ -81,6 +81,20 @@ export class Puppet {
 
   bone(name: string): Bone {
     return this.joint(name).bone;
+  }
+
+  /** A bone's rest pose in the model's space (the frame its children are in: the model as it
+   * was made, x across, y up, z front), however it is posed now. */
+  restMatrix(name: string): Matrix4 {
+    const out = new Matrix4();
+    const local = new Matrix4();
+    for (let o: Object3D | null = this.joint(name).bone; o && o !== this.root; o = o.parent) {
+      const joint = this.joints.get(o.name);
+      if (joint) local.compose(joint.restPosition, joint.rest, joint.restScale);
+      else local.copy(o.matrix);
+      out.premultiply(local);
+    }
+    return out;
   }
 
   private joint(name: string): Joint {

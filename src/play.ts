@@ -285,13 +285,14 @@ export class Play {
     return this.settle(() => false, seconds);
   }
 
-  /** Put a prop out: up through the floor near someone (or wherever there's room). */
-  async bring(name: string, near: Character | null, cast: Character[] = []) {
+  /** Put a prop out: up through the floor near someone (or wherever there's room), or at `at`
+   * if it's asked for there. */
+  async bring(name: string, near: Character | null, cast: Character[] = [], at?: { s: number; depth?: number }) {
     const f = this.frame;
     const model = await loadModel(`${this.models}prop-${name}.glb`);
     const prop = new Prop(name, model);
     prop.dress(this.look);
-    const spot = this.spot(prop, near, cast);
+    const spot = at ? { s: at.s, depth: at.depth ?? 0.4 } : this.spot(prop, near, cast);
     if (!spot) {
       prop.dispose();
       throw new Cut();

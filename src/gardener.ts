@@ -41,6 +41,9 @@ export class Gardener extends Jobbot {
   static readonly terms =
     'garden gardening plant watering can spout green blue yellow tan boots wellies wellington dungarees overalls trowel glove seeds seedling flowers grow digs';
 
+  /** The trowel is in her left hand; the glove holds things up. */
+  readonly holdWith = -1 as const;
+
   private fx = {
     sprout: 0, // growth 0..1
     bud: 0, // how brightly the bud glows

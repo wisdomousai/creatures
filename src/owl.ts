@@ -146,6 +146,14 @@ export class Owl extends Character {
   readonly flies = true;
   /** He holds a sign by a bar under his feet, hovering. */
   readonly holdsUp: readonly Hold[] = ['feet'];
+  /** The bar goes into the crook of each foot's talons: out in front of the ankle, level with
+   * the talons' tips curling down round it. */
+  readonly holdGrips: Character['holdGrips'] = {
+    feet: [
+      ['leg.L', [0.062, 0.006, 0.085]],
+      ['leg.R', [-0.062, 0.006, 0.085]],
+    ],
+  };
   private env: Env | null = null;
   private pokes: number[] = [];
   private hover = 0;

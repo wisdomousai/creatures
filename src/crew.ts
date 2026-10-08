@@ -26,7 +26,7 @@ import { GAMES, Play } from './play';
 import { Set as SetPieces, SET_PAGES } from './set';
 import { type FlameStyle, glowColour, type LookName } from './looks';
 import { Stage } from './stage';
-import { canHold, type Held, type HoldOptions, holdUp } from './tools';
+import { canHold, GRIP_GAP, type Held, type HoldOptions, holdUp } from './tools';
 import { setAssets } from './assets';
 import { Vacuum } from './vacuum';
 import { Bunny } from './bunny';
@@ -937,7 +937,58 @@ export class Crew {
       stage: this.stage,
       host: this.opts.hits,
       frame: () => this.frame,
+      stand: async (name, at) => {
+        const play = this.play;
+        if (!play) return null;
+        const prop = await play.bring(name, null, [], at).catch(() => null);
+        if (!prop) return null;
+        return {
+          get s() {
+            return prop.s;
+          },
+          set s(s: number) {
+            prop.s = s;
+          },
+          get depth() {
+            return prop.depth;
+          },
+          set depth(d: number) {
+            prop.depth = d;
+          },
+          get rise() {
+            return prop.rise;
+          },
+          get alive() {
+            return !prop.gone && !prop.heldBy && prop.want > 0;
+          },
+          top: (f) => prop.seatPx(f) + prop.h,
+          footprint: (f) => prop.footprint(f),
+          users: prop.users,
+          leave: () => play.send(prop),
+        };
+      },
     });
+  }
+
+  /**
+   * Check how someone holds a tool (docs/holding.md): ask them to hold it up, wait for it to
+   * be in hand, and measure it for `seconds` (see Held.check: red dots on the tool's grips,
+   * green where they should be held). Resolves with the worst gap and reach, in their metres,
+   * and `ok` if both stayed under GRIP_GAP; the hold stays up, for a close-up, until `held`
+   * is released. Null if they can't hold it.
+   */
+  async holdCheck(
+    who: string | Character,
+    tool: string,
+    options: HoldOptions = {},
+    seconds = 4,
+  ): Promise<{ tool: string; held: Held; gap: number; reach: number; ok: boolean } | null> {
+    const held = this.holdUp(who, tool, options);
+    if (!held || !(await held.ready)) return null;
+    held.check();
+    await new Promise((done) => setTimeout(done, seconds * 1000));
+    const [gap, reach] = [held.worstGap, held.worstReach];
+    return { tool: held.tool, held, gap, reach, ok: gap < GRIP_GAP && reach < GRIP_GAP };
   }
 
   /** Could they hold this up (a tool's name, or `sign`)? */

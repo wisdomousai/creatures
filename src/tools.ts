@@ -1,10 +1,15 @@
 import {
+  type Bone,
   Box3,
   CanvasTexture,
   Group,
   LinearMipmapLinearFilter,
+  Mesh,
+  MeshBasicMaterial,
+  Raycaster,
+  SphereGeometry,
+  Triangle,
   type BufferGeometry,
-  type Mesh,
   type MeshStandardMaterial,
   type Object3D,
   type PerspectiveCamera,
@@ -26,7 +31,8 @@ import {
 } from './character';
 import { CARDS } from './families';
 import { dress, type FlameStyle, type LookName, type Outfit } from './looks';
-import { type Grip, gripOf, gripOn, handy } from './props';
+import { RaisedArm } from './arm';
+import { type Grip, gripAt, gripOf, gripOn, handy } from './props';
 import { Puppet } from './puppet';
 import { pixelRatio } from './stage';
 import { ease, FixedSpring } from './swimmer';
@@ -41,15 +47,20 @@ import { ease, FixedSpring } from './swimmer';
  * head up for one in the mouth, the legs hanging under an owl hovering over a bar.
  *
  * Not everyone holds everything. A tool is held by those whose card says so (Card.tools in
- * families.ts) and whose body has a grip for it. Signs are the exception: they come in
- * kinds, one for each way of holding one, and asking for a `sign` gets the kind that suits
- * the body: the placard, the picket, the hanger, a card for the small, and, for those with
- * nothing to hold it with, an easel to stand beside. Asking for a kind by its name
- * ('arrow', 'tag') gets that one, if they can.
+ * families.ts) and whose body has a grip for it. Signs are the exception: they come in kinds,
+ * one for each way of really holding one, and asking for a `sign` gets the kind that suits
+ * the body: the paddle, raised in one hand (any body with arms: see arm.ts), the placard in
+ * two, or the hanger an owl hangs from by his talons. A body with only a mouth or a jaw to
+ * hold with gets no sign (canHold says no, holdUp gives null): a sign stuck in a muzzle isn't
+ * held. Asking for a kind by its name ('arrow', 'tag') gets that one, if they can.
  *
- *   const held = crew.holdUp('cat', 'sign', { label: 'Home', onPick: () => show('/') });
+ * A flier can be asked to hover with it (`hover`), and anyone can be asked to stand on a
+ * prop to hold it up (`on`: a crate hops them up, and goes down again when they're done).
+ * How well it is held can be measured: Held.check(), crew.holdCheck() and docs/holding.md.
+ *
+ *   const held = crew.holdUp('monkey', 'sign', { label: 'Home', onPick: () => show('/') });
  *   held?.lead('left'); // off they go with it, and a promise for when they're out of sight
- *   held?.release(); // or it goes, and the cat gets on with her life
+ *   held?.release(); // or it goes, and the monkey gets on with his life
  *
  * A sign's face (the Board in its model) is painted with its label in every look. With an
  * `onPick` it is also a button in the page over the board, that wiggles when the pointer or
@@ -63,6 +74,8 @@ export interface Tool {
   /** Its model, a file in the models folder (without .glb). */
   model: string;
   mount: Mount;
+  /** Held by the feet over a bar: half the bar's length, in its metres, along x. */
+  bar?: number;
   /** The family it is one of (a sign, in many kinds). */
   family?: string;
   /** Held in both hands: where the two grips are across the tool, in its metres (x, left
@@ -92,9 +105,9 @@ export const TOOLS: Record<string, Tool> = {
   // The signs: kinds of one family (see FAMILIES for which a body gets).
   placard: { model: 'tool-placard', mount: 'hands', family: 'sign', grips: [-0.231, 0.231] },
   picket: { model: 'tool-picket', mount: 'grip', family: 'sign', clear: true },
-  hanger: { model: 'tool-hanger', mount: 'feet', family: 'sign' },
+  hanger: { model: 'tool-hanger', mount: 'feet', family: 'sign', bar: 0.189 },
   card: { model: 'tool-card', mount: 'grip', family: 'sign', clear: true },
-  paddle: { model: 'tool-paddle', mount: 'grip', family: 'sign', clear: true },
+  paddle: { model: 'tool-paddle', mount: 'hand', family: 'sign' },
   arrow: { model: 'tool-arrow', mount: 'grip', family: 'sign', points: 'right', clear: true },
   // (Its right grip is as far from the left as signs.py says.)
   banner: { model: 'tool-banner', mount: 'hands', family: 'sign', grips: [0, 0.9] },
@@ -111,8 +124,11 @@ export const TOOLS: Record<string, Tool> = {
   megaphone: { model: 'tool-megaphone', mount: 'grip' },
 };
 
-/** Models no taller than this (metres) are small, and get the small things. */
-const SMALL = 0.45;
+/** A tool is held for real when its grip stays this close (metres) to the hand that holds it. */
+export const GRIP_GAP = 0.015;
+
+/** How far a bar held in two feet may tip, in radians. */
+const TILT = 0.2;
 /** How far a sign held in a mouth tips out, in radians. */
 const TIP = 0.3;
 
@@ -122,11 +138,11 @@ const TIP = 0.3;
  */
 const FAMILIES: Record<string, (c: Character) => string | null> = {
   sign: (c) => {
-    const grip = !!gripOf(c);
+    // (One hanging from the ceiling would have it upside down.)
+    if (c.edge === 'top') return null;
     if (suits(c, 'feet')) return 'hanger';
-    if (!grip) return suits(c, 'floor') ? 'easel' : null;
-    if (c.spec.metres < SMALL) return 'card';
-    return suits(c, 'hands') ? 'placard' : 'picket';
+    if (suits(c, 'hand')) return 'paddle';
+    return suits(c, 'hands') ? 'placard' : null;
   },
 };
 
@@ -139,19 +155,46 @@ interface Hoverer {
 const hovers = (c: Character): c is Character & Hoverer =>
   typeof (c as Partial<Hoverer>).hoverAt === 'function';
 
-/** The two grips a tool in both hands is carried by, or the feet it hangs from. */
-function pair(c: Character, mount: 'hands' | 'feet'): [Grip, Grip] | null {
-  const [l, r] =
-    mount === 'feet'
-      ? [gripOn(c, 'leg.L', 'end'), gripOn(c, 'leg.R', 'end')]
-      : [gripOn(c, 'hand.L', 'palm'), gripOn(c, 'hand.R', 'palm')];
-  return l && r ? [l, r] : null;
+/** The arm a body raises on this side (1 its left): the grip on its hand's palm, else the far
+ * end of its forearm or arm, the places props.ts looks for a hand. */
+function armGrip(c: Character, side: 1 | -1): Grip[] | null {
+  const s = side === 1 ? 'L' : 'R';
+  for (const [bone, part] of [['hand', 'palm'], ['forearm', 'end'], ['fore', 'end'], ['arm', 'end']] as const) {
+    const grip = gripOn(c, `${bone}.${s}`, part);
+    if (grip) return [grip];
+  }
+  return null;
+}
+
+const placed = new WeakMap<Character, Map<string, Grip[] | null>>();
+
+/**
+ * Where a tool is held on c in this way: the one hand raised, the two hands a tool in both
+ * is carried by, or the feet it hangs from (left, then right). The places the body names
+ * (Character.holdGrips), else guessed from its skin: a hand's palm, an owl's talons.
+ */
+function gripsOf(c: Character, mount: 'hand' | 'hands' | 'feet'): Grip[] | null {
+  let found = placed.get(c);
+  if (!found) placed.set(c, (found = new Map()));
+  const key = mount === 'hand' ? `${mount}${c.holdSide}` : mount;
+  if (!found.has(key)) {
+    let own = c.holdGrips[mount];
+    if (own && mount === 'hand') own = [own[c.holdSide === 1 ? 0 : 1]];
+    const made = own?.map(([bone, at]) => (at ? gripAt(c, bone, at) : gripOn(c, bone, 'end')));
+    const [l, r] =
+      mount === 'feet'
+        ? [gripOn(c, 'leg.L', 'end'), gripOn(c, 'leg.R', 'end')]
+        : [gripOn(c, 'hand.L', 'palm'), gripOn(c, 'hand.R', 'palm')];
+    const guess = mount === 'hand' ? armGrip(c, c.holdSide) : l && r ? [l, r] : null;
+    found.set(key, made ? (made.every((g) => g) ? (made as Grip[]) : null) : guess);
+  }
+  return found.get(key) ?? null;
 }
 
 /** Are their hands as far apart as a tool's grips (a banner's two poles)? They can't take one
  * wider than they can reach, however they stand. */
 function spans(c: Character, tool: Tool) {
-  const [l, r] = pair(c, 'hands') ?? [];
+  const [l, r] = gripsOf(c, 'hands') ?? [];
   const [a, b] = tool.grips ?? [];
   if (!l || !r || a === undefined || b === undefined) return false;
   c.model.updateWorldMatrix(true, true);
@@ -173,9 +216,10 @@ function suits(c: Character, mount: Mount) {
     case 'floor':
       return c.edge === 'bottom' && !c.free && c.inBox;
     case 'feet':
-      return c.holdsUp.includes('feet') && hovers(c) && !!pair(c, 'feet');
+      return c.holdsUp.includes('feet') && hovers(c) && !!gripsOf(c, 'feet');
     case 'hands':
-      return c.holdsUp.includes('hands') && !!pair(c, 'hands');
+    case 'hand':
+      return (mount === 'hand' || c.holdsUp.includes(mount)) && !!gripsOf(c, mount);
   }
 }
 
@@ -217,6 +261,28 @@ export interface HoldOptions {
    * back into it, 0..1): it walks there holding it, and stays. Else it holds it where it
    * is. */
   at?: { s: number; depth?: number };
+  /** Something to stand on to hold it up: the prop is put out on the floor at `at` (else
+   * beside them), they hop onto it, sit and hold it up there, and it goes down through the
+   * floor again when they're done, or go off (lead hops them down first). Not for a flier
+   * that hovers. */
+  on?: 'crate';
+}
+
+/** A prop on the floor to stand on (HoldOptions.on), as the crew puts it out. */
+export interface Stand {
+  s: number;
+  depth: number;
+  /** 0 below the floor, 1 up on it. */
+  readonly rise: number;
+  /** Still there (not gone back down, not carried off). */
+  readonly alive: boolean;
+  /** How high its top is, px at the front of the box. */
+  top(f: Frame): number;
+  footprint(f: Frame): { x: number; z: number };
+  /** Who's on it: the crew walk round what isn't in use. */
+  readonly users: Set<Character>;
+  /** Send it back down. */
+  leave(): void;
 }
 
 /** What a page needs of its stage to put a button over a tool. */
@@ -225,6 +291,8 @@ export interface View {
   /** The layer for buttons, if the options don't give one. */
   host: HTMLElement;
   frame: () => Frame;
+  /** Put out something to stand on at a spot (for `on`); null if it can't be had. */
+  stand?: (name: string, at: { s: number; depth?: number }) => Promise<Stand | null>;
 }
 
 /** A tool being held up. */
@@ -238,6 +306,20 @@ export interface Held {
   /** Resolves true once the tool is in their hands, false if it never gets there. */
   readonly ready: Promise<boolean>;
   readonly released: boolean;
+  /**
+   * Measure and show how it is held, for a check (`crew.holdCheck`, docs/holding.md): from now
+   * on, every frame, `gap` (how far the tool's grip is from the place the body says holds it,
+   * in the holder's metres: the worst of its hands, paws or feet; a bar's is the distance to
+   * the bar) and `reach` (how far that place is from the skin of the hand, paw or talon that
+   * should be holding: a grip floating off the paw shows here) are measured, with the worst of
+   * each, and a red dot sits on the tool's grip and a green one where it should be held.
+   * It is held for real while both stay under GRIP_GAP. NaN until measured.
+   */
+  check(on?: boolean): void;
+  readonly gap: number;
+  readonly reach: number;
+  readonly worstGap: number;
+  readonly worstReach: number;
   /** Off they go with it, toward a side of the frame or out by a door (they walk, fly or
    * sink as they do), and the promise is kept when they're out of sight. */
   lead(toward: 'left' | 'right' | Door): Promise<void>;
@@ -279,6 +361,7 @@ class Waiting implements Held {
   readonly ready: Promise<boolean>;
   private inner: Held | null = null;
   private gone = false;
+  private checking = false;
   private text: string;
   private timer: ReturnType<typeof setInterval>;
   private settle!: (ok: boolean) => void;
@@ -291,10 +374,10 @@ class Waiting implements Held {
   ) {
     this.text = options.label ?? '';
     this.ready = new Promise<boolean>((done) => (this.settle = done));
-    this.timer = setInterval(() => this.check(), 50);
+    this.timer = setInterval(() => this.watch(), 50);
   }
 
-  private check() {
+  private watch() {
     if (this.gone) return;
     const c = this.c;
     if (c.state === 'entering') return;
@@ -305,6 +388,7 @@ class Waiting implements Held {
       return this.settle(false);
     }
     this.inner = inner;
+    if (this.checking) inner.check();
     void inner.ready.then(this.settle);
   }
 
@@ -324,6 +408,22 @@ class Waiting implements Held {
   get released() {
     return this.gone || !!this.inner?.released;
   }
+  get gap() {
+    return this.inner?.gap ?? NaN;
+  }
+  get reach() {
+    return this.inner?.reach ?? NaN;
+  }
+  get worstGap() {
+    return this.inner?.worstGap ?? NaN;
+  }
+  get worstReach() {
+    return this.inner?.worstReach ?? NaN;
+  }
+  check(on = true) {
+    this.checking = on;
+    this.inner?.check(on);
+  }
   lead(toward: 'left' | 'right' | Door): Promise<void> {
     if (this.inner) return this.inner.lead(toward);
     return this.ready.then((ok) => (ok && this.inner ? this.inner.lead(toward) : undefined));
@@ -340,6 +440,18 @@ class Waiting implements Held {
 const v1 = new Vector3();
 const v2 = new Vector3();
 const v3 = new Vector3();
+const tri = new Triangle();
+const v4 = new Vector3();
+const ray = new Raycaster();
+// (Each a little askew, so a ray doesn't run down the seam between two triangles.)
+const AXES = [
+  new Vector3(1, 0.0123, 0.0071),
+  new Vector3(-1, 0.0087, -0.0113),
+  new Vector3(0.0097, 1, 0.0131),
+  new Vector3(-0.0061, -1, 0.0109),
+  new Vector3(0.0143, 0.0059, 1),
+  new Vector3(0.0079, -0.0103, -1),
+].map((v) => v.normalize());
 
 class Holding implements Held, Carried {
   readonly ready: Promise<boolean>;
@@ -364,6 +476,26 @@ class Holding implements Held, Carried {
   /** Textures let go of, to dispose once the new one has been drawn (never one on screen). */
   private spent: CanvasTexture[] = [];
   private hovered = false;
+  private mount: Mount;
+  /** The arm raised to hold it up, for those who hold it in one hand. */
+  private arm: RaisedArm | null = null;
+  /** 0 on the move, 1 settled to hold it up (for those who must stand still to). */
+  private settled = new FixedSpring(5, 0.9);
+  /** Standing on a prop to hold it (HoldOptions.on): the prop, and where they are with it:
+   * waiting for it, walking to its side, crouching, hopping up, up, or hopping down. */
+  private stand: Stand | null = null;
+  private climbing: 'fetch' | 'walk' | 'crouch' | 'jump' | 'up' | 'down' | null = null;
+  private ct = 0;
+  private dir: 1 | -1 = 1;
+  private after: (() => void) | null = null;
+  /** Where each hand, paw or foot holds it, in the holder's space (this frame). */
+  private touch = [new Vector3(), new Vector3()];
+  private checking = false;
+  private marks: Mesh[] = [];
+  gap = NaN;
+  reach = NaN;
+  worstGap = NaN;
+  worstReach = NaN;
   private t = 0;
   private px = 0;
   /** Popping in (0 away, 1 in hand); wiggling; lifting; swinging; and how fast it's carried. */
@@ -381,7 +513,7 @@ class Holding implements Held, Carried {
   private fading = false;
   private flipped = false;
   /** Which side of the face a mouth-held sign stands on: the one toward the page's middle. */
-  private side = 1;
+  private side: 1 | -1 = 1;
   private written = '';
   private done: (ok: boolean) => void = () => {};
 
@@ -392,6 +524,7 @@ class Holding implements Held, Carried {
     private view: View,
   ) {
     this.def = TOOLS[tool];
+    this.mount = this.def.mount;
     this.text = opts.label ?? '';
     this.look = c.lookName;
     this.ready = new Promise<boolean>((done) => (this.done = done));
@@ -401,7 +534,7 @@ class Holding implements Held, Carried {
       facing: 0,
       // Looking straight out of the screen, not at the mouse.
       look: () => c.eyePoint(this.view.frame()),
-      pose: (t) => this.pose(t),
+      pose: (t, dt) => this.pose(t, dt),
     };
   }
 
@@ -423,10 +556,27 @@ class Holding implements Held, Carried {
     c.direct(this.role);
     const mid = this.view.frame();
     const at = this.opts.at;
-    this.side = (at?.s ?? c.s) < (mid.left + mid.right) / 2 ? 1 : -1;
+    const stand = this.aloft && this.opts.hover ? this.opts.hover.x : (at?.s ?? c.s);
+    this.side = c.holdWith ?? (stand < (mid.left + mid.right) / 2 ? 1 : -1);
+    c.holdSide = this.side;
     // Off to where it was asked to stand, or standing still where it is.
-    if (!c.free && c.inBox) c.walkTo(at?.s ?? c.s, at?.depth ?? c.depth);
-    if (this.def.mount === 'feet') {
+    if (this.perching) {
+      // A prop to stand on, put out where it was asked (else a little way toward the middle).
+      this.climbing = 'fetch';
+      const spot = at ?? { s: c.s + this.side * c.heightPx * 1.1, depth: c.depth };
+      void this.view.stand!(this.opts.on!, spot).then((st) => {
+        if (this.released || this.leading || !st) {
+          st?.leave();
+          if (!st) this.release();
+          return;
+        }
+        this.stand = st;
+        this.dir = c.s < st.s ? -1 : 1;
+        this.climbing = 'walk';
+        this.ct = 0;
+      });
+    } else if (!this.aloft && !c.free && c.inBox) c.walkTo(at?.s ?? c.s, at?.depth ?? c.depth);
+    if (this.aloft) {
       const f = this.view.frame();
       const at = c.free ?? c.foot(f);
       this.spot = this.opts.hover
@@ -455,7 +605,7 @@ class Holding implements Held, Carried {
     this.root.visible = false;
     // Turned about its grip in the character's space; an easel is set on the floor beside
     // them (and so moves with them).
-    (this.def.mount === 'floor' ? c.holder : c.pivot).add(this.root);
+    (this.mount === 'floor' ? c.holder : c.pivot).add(this.root);
     this.flipped = !!this.def.points && (this.opts.point ?? this.def.points) !== this.def.points;
     scene.updateMatrixWorld(true);
     scene.traverse((o) => {
@@ -480,8 +630,15 @@ class Holding implements Held, Carried {
     if (this.board) this.letter(true);
     this.dress(this.look, this.flame);
     if (this.opts.onPick) this.makeButton();
-    if (this.def.mount === 'feet') this.swing.kick(1.4);
-    this.done(true);
+    if (this.mount === 'feet') this.swing.kick(1.4);
+    this.armed = true;
+    this.ripen();
+  }
+
+  /** In hand: the tool's here, and they're where they hold it (up on their crate). */
+  private armed = false;
+  private ripen() {
+    if (this.armed && !this.released && (!this.perching || this.climbing === 'up')) this.done(true);
   }
 
   dress(look: LookName, flame?: FlameStyle) {
@@ -616,11 +773,17 @@ class Holding implements Held, Carried {
   // ---------- Each frame ----------
 
   /** Added to the pose before the joints move: what lifts the tool where it reads. */
-  private pose(t: number) {
+  private pose(t: number, dt: number) {
     const c = this.c;
-    const mount = this.def.mount;
+    const mount = this.mount;
     const k = ease(t / 0.6);
-    if (mount === 'hands' || mount === 'feet') c.holdPose(mount, k, t);
+    // Raising one: only once it's still (it walks to where it stands first; a flier's steps are over).
+    const up = this.settled.update(dt, c.walking && !c.free ? 0 : 1);
+    if (mount === 'hand') {
+      if (c.holdsUp.includes('hand')) c.holdPose(mount, k * up, t);
+      else this.raised()?.pose(k * up);
+    }
+    else if (mount === 'hands' || mount === 'feet') c.holdPose(mount, k, t);
     else if (mount === 'grip') {
       if (c.holdsUp.includes('grip')) c.holdPose('grip', k, t);
       // The head up, with it in the mouth, where it can be read.
@@ -638,12 +801,15 @@ class Holding implements Held, Carried {
     }
     // Given another part (or sent off by someone else): the tool goes.
     if (c.role !== this.role && !c.isHeld) return this.release();
-    if (this.def.mount === 'feet' && !this.leading && !(c as Character & Hoverer).onErrand)
-      return this.release();
+    if (this.aloft && !this.leading && !(c as Character & Hoverer).onErrand) return this.release();
     for (const old of this.spent.splice(0)) old.dispose();
+    // An arm raised is stretched once the joints have moved, whether or not it has the tool yet.
+    this.arm?.apply();
+    this.climb(dt, env);
+    if (this.released) return;
     if (!this.model) return;
     this.t += dt;
-    // A hanging tool shows once he's up at his spot.
+    // A hanging tool shows once he's up at his spot; one raised, once they are sitting up.
     this.appear.update(dt, this.fading || !this.arrived() ? 0 : 1);
     this.wiggle.update(dt, 0);
     this.lift.update(dt, this.hovered ? 0.035 : 0);
@@ -656,7 +822,7 @@ class Holding implements Held, Carried {
     const root = this.root;
     root.visible = this.appear.y > 0.01;
     if (!root.visible) return;
-    const mount = this.def.mount;
+    const mount = this.mount;
     const s = this.appear.y * (this.flipped ? -1 : 1);
     c.holder.updateMatrixWorld(true);
     const model = c.model;
@@ -672,16 +838,22 @@ class Holding implements Held, Carried {
     const at = v1;
     let roll = ((this.def.roll ?? 0) * Math.PI) / 180;
     let size = 1;
-    if (mount === 'hands' || mount === 'feet') {
-      const [l, r] = pair(c, mount)!;
-      const pl = this.in(l, v2);
-      const pr = this.in(r, v3);
-      at.copy(pl).add(pr).multiplyScalar(0.5);
-      if (mount === 'hands') {
-        roll = clamp(Math.atan2(pl.y - pr.y, pl.x - pr.x), -0.35, 0.35);
-        // The middle between its grips (a banner's origin is its left grip).
-        const g = this.def.grips;
-        if (g) at.x -= (g[0] + g[1]) / 2;
+    const grips = mount === 'hands' || mount === 'hand' || mount === 'feet' ? gripsOf(c, mount) : null;
+    if (grips) {
+      const [pl, pr] = this.touch;
+      grips.forEach((g, i) => this.in(g, this.touch[i]));
+      if (mount === 'hand') {
+        at.copy(pl);
+        roll = this.aim(grips[0]);
+        size = this.raised()?.size ?? 1;
+      } else {
+        at.copy(pl).add(pr).multiplyScalar(0.5);
+        if (mount === 'hands') {
+          roll = clamp(Math.atan2(pl.y - pr.y, pl.x - pr.x), -0.35, 0.35);
+          // The middle between its grips (a banner's origin is its left grip).
+          const g = this.def.grips;
+          if (g) at.x -= (g[0] + g[1]) / 2;
+        }
       }
     } else if (mount === 'neck') {
       c.puppet.bone('head').localToWorld(at.set(0, 0, 0));
@@ -701,7 +873,7 @@ class Holding implements Held, Carried {
     }
     const n = this.def.nudge;
     if (n) at.add(v2.set(n[0], n[1], n[2]));
-    const o = mount === 'hands' || mount === 'feet' || mount === 'grip' ? c.holdOffset[mount] : null;
+    const o = mount === 'neck' ? null : c.holdOffset[mount];
     if (o) at.add(v2.set(o[0], o[1], o[2]));
     // How fast the grip is carried across the screen, to swing a hanging tool.
     if (mount === 'feet' || mount === 'neck') {
@@ -712,13 +884,144 @@ class Holding implements Held, Carried {
       const lean = clamp(-this.slide / (c.heightPx * 5), -0.4, 0.4) + 0.03 * Math.sin(this.t * 1.7);
       roll = this.swing.update(dt, mount === 'feet' ? lean : lean * 0.5) - c.pivot.rotation.z;
     } else roll += 0.012 * Math.sin(this.t * 2.4);
-    at.y += this.lift.y;
+    // A hover lifts what's carried in the mouth, not what a hand or a foot has hold of.
+    if (!grips) at.y += this.lift.y;
     root.position.copy(at.applyMatrix4(model.matrix));
-    root.rotation.z = roll + this.wiggle.y;
+    // A bar in two feet is only tipped so far before it comes out of one of them.
+    const tip = roll + this.wiggle.y;
+    root.rotation.z = mount === 'feet' ? clamp(tip, -TILT, TILT) : tip;
     root.scale.set(s * size, this.appear.y * size, this.appear.y * size);
     this.flutter(dt);
     root.updateMatrixWorld(true);
     this.place();
+    if (this.checking) this.measure(grips);
+  }
+
+  // ---------- Checking the hold ----------
+
+  check(on = true) {
+    this.checking = on;
+    this.gap = this.reach = this.worstGap = this.worstReach = on ? 0 : NaN;
+    if (!on) {
+      for (const m of this.marks.splice(0)) {
+        m.removeFromParent();
+        m.geometry.dispose();
+        (m.material as MeshBasicMaterial).dispose();
+      }
+    }
+  }
+
+  /** Measure the hold this frame (check()): the root's matrices are up to date. */
+  private measure(grips: Grip[] | null) {
+    const { c, root, mount } = this;
+    if (!grips) return;
+    const model = c.model;
+    const g = this.def.grips;
+    const bar = this.def.bar;
+    // Where each hand wants it, on the tool, then in the holder's space.
+    const want = grips.map((_, i) => {
+      const p = new Vector3(g ? g[i] : 0, 0, 0);
+      if (bar !== undefined) {
+        // A bar: the nearest point of it to this foot.
+        root.worldToLocal(model.localToWorld(p.copy(this.touch[i])));
+        p.set(clamp(p.x, -bar, bar), 0, 0);
+      }
+      return model.worldToLocal(root.localToWorld(p));
+    });
+    // Two hands on two grips: whichever way round they fit better.
+    const swap = grips.length === 2 && g !== undefined && !bar && this.touch[0].distanceTo(want[1]) + this.touch[1].distanceTo(want[0]) < this.touch[0].distanceTo(want[0]) + this.touch[1].distanceTo(want[1]);
+    this.gap = Math.max(...grips.map((_, i) => this.touch[i].distanceTo(want[swap ? 1 - i : i])));
+    this.reach = Math.max(
+      ...grips.map((gr, i) => this.skinDistance(gr.bone, this.touch[i])),
+    );
+    // (The worst is of what's shown: not while it's still coming in, or being sent off.)
+    if (this.appear.y > 0.95 && !this.leading) {
+      this.worstGap = Math.max(this.worstGap || 0, this.gap);
+      this.worstReach = Math.max(this.worstReach || 0, this.reach);
+    }
+    this.dots(want, swap);
+  }
+
+  /** How far a point (in the holder's space) is from the skin that moves with a bone, 0 if it
+   * is inside it (a grip in the palm of a mitt): the skin is the triangles whose corners are
+   * weighted to the bone. Rays out along each way count the surface crossed, odd says in, and
+   * four of the six win. */
+  private skinDistance(bone: Bone, point: Vector3) {
+    const c = this.c;
+    const tris: Triangle[] = [];
+    c.model.updateWorldMatrix(true, true);
+    c.model.traverse((obj) => {
+      const mesh = obj as SkinnedMesh;
+      if (!mesh.isSkinnedMesh) return;
+      const j = mesh.skeleton.bones.indexOf(bone);
+      if (j < 0) return;
+      const idx = mesh.geometry.attributes.skinIndex;
+      const wt = mesh.geometry.attributes.skinWeight;
+      const mine: (Vector3 | null)[] = [];
+      for (let i = 0; i < idx.count; i++) {
+        let weight = 0;
+        for (let k = 0; k < 4; k++) if (idx.getComponent(i, k) === j) weight += wt.getComponent(i, k);
+        if (weight < 0.5) {
+          mine.push(null);
+          continue;
+        }
+        mesh.getVertexPosition(i, v4);
+        mine.push(c.model.worldToLocal(mesh.localToWorld(v4)).clone());
+      }
+      const index = mesh.geometry.index;
+      const corners = index ? index.count : idx.count;
+      for (let i = 0; i + 2 < corners; i += 3) {
+        const [a, b, d] = [0, 1, 2].map((k) => mine[index ? index.getX(i + k) : i + k]);
+        if (a && b && d) tris.push(new Triangle(a, b, d));
+      }
+    });
+    let votes = 0;
+    for (const axis of AXES) {
+      ray.set(point, axis);
+      votes += tris.filter((t) => ray.ray.intersectTriangle(t.a, t.b, t.c, false, v4)).length % 2;
+    }
+    if (votes >= 4) return 0;
+    return Math.min(...tris.map((t) => t.closestPointToPoint(point, v4).distanceTo(point)));
+  }
+
+  /** The dots on the holds: red on the tool's grips, green where the body holds. */
+  private dots(want: Vector3[], swap: boolean) {
+    const c = this.c;
+    if (!this.marks.length) {
+      for (const colour of [0xe0302a, 0xe0302a, 0x20b050, 0x20b050]) {
+        const dot = new Mesh(
+          new SphereGeometry(0.008, 10, 8),
+          new MeshBasicMaterial({ color: colour, depthTest: false }),
+        );
+        dot.renderOrder = 999;
+        dot.visible = false;
+        this.marks.push(dot);
+        c.pivot.add(dot);
+      }
+    }
+    this.marks.forEach((dot, i) => {
+      const from = i < 2 ? want[swap ? 1 - i : i] : this.touch[i - 2];
+      dot.visible = !!from && (i % 2 === 0 || want.length > 1);
+      if (from) dot.position.copy(v4.copy(from).applyMatrix4(c.model.matrix));
+    });
+  }
+
+  /** The arm raised to hold it (made the first time it's wanted). */
+  private raised() {
+    if (this.mount !== 'hand') return null;
+    const grip = gripsOf(this.c, 'hand')?.[0];
+    return (this.arm ??= grip ? new RaisedArm(this.c, this.side, grip) : null);
+  }
+
+  /** Which way the handle points: along the bone that holds it, on the screen. */
+  private aim(g: Grip) {
+    const model = this.c.model;
+    g.bone.localToWorld(v2.set(0, 0, 0));
+    g.bone.localToWorld(v3.set(0, 1, 0));
+    model.worldToLocal(v2);
+    model.worldToLocal(v3).sub(v2);
+    const flat = Math.hypot(v3.x, v3.y);
+    return clamp(Math.atan2(-v3.x, v3.y), -0.6, 0.6) * clamp((flat / v3.length()) * 2, 0, 1);
   }
 
   private flutter(dt: number) {
@@ -739,15 +1042,90 @@ class Holding implements Held, Carried {
     return this.c.model.worldToLocal(out);
   }
 
-  /** Is it where it should be to show (a flier hovering over its spot)? */
+  /** Is it where it should be to show (a flier hovering over its spot, a paw raised)? */
   private arrived() {
-    if (this.def.mount !== 'feet') return true;
+    if (this.perching && this.climbing !== 'up') return false;
+    if (this.mount === 'hand' && !(this.settled.y > 0.9 && this.t > 0.7)) return false;
+    if (!this.aloft) return true;
     const free = this.c.free;
     const spot = this.spot;
     return !!free && !!spot && Math.hypot(free.x - spot.x, free.y - spot.y) < this.c.heightPx * 0.6;
   }
 
+  /** Does it hold it up from a prop it stands on? */
+  private get perching() {
+    return !!this.opts.on && !!this.view.stand && !this.aloft;
+  }
+
+  /** Does it hold it up hovering (feet hung from a bar, or a flier asked to hover)? */
+  private get aloft() {
+    return this.mount === 'feet' || (!!this.opts.hover && this.mount === 'hand' && hovers(this.c));
+  }
+
   // ---------- Going off, and letting go ----------
+
+  /** Getting onto the prop (and off it again), a step a frame. */
+  private climb(dt: number, env: Env) {
+    const c = this.c;
+    const st = this.stand;
+    if (this.after && !c.hopping && this.climbing !== 'jump' && this.climbing !== 'up') {
+      const go = this.after;
+      this.after = null;
+      go();
+    }
+    if (!st || !this.climbing) return;
+    const f = env.frame;
+    this.ct += dt;
+    if (this.climbing === 'down') {
+      if (!c.hopping) this.drop();
+      return;
+    }
+    // Pushed off, or the prop's been taken away: down.
+    if (!st.alive || st.rise < 0.5) return this.dismount();
+    if (this.climbing === 'walk') {
+      if (st.rise < 0.95) return;
+      c.walkTo(st.s + this.dir * (c.heightPx * 0.55 + st.footprint(f).x), st.depth);
+      if (c.there || this.ct > 7) [this.climbing, this.ct] = ['crouch', 0];
+    } else if (this.climbing === 'crouch') {
+      // A beat to look up at it, then the spring.
+      this.role.facing = -this.dir * 40;
+      if (this.ct > 0.4) {
+        c.hopOnto(st.s, st.depth, st.top(f), 0.65, 0.55);
+        [this.climbing, this.ct] = ['jump', 0];
+      }
+    } else if (this.climbing === 'jump' && !c.hopping) {
+      this.climbing = 'up';
+      st.users.add(c);
+      c.perched = true;
+      this.role.posture = 'sit';
+      this.role.facing = 0;
+      this.ripen();
+      // Sent off on the way up: straight down again.
+      if (this.after) this.dismount();
+    }
+  }
+
+  /** Down off the prop to its side, and the prop goes when they're down. */
+  private dismount() {
+    const c = this.c;
+    if (!this.stand || this.climbing === 'down') return;
+    if (c.state === 'here' && c.standOn > 0) {
+      c.hopOnto(c.s + this.dir * c.heightPx * 0.9, c.depth, 0, 0.5, 0.2);
+      this.climbing = 'down';
+      this.role.posture = 'stand';
+      c.perched = false;
+    } else this.drop();
+  }
+
+  /** Finished with the prop: back down through the floor. */
+  private drop() {
+    const st = this.stand;
+    this.stand = null;
+    this.climbing = null;
+    if (!st) return;
+    st.users.delete(this.c);
+    st.leave();
+  }
 
   lead(toward: 'left' | 'right' | Door) {
     if (this.led) return this.led;
@@ -759,8 +1137,17 @@ class Holding implements Held, Carried {
     this.button = null;
     this.role.facing = undefined;
     this.role.hurry = 1.4;
-    if (this.def.mount === 'floor') this.fading = true;
-    c.leaveToward(toward);
+    if (this.mount === 'floor') this.fading = true;
+    // Down off the prop first, then off they go (still on their way to it: not up there yet).
+    const go = () => c.leaveToward(toward);
+    if (this.climbing === 'up') {
+      this.dismount();
+      this.after = go;
+    } else if (this.climbing === 'jump' || this.climbing === 'down') this.after = go;
+    else {
+      this.drop();
+      go();
+    }
     return (this.led = new Promise<void>((done) => {
       this.finish = done;
       const timer = setInterval(() => {
@@ -778,11 +1165,21 @@ class Holding implements Held, Carried {
     const c = this.c;
     c.carried.delete(this);
     if (holding.get(c) === this) holding.delete(c);
+    // Down off the prop (a hop), and the prop goes down after them.
+    if (this.stand && this.climbing === 'up' && c.state === 'here') {
+      const st = this.stand;
+      c.hopOnto(c.s + this.dir * c.heightPx * 0.9, c.depth, 0, 0.5, 0.2);
+      c.perched = false;
+      this.stand = null;
+      setTimeout(() => (st.users.delete(c), st.leave()), 700);
+    } else this.drop();
     if (c.role === this.role) {
       if (c.state === 'here') c.release();
       else c.role = null;
     }
-    if (this.def.mount === 'feet' && c.state === 'here') (c as Character & Hoverer).comeDown();
+    this.check(false);
+    this.arm?.rest();
+    if (this.aloft && c.state === 'here') (c as Character & Hoverer).comeDown();
     this.button?.remove();
     this.button = null;
     this.root.removeFromParent();

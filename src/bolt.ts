@@ -52,6 +52,9 @@ export class Bolt extends Character {
   private route: { x: number; y: number }[] = [];
   private landing = false;
   private exiting = false;
+  /** Hovering at a spot for the site (hoverAt()), and going out of the frame the air's way. */
+  private errand: { x: number; y: number } | null = null;
+  private offstage = false;
   /** Which way he's going out, once he's down (his usual way, below the lip, or a door). */
   private exitBy: 'rise' | Door | undefined;
   private tilt = new Spring(1.6, 0.55);
@@ -961,7 +964,50 @@ export class Bolt extends Character {
     else super.leave(by);
   }
 
+  /**
+   * Up to a spot in front of the box (viewport px, his feet there) and hovering there on his
+   * flames for as long as it takes (tools.ts: a sign held up in the air). comeDown() brings
+   * him back to the floor. False if he can't just now.
+   */
+  hoverAt(x: number, y: number) {
+    if (this.state !== 'here' || this.exiting) return false;
+    if (!this.flying) this.takeOff();
+    this.errand = { x, y };
+    this.landing = false;
+    this.route = [{ x, y }];
+    this.depthGoal = 0;
+    return true;
+  }
+
+  /** Is he hovering at hoverAt()'s spot (or on his way)? */
+  get onErrand() {
+    return !!this.errand && this.state === 'here';
+  }
+
+  /** Done hovering: down to the floor where he is. */
+  comeDown() {
+    if (!this.errand) return;
+    this.errand = null;
+    if (this.flying && !this.landing && this.free)
+      this.flyTo({ x: this.free.x, y: this.lastFrame.bottom }, true);
+  }
+
+  /** Off the side of the frame, in the air if he's up (else on foot, as ever). */
+  leaveToward(to: 'left' | 'right' | Door) {
+    if (typeof to !== 'string' || !this.flying || !this.free || this.state !== 'here') return super.leaveToward(to);
+    const f = this.lastFrame;
+    const H = this.heightPx;
+    this.errand = null;
+    this.exiting = true;
+    this.offstage = true;
+    this.landing = false;
+    this.state = 'leaving';
+    this.route = [{ x: to === 'left' ? f.left - H * 2 : f.right + H * 2, y: this.free.y - H * 0.8 }];
+  }
+
   protected onEnter() {
+    this.errand = null;
+    this.offstage = false;
     this.flying = false;
     this.seated = false;
     this.exiting = false;
@@ -972,7 +1018,7 @@ export class Bolt extends Character {
 
   /** Given a part up in the air: he comes down where he is, to be on his feet for it. */
   protected onDirect() {
-    if (this.flying && !this.landing && this.free)
+    if (this.flying && !this.landing && this.free && !this.errand)
       this.flyTo({ x: this.free.x, y: this.lastFrame.bottom }, true);
   }
 
@@ -991,6 +1037,12 @@ export class Bolt extends Character {
     }
     this.unclipped = false;
     const pos = this.free!;
+    if (this.offstage && (pos.x < env.frame.left - this.heightPx * 1.2 || pos.x > env.frame.right + this.heightPx * 1.2)) {
+      this.offstage = this.exiting = this.flying = false;
+      this.free = null;
+      this.route = [];
+      return this.gone();
+    }
     const target = this.route[0];
     const maxSpeed = this.heightPx * 7;
     const maxAcc = this.heightPx * 16;
