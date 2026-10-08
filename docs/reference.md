@@ -73,13 +73,16 @@ returns a handle, or `null` if they can't (or aren't on the page at all). Someon
 a key of `TOOLS`, or `'sign'` to have the kind chosen for their body.
 
 - Options: `label` (the lettering), `font` (a CSS font family; the size is fitted to the board), `onPick` (puts a button over the board), `host` (where the button goes),
-  `point` (`'left'` or `'right'`, for an arrow), `hover` (an owl's spot: `{ x, y }`, px), `at` (where on the floor to stand and hold it: `{ s, depth }`; it walks there with it and stays).
-- The handle: `label` (settable), `button`, `ready` (resolves when it's up),
+  `point` (`'left'` or `'right'`, for an arrow), `hover` (a flier's spot, its feet there: `{ x, y }`, px; an owl hangs a sign from his talons, Bolt hovers on his flames with a paddle raised in one hand), `at` (where on the floor to stand and hold it: `{ s, depth }`; it walks there with it and stays), `on` (`'crate'`: a crate comes up through the floor at `at`, they hop onto it, sit and hold the sign up there, and hop down when it's let go or they're led off; the crate goes back down after them. Not for fliers that hover).
+- The handle: `label` (settable), `button`, `ready` (resolves when it's up: for `on`, once they're up on the crate), `check()` and `gap`, `reach`, `worstGap`, `worstReach` (see [holding.md](holding.md)),
   `released`, `lead(toward)` (`'left'`, `'right'` or a door: they walk or fly off holding it, and the
   promise resolves once they're gone) and `release()`.
-- `TOOLS` is the registry: each has a `model`, a `mount` (`hands`, `grip`, `feet`, `neck`,
-  `floor`) and, for signs, a `family`. A creature class opts in with `holdsUp`, `holdOffset`
-  and `holdPose(hold, k, t)`; `CARDS[key].tools` lists the extras it carries.
+- `crew.holdCheck(who, tool, options?, seconds?)` holds it up and measures how well; see [holding.md](holding.md).
+- `TOOLS` is the registry: each has a `model`, a `mount` (`hands`, `hand`, `grip`, `feet`, `neck`,
+  `floor`) and, for signs, a `family`. A `sign` is a paddle in one raised hand for any body with
+  arms (a hand, a forearm or a bare arm bone), a placard in two hands, or an owl's hanger; a body
+  with only a mouth gets none. A creature class opts in with `holdsUp`, `holdOffset`,
+  `holdGrips` and `holdPose(hold, k, t)`; `CARDS[key].tools` lists the extras it carries.
 - `gripOf(creature)` and `gripOn(creature, bone, part)` find where a creature holds things.
 
 ## Speech bubbles
