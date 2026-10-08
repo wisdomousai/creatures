@@ -959,6 +959,12 @@ export class Bolt extends Character {
     this.flames.snap(1.2);
   }
 
+  /** Given a part up in the air: he comes down where he is, to be on his feet for it. */
+  protected onDirect() {
+    if (this.flying && !this.landing && this.free)
+      this.flyTo({ x: this.free.x, y: this.lastFrame.bottom }, true);
+  }
+
   protected onArrive() {
     // (Unless he's come in on a job: then he's on his feet.)
     if (!this.role) this.takeOff();

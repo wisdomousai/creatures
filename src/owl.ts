@@ -187,6 +187,8 @@ export class Owl extends Character {
     holding: boolean;
     mode: Mode;
   } | null = null;
+  /** Hovering somewhere for the site (hoverAt()): the spot, kept for when he's up. */
+  private errand: Waypoint | null = null;
   private forthV = 0;
   private tilt = new Spring(1.6, 0.8);
   private flip = new Spring(1.6, 0.6);
@@ -819,6 +821,7 @@ export class Owl extends Character {
     this.flight = 'air';
     this.plan(env.frame, at);
     if (this.job) this.route = [];
+    else if (this.errand) this.route = [this.errand];
     this.puppet.kick('body', -240);
     this.puppet.kick('head', 160);
     this.beatPhase = 0;
@@ -851,6 +854,7 @@ export class Owl extends Character {
   }
 
   leave() {
+    this.errand = null;
     // Fetching a page: that first (letGo() sees him down, and off).
     if (this.job) {
       this.exiting = true;
@@ -885,7 +889,46 @@ export class Owl extends Character {
     this.route = [];
     this.beatPhase = 0;
     this.job = null;
+    this.errand = null;
     this.forth = this.forthV = 0;
+  }
+
+  /**
+   * Up to a spot in front of the box (viewport px, his feet there; `n` out toward the
+   * reader) and hovering there for as long as it takes, for the site to have him ask the
+   * visitor something. comeDown() brings him back to the floor. False if he can't just now.
+   */
+  hoverAt(x: number, y: number, n = 0) {
+    if (this.state !== 'here' || this.exiting || this.job) return false;
+    this.errand = { x, y, d: 0, n, mode: 'hover', v: 4, hold: Infinity };
+    // On the floor: a crouch, then off (takeOff() sends him there); in the air: straight there.
+    if (this.flight === 'no') this.setAct('hoverFly');
+    else {
+      this.route = [this.errand];
+      this.holdT = 0;
+    }
+    return true;
+  }
+
+  /** Is he hovering at hoverAt()'s spot (or on his way)? */
+  get onErrand() {
+    return !!this.errand && this.state === 'here';
+  }
+
+  /** Done hovering: back into the box, and down onto the floor. */
+  comeDown() {
+    if (!this.errand) return;
+    this.errand = null;
+    const env = this.env;
+    // Still crouching: he takes off on an ordinary flight, and lands from that.
+    if (!this.free || !env) return;
+    const H = this.heightPx;
+    const x = this.clearSpot(this.free.x, env.frame);
+    this.route = [
+      { x, y: env.frame.bottom - H * 1.5, d: 0.2, n: 0, mode: 'glide', v: 4 },
+      { x, y: env.frame.bottom, d: 0.2, n: 0, mode: 'land', v: 3.2 },
+    ];
+    this.holdT = 0;
   }
 
   /**
@@ -895,6 +938,7 @@ export class Owl extends Character {
    */
   carry(at: () => Vector3 | null, onHold: () => void, front?: () => number | null) {
     if (this.state !== 'here' || this.exiting) return false;
+    this.errand = null;
     this.job = { at, onHold, front, over: false, holding: false, mode: 'climb' };
     this.depthGoal = 0;
     // On the floor: up first (a crouch, then off); in the air: straight there.

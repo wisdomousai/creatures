@@ -2,7 +2,7 @@
 can be watched live. Everything goes into its own "Bolt" scene; other scenes are
 untouched. Only the model is previewed here: the site animates the joints itself.
 
-    import sys; sys.path.insert(0, '<repo>/art/robot'); import live; live.rebuild(('bolt', 'cat'))
+    import sys; sys.path.insert(0, '<repo>/blender'); import live; live.rebuild(('bolt', 'cat'))
 """
 
 import importlib

@@ -4,3 +4,4 @@ dist-playground
 blender/build
 *.tgz
 .DS_Store
+__pycache__

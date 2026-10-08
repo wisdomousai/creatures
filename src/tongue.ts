@@ -2,7 +2,7 @@ import { type Object3D, Quaternion, Vector3 } from 'three';
 import type { Puppet } from './puppet';
 
 /**
- * The chameleons' tongue and the fly it catches (art/robot/chamkit.py): a chain of seven
+ * The chameleons' tongue and the fly it catches (blender/chamkit.py): a chain of seven
  * telescoping sleeves tg.1-7, each a child of the one before, ending in a sticky pad (tg.tip),
  * and a tiny robot fly (fly, flywing.L/R) that waits hidden in the body.
  *

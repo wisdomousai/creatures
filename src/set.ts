@@ -29,7 +29,7 @@ import { KINDS, type Kind, rugStep } from './set-kinds';
 import { Spring } from './spring';
 
 /**
- * The set: plants and furniture that are alive (art/robot/set.py), standing in the back
+ * The set: plants and furniture that are alive (blender/set.py), standing in the back
  * of the box, along the back wall and in its corners: a fern, a sunflower lamp, a floor
  * lamp, an armchair, a bookshelf, a rug, a stool, a radio and a gramophone. Each page has
  * its own few; when the page changes, the old ones sink into a hole in the floor and the
@@ -51,14 +51,14 @@ export const DEG = Math.PI / 180;
  * it away. */
 export const DOUBLE = 350;
 
-/** Which pieces stand on each page. */
+/** Which pieces stand on each page. The rug stays put away until something asks for it. */
 export const SET_PAGES: Record<string, string[]> = {
-  home: ['fern', 'lamp', 'rug'],
+  home: ['fern', 'lamp'],
   writing: ['bookshelf', 'armchair', 'sunflower'],
   'work-with-me': ['lamp', 'stool', 'fern'],
   work: ['sunflower', 'radio', 'stool'],
   about: ['armchair', 'fern', 'lamp'],
-  contact: ['stool', 'radio', 'rug'],
+  contact: ['stool', 'radio'],
   creatures: ['cattree', 'kennel', 'birdbath'],
   'creatures/cats': ['cattree', 'armchair', 'fern'],
   'creatures/dogs': ['kennel', 'stool', 'sunflower'],
@@ -140,6 +140,12 @@ export class Piece implements Body {
   hover = 0;
   hovered = false;
   private hoverSmooth = new Spring(4, 0.8);
+  /** Stands on a shelf of another piece (the gramophone in the library's case): that piece,
+   * once it's there, and how high up it stands (--bot). It rises and sinks with its host, and
+   * the crew don't walk round it. */
+  hostName: string | null = null;
+  hostOf: ((name: string) => Piece | undefined) | null = null;
+  lift = 0;
   /** Held by the pointer (viewport px, and where its foot is from it): it goes after it. */
   taken: { x: number; y: number; dx: number; dy: number } | null = null;
   /** Set going by a click, fading; how many clicks lately. */
@@ -162,7 +168,7 @@ export class Piece implements Body {
     const wide = this.footprint(f).x * 2;
     return {
       s: this.floorPoint(f).x + n.x * wide,
-      depth: this.depth,
+      depth: this.depth + ((n.back ?? 0) * this.heightPx(f)) / floorDepth(f),
       h: n.seat * this.heightPx(f),
       room: { w: n.w * wide, h: n.h * this.heightPx(f) },
     };
@@ -277,7 +283,7 @@ export class Piece implements Body {
   }
 
   blocks(c: Character) {
-    return this.kind.blocks && this.rise > 0.3 && !this.sitters.has(c);
+    return this.kind.blocks && !this.hostName && this.rise > 0.3 && !this.sitters.has(c);
   }
 
   /** Its height in --bot. */
@@ -320,6 +326,8 @@ export class Piece implements Body {
   }
 
   private open(f: Frame, box: { portal: Box['portal'] }) {
+    // (On a shelf it comes up with the piece it stands on, through its hole.)
+    if (this.hostName) return;
     const x = project(f, this.depth, { x: this.s, y: f.bottom }).x;
     const width = this.footprint(f).x * 2 * depthScale(f, this.depth);
     this.portal ??= box.portal('floor', x, this.depth, Math.max(width * 1.2, f.bot * 0.8));
@@ -383,7 +391,9 @@ export class Piece implements Body {
     this.dt = dt;
     this.peers = env.crew;
     this.t += dt;
-    if (!this.portal || this.portal.open > 0.85)
+    const host = this.hostName ? this.hostOf?.(this.hostName) : undefined;
+    if (this.hostName) this.rise = host ? Math.min(host.rise, 1) : 0;
+    else if (!this.portal || this.portal.open > 0.85)
       this.rise = clamp(this.rise + clamp(this.want - this.rise, -dt / 0.9, dt / 0.9), 0, 1);
     if (this.portal && this.rise === this.want) {
       this.portal.want = 0;
@@ -502,7 +512,7 @@ export class Piece implements Body {
   middle(f: Frame) {
     return project(f, this.depth, {
       x: this.s + this.slide.y,
-      y: f.bottom - this.hop.y * f.bot - this.heightPx(f) * 0.5,
+      y: f.bottom - (this.hop.y + this.lift) * f.bot - this.heightPx(f) * 0.5,
     });
   }
 
@@ -512,23 +522,24 @@ export class Piece implements Body {
     const sq = clamp(this.squash.update(dt, 0) * 0.05, -0.25, 0.25);
     this.holder.scale.set(px * (1 + sq * 0.5), px * (1 - sq), px * (1 + sq * 0.5));
     this.holder.visible = this.rise > 0 || this.want > 0;
-    const up = (this.rise - 1) * this.heightPx(f) * 1.15;
+    const host = this.hostName ? this.hostOf?.(this.hostName) : undefined;
+    const up = (this.rise - 1) * (host ?? this).heightPx(f) * 1.15;
     const foot = project(f, this.depth, {
       x: this.s + this.slide.y,
-      y: f.bottom - Math.max(0, this.hop.y) * f.bot - up,
+      y: f.bottom - (Math.max(0, this.hop.y) + this.lift) * f.bot - up,
     });
     this.holder.position.set(foot.x, -foot.y, -this.depth * f.depth * 3);
     this.holder.rotation.z = this.lean.y * DEG;
     // Its shadow on the floor under it, fainter as it hops.
     const ground = project(f, this.depth, { x: this.s + this.slide.y, y: f.bottom });
     const lift = clamp(1 - Math.max(0, this.hop.y) / 1.6, 0.2, 1);
-    this.shadow.visible = this.rise > 0.5 && !this.kind.flat;
+    this.shadow.visible = this.rise > 0.5 && !this.kind.flat && !this.hostName;
     this.shadow.material.opacity = 0.22 * lift * clamp(this.rise * 2 - 1, 0, 1);
     const width = this.footprint(f).x * 2.3 * k * (0.7 + 0.3 * lift);
     this.shadow.scale.set(width, f.depth * 0.5 * k, 1);
     this.shadow.position.set(ground.x, -ground.y, -this.depth * f.depth * 3 - width * 0.4);
     // Cut to the hole while it comes up through it (or goes down), not while it closes after.
-    const edges = this.portal && this.rise < 1 ? this.portal.clip() : [];
+    const edges = this.rise < 1 ? ((this.portal ?? host?.portal)?.clip() ?? []) : [];
     this.planes.slice(0, 3).forEach((plane, i) => {
       const e = edges[i];
       if (e) {
@@ -713,6 +724,10 @@ export interface Spot {
   at: number;
   depth: number;
   size?: number;
+  /** Stands on another piece (its name), `lift` --bot above the floor: the gramophone on a
+   * case's shelf. It comes and goes with it. */
+  on?: string;
+  lift?: number;
 }
 
 /** The page's set pieces: which stand where, their coming and going, and their clicks. */
@@ -847,6 +862,11 @@ export class Set {
     piece.theme(this.dark);
     const fixed = this.spots?.get(name);
     if (fixed?.size) piece.scale = fixed.size / piece.kind.size;
+    if (fixed?.on) {
+      piece.hostName = fixed.on;
+      piece.hostOf = (n) => this.piece(n);
+      piece.lift = fixed.lift ?? 0;
+    }
     const spot = fixed
       ? { s: frame.left + (frame.right - frame.left) * fixed.at, depth: fixed.depth }
       : this.place(piece, frame, near);

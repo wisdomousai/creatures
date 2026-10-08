@@ -89,7 +89,7 @@ export function partTexture(role: string): CanvasTexture | null {
   return texture;
 }
 
-// ---------- Material maps (public/robot/tex, art/robot/tex) ----------
+// ---------- Material maps (models/tex) ----------
 
 /**
  * The library's material kit: greyscale maps of wood, planks, plaster, damask, book cloth,

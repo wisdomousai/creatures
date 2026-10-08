@@ -27,6 +27,8 @@ import { Spring } from './spring';
  * mouse resting on him brings warm pink waves and a happy wiggle; a drum hit flashes
  * up the arm that struck. Shy, he goes dark and flattens (camouflage). Poke him and he
  * squirts a puff of ink and hides; poke him three times and he spins, arms flung out.
+ * Hold him and he lets go of his wall and swims after the pointer; let go, he floats a
+ * moment and swims off to an edge.
  *
  * More of what he does: a stretch with every arm up high, a startled puff of ink, a
  * headstand on his dome with his arms kicking in the air, a walk on tiptoe on two arms,
@@ -50,7 +52,7 @@ export const OCTOPUS_FACE: FaceLayout = {
   mouth: [0.5, 0.8],
 };
 
-/** The arms round the collar, as in art/robot/octopus.py: degrees from the front
+/** The arms round the collar, as in blender/octopus.py: degrees from the front
  * toward his left. 0-3 are on his left, 4-7 on his right. */
 const AZIMUTHS = [20, 58, 100, 145, 215, 260, 302, 340].map((a) => (a * Math.PI) / 180);
 const ARMS = AZIMUTHS.length;
@@ -107,6 +109,8 @@ export class Octopus extends Character {
 
   /** It comes in its own way (flying or swimming), not jumping out of its picture. */
   readonly jumpsOut = false;
+  /** Held by the pointer, he swims after it (off his wall, too: see takeUp). */
+  readonly flies = true;
   /** This frame's arm pose, per arm and bone: lift (+ curls up, toward the top) and
    * sweep (+ toward his left), degrees; turned into joint targets at the end of pose(). */
   private lift = AZIMUTHS.map(() => new Array<number>(SEGS).fill(0));
@@ -927,6 +931,36 @@ export class Octopus extends Character {
     this.flights = [];
   }
 
+  /** Taken hold of, he lets go of his wall (or the floor, or gives up his own swim) and
+   * swims after the pointer, out at the front; let go, he floats a moment and then swims
+   * back to an edge (flightBack). */
+  takeUp(p: { x: number; y: number }, frame: Frame) {
+    if (!super.takeUp(p, frame)) return false;
+    // (Off the floor he's in the air already.)
+    const a = this.free?.tilt ?? ANGLE[this.edge];
+    if (!this.free) this.free = { ...this.airborne(this.frontFoot(frame), a), tilt: a };
+    this.tilt.snap(a);
+    // Up in the air his edge is the floor, as a flier's is, till he lands somewhere.
+    this.edge = 'bottom';
+    this.s = this.free.x;
+    this.depthGoal = 0;
+    this.swim = 'no';
+    this.route = [];
+    this.landing = null;
+    this.vel = { x: 0, y: 0 };
+    return true;
+  }
+
+  /** Let go in the air, after floating a moment: off to an edge, swimming. */
+  protected flightBack() {
+    const env = this.env;
+    if (!this.free || !env) return false;
+    this.tilt.snap(this.free.tilt);
+    this.setAct('swim');
+    this.head(env, []);
+    return true;
+  }
+
   leave() {
     // Asked to go while he's out swimming: land first.
     if (this.swim !== 'no' && this.state === 'here') this.exiting = true;
@@ -997,20 +1031,26 @@ export class Octopus extends Character {
     this.free = { ...at, tilt: a };
     this.tilt.snap(a);
     this.vel = { x: up.x * H * 3, y: up.y * H * 3 };
+    const W = f.right - f.left;
+    const V = f.bottom - f.top;
+    this.head(env, [
+      { x: at.x + up.x * H * 2.5, y: at.y + up.y * H * 2.5 },
+      { x: f.left + W * (0.25 + 0.5 * Math.random()), y: f.top + V * (0.3 + 0.4 * Math.random()) },
+    ]);
+  }
+
+  /** Swimming from where he is, by way of `via`, to a landing on one of his edges, the
+   * last stretch in arms first. */
+  private head(env: Env, via: Point[]) {
+    const f = env.frame;
+    const H = this.heightPx;
     this.swim = 'swimming';
     this.swimT = 0;
     this.landing = this.landingSpot(env);
     const la = ANGLE[this.landing.edge];
     const lup = inward(la);
     const down = this.airborne(this.on(f, this.landing.edge, this.landing.s), la);
-    const W = f.right - f.left;
-    const V = f.bottom - f.top;
-    this.route = [
-      { x: at.x + up.x * H * 2.5, y: at.y + up.y * H * 2.5 },
-      { x: f.left + W * (0.25 + 0.5 * Math.random()), y: f.top + V * (0.3 + 0.4 * Math.random()) },
-      { x: down.x + lup.x * H * 2, y: down.y + lup.y * H * 2 },
-      down,
-    ];
+    this.route = [...via, { x: down.x + lup.x * H * 2, y: down.y + lup.y * H * 2 }, down];
   }
 
   private touchDown() {
@@ -1035,10 +1075,7 @@ export class Octopus extends Character {
     if (!this.free) return super.move(dt, env);
     const pos = this.free;
     const H = this.heightPx;
-    this.swimT += dt;
-    // Each stroke a squeeze of the dome and a jet, then a glide.
-    const phase = cycle(this.swimT / STROKE);
-    this.stroke = phase < 0.3 ? Math.sin((phase / 0.3) * Math.PI) : 0;
+    this.paddle(dt);
     const target = this.route[0];
     const last = this.route.length === 1;
     if (target) {
@@ -1065,6 +1102,13 @@ export class Octopus extends Character {
     const turns = Math.round((pos.tilt - want) / (2 * Math.PI));
     pos.tilt = this.tilt.update(dt, want + turns * 2 * Math.PI);
     this.heading.update(dt, 0);
+  }
+
+  /** Each stroke a squeeze of the dome and a jet, then a glide. */
+  private paddle(dt: number) {
+    this.swimT += dt;
+    const phase = cycle(this.swimT / STROKE);
+    this.stroke = phase < 0.3 ? Math.sin((phase / 0.3) * Math.PI) : 0;
   }
 
   /** On the last stretch in: the final leg, or close to the point it starts from. */
@@ -1124,6 +1168,16 @@ export class Octopus extends Character {
     if (act === 'swim') {
       if (this.swim === 'off' && t > 0.45) this.pushOff(env);
       this.swimming(t);
+    } else if (this.free) {
+      // Held up (or floating a moment, let go): stroking on the spot, and turned upright,
+      // leaning after the pointer, a turn at a time (off a wall he was on his side).
+      this.paddle(dt);
+      this.swimming(t);
+      if (this.isHeld) {
+        const want = this.free.tilt;
+        const turns = Math.round((this.tilt.y - want) / (2 * Math.PI));
+        this.free.tilt = this.tilt.update(dt, want + turns * 2 * Math.PI);
+      }
     }
 
     // Shy of a mouse rushing past close by.

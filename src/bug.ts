@@ -15,7 +15,7 @@ import { Spring } from './spring';
  *     poses them all, `step()` is a tripod gait step, `walkLegs()` the walk;
  *   - a lift off the floor on a spring (`hoverUp`), for those that fly: the bug stays on
  *     its floor and is raised by `h`, like Zip, so nothing about walking changes;
- *   - the models are built by art/robot/bugkit.py.
+ *   - the models are built by blender/bugkit.py.
  */
 export { ease, span };
 export const SIDES = [

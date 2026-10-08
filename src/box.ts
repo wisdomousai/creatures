@@ -1,4 +1,5 @@
-import { doorOf, type Room, type Setting, Painting, whenReady } from './box-texture';
+import { clockOf, doorOf, type Room, type Setting, Painting, whenReady } from './box-texture';
+import { ClockFace, type Make } from './clockface';
 import type { Frame } from './character';
 
 const SVG = 'http://www.w3.org/2000/svg';
@@ -211,6 +212,8 @@ export class Box {
   private pubVignette: SVGRectElement;
   /** The pub's pictures (box-texture.ts), laid over its paint. */
   private pubPainting: Painting;
+  /** The picture's wall clock, made real: one over each picture that has it. */
+  private clocks: ClockFace[] = [];
   private textureWanted = false;
   /** The everyday room a section is in (box-texture.ts; null: the plain white box), the one
    * wanted next, and how far its picture is in (0 .. 1). */
@@ -340,6 +343,7 @@ export class Box {
       p.ceiling,
       p.joists,
       pubImage,
+      this.clock(make, defs, id),
     );
     // The everyday room's picture, under everything else, darker as the page is.
     const sceneryImage = make('image', { preserveAspectRatio: 'none' });
@@ -353,7 +357,7 @@ export class Box {
     defs.appendChild(clipScenery);
     this.sceneryBack = make('g', { 'clip-path': `url(#${id}-scenery-clip)`, opacity: '0' });
     this.sceneryBack.style.display = 'none';
-    this.sceneryBack.append(sceneryImage, this.sceneryShade);
+    this.sceneryBack.append(sceneryImage, this.clock(make, defs, id), this.sceneryShade);
     this.pubLamps = make('g', { 'clip-path': `url(#${id}-pub-clip)`, opacity: '0' });
     this.pubLamps.style.display = 'none';
     this.pubVignette = make('rect', { fill: `url(#${id}-pub-vignette)` });
@@ -548,6 +552,8 @@ export class Box {
     this.frame = frame;
     this.radius = radius;
     this.el.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    const now = new Date();
+    for (const clock of this.clocks) clock.tick(now);
     for (const door of [...this.doors, ...this.portals]) {
       door.frame = frame;
       door.draw();
@@ -648,6 +654,13 @@ export class Box {
       });
   }
 
+  /** A clock face for a picture's wall clock (the pub's picture first, then the section's). */
+  private clock(make: Make, defs: SVGDefsElement, id: string) {
+    const clock = new ClockFace(make, defs, `${id}-clock${this.clocks.length}`);
+    this.clocks.push(clock);
+    return clock.g;
+  }
+
   private drawScenery(frame: Frame, radius: number) {
     if (!this.setting) return;
     const { left, right, top, bottom } = frame;
@@ -659,7 +672,9 @@ export class Box {
       r.setAttribute('height', f(bottom - top));
     }
     this.sceneryClip.setAttribute('rx', f(radius));
-    this.scenery.paint(this.setting, roomOf(frame));
+    const room = roomOf(frame);
+    this.scenery.paint(this.setting, room);
+    this.clocks[1].place(this.scenery.shown === 'library' ? clockOf('library', room) : null);
   }
 
   private showScenery() {
@@ -766,7 +781,9 @@ export class Box {
     }
     // (The planks' own seams, once the picture of them is on.)
     p.planks.setAttribute('d', this.pubPainting.shown ? '' : planks.join(' '));
-    this.pubPainting.paint('library', roomOf(frame), () => p.planks.setAttribute('d', ''));
+    const room = roomOf(frame);
+    this.pubPainting.paint('library', room, () => p.planks.setAttribute('d', ''));
+    this.clocks[0].place(this.pubPainting.shown === 'library' ? clockOf('library', room) : null);
     // The ceiling: dark boards, joists across it front to back.
     p.ceiling.setAttribute('d', P([left, top], [bl, cb], [br, cb], [right, top]));
     const joists: string[] = [];

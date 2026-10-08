@@ -1069,6 +1069,93 @@ def bookcase(m, add, twin=False):
     return bones
 
 
+# ---------- 10b. The reading room's low case ----------
+
+READ_SHELVES = (0.1, 0.62, 0.99)
+READ_W, READ_H = 0.78, 1.37
+# The bottom shelf's left end is the gramophone's (the piece stands on it), and behind it, a
+# cat's pillow: the middle of the pillow, its half width, and its top above the shelf.
+READ_PILLOW = (-0.5, 0.26, 0.075)
+READ_GRAM_X = -0.5
+
+
+def readcase(m, add):
+    """The library's left-hand case, wide and low: three shelves of books packed tight (a few
+    on bones, to lean and pop: lib{shelf}{k}), a cornice with two light eyes (Dot0), and a
+    flat stack of books on top. The bottom shelf is a roomy bay: the gramophone stands on its
+    left end (a separate piece, the site sets it there) and behind it, further back,
+    a plump pillow on the nook bone (it breathes, and gives under a sleeper) for the cat, with a
+    bookend holding the shelf's few books back. Some spines light up (Dot2)."""
+    w, d, h = READ_W, LIB_D, READ_H
+    shelves = READ_SHELVES
+    for sx in (-1, 1):
+        add(box('Side', (0.022, d, h / 2 - 0.02), (sx * (w - 0.022), 0, h / 2 + 0.02), 0.3, seg=(14, 16)),
+            m['role']('Wood'))
+        add(box('Pilaster', (0.012, 0.006, h / 2 - 0.12), (sx * (w - 0.022), -d - 0.004, h / 2 + 0.02), 0.4),
+            m['joint'])
+    add(box('Back', (w - 0.03, 0.008, h / 2 - 0.04), (0, d - 0.01, h / 2 + 0.02), 0.3), m['joint'])
+    add(box('Plinth', (w + 0.01, d + 0.01, 0.04), (0, 0, 0.045), 0.3), m['role']('Wood'))
+    add(box('Cornice', (w + 0.03, d + 0.025, 0.05), (0, 0, h + 0.01), 0.3, seg=(24, 10)), m['role']('Wood'))
+    add(box('CorniceTop', (w + 0.045, d + 0.035, 0.012), (0, 0, h + 0.066), 0.4), m['joint'])
+    add(box('Visor', (0.16, 0.006, 0.03), (0, -d - 0.03, h + 0.01), 0.45, seg=(20, 8)), m['bezel'])
+    eyes(add, m, (0, -d - 0.034, h + 0.01), 0.075, 0.024, 0.017, dot=0)
+    bolts(add, m, [(sx * (w - 0.03), -d - 0.03, h + 0.01) for sx in (-1, 1)], 0.008)
+    bones = []
+    lit = {(1, 3), (2, 7), (1, 9)}
+    boned = {1, 5, 9}
+    # Where the bottom shelf's books begin (the right of the bay), and the pillow's span.
+    px, ph, pt = READ_PILLOW
+    bay = px + ph + 0.1
+    for s, z in enumerate(shelves):
+        add(box('Shelf', (w - 0.03, d - 0.004, 0.01), (0, 0, z - 0.01), 0.3), m['role']('Wood'))
+        add(box('Lip', (w - 0.03, 0.007, 0.016), (0, -d + 0.004, z - 0.004), 0.4), m['joint'])
+        x = -w + 0.06
+        for k, (bw, bh) in enumerate(lib_books(s, w, 250)):
+            cx = x + bw
+            x = cx + bw + 0.004
+            if s == 0 and cx - bw < bay:
+                continue
+            bone = f'lib{s}{k}' if k in boned else 'root'
+            tone = (s * 3 + k + 1) % 5
+            add(box('Book', (bw, d - 0.03, bh / 2), (cx, 0.0, z + bh / 2), 0.2, seg=(8, 6)),
+                m['role'](f'Book{tone}'), bone)
+            add(box('Band', (bw + 0.003, 0.006, 0.008), (cx, -d + 0.027, z + bh * 0.82), 0.4, seg=(6, 4)),
+                m['role']('Band', 'bezel'), bone)
+            add(box('Title', (bw * 0.45, 0.004, bh * 0.14), (cx, -d + 0.029, z + bh * 0.55), 0.4, seg=(6, 4)),
+                m['dot'](2) if (s, k) in lit else m['role']('Title', 'bezel'), bone)
+            if bone != 'root':
+                bones.append((bone, (cx, 0, z), (cx, 0, z + bh), 'root'))
+    # The bay's bookend, holding the shelf's few books back from the pillow.
+    z = shelves[0]
+    be = bay - 0.04
+    add(box('Bookend', (0.012, d - 0.04, 0.085), (be, 0.0, z + 0.085), 0.3), m['role']('Trim', 'joint'))
+    add(box('BookendBase', (0.05, d - 0.04, 0.007), (be + 0.04, 0.0, z + 0.004), 0.4), m['joint'])
+    add(ball('BookendKnob', 0.014, (be, -d + 0.035, z + 0.17), seg=(10, 8)), m['role']('Trim', 'joint'))
+    # The pillow, at the back of the bay: plump, piped round, buttoned, a tassel at each corner.
+    pz, py, pd = z + pt / 2 + 0.006, 0.045, d - 0.07
+    add(kit.superellipsoid('Pillow', (ph, pd, pt / 2), 0.55, 1.0, seg=(28, 14), location=(px, py, pz)),
+        m['role']('Cushion'), 'nook')
+    add(kit.tube('Piping', [(px + qx, py + qy, pz) for qx, qy in squircle(ph - 0.004, pd - 0.004, 0.6)], 0.006, ring=6)[0],
+        m['joint'], 'nook')
+    add(kit.superellipsoid('Button', (0.015, 0.015, 0.007), 0.6, 1.0, seg=(12, 6), location=(px, py, pz + pt / 2)),
+        m['joint'], 'nook')
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            add(ball('Tassel', 0.012, (px + sx * (ph + 0.004), py + sy * (pd + 0.002), pz), seg=(8, 6)), m['role']('Trim', 'joint'),
+                'nook')
+    bones.append(('nook', (px, py, z), (px, py, pz + pt / 2), 'root'))
+    # A low stack of books lying flat on top, and one more on its side.
+    top = h + 0.078
+    for j, (lw, lt) in enumerate(((0.15, 0.024), (0.13, 0.02), (0.11, 0.022))):
+        cz = top + sum(t * 2 for _, t in ((0.15, 0.024), (0.13, 0.02), (0.11, 0.022))[:j]) + lt
+        add(box('Book', (lw, d - 0.03 - j * 0.008, lt), (-0.45 + j * 0.014, 0.0, cz), 0.2, seg=(8, 6)),
+            m['role'](f'Book{(j + 3) % 5}'))
+        add(box('Band', (0.006, 0.006, lt + 0.002), (-0.45 + j * 0.014 + lw * 0.6, -d + 0.027 + j * 0.008, cz), 0.4,
+                seg=(4, 4)), m['role']('Band', 'bezel'))
+    bones += eye_bones((0, -d - 0.034, h + 0.01), 0.075, 0.04, 'root')
+    return bones
+
+
 # ---------- 11. Cat tree ----------
 
 TREE_POST = (0.1, 0.05)
@@ -1629,7 +1716,7 @@ KINDS = {
     'stool': dict(build=stool, height=0.55, width=0.62),
     'radio': dict(build=radio, height=0.62, width=0.62),
     'fireplace': dict(build=fireplace, height=1.07, width=1.25),
-    'bookcase': dict(build=bookcase, height=2.04, width=1.06),
+    'bookcase': dict(build=readcase, height=READ_H + 0.08, width=READ_W * 2 + 0.06),
     'libcase': dict(build=lambda m, add: bookcase(m, add, twin=True), height=TWIN_H + 0.08, width=TWIN_W * 2 + 0.06),
     'cattree': dict(build=cattree, height=1.36, width=0.92),
     'kennel': dict(build=kennel, height=0.97, width=1.3),

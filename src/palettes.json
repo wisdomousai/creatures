@@ -1231,6 +1231,7 @@
     },
     "roles": {
       "Case": "#efe6d2",
+      "Phone": "#e9dfc8",
       "Knob": "#e8b04a",
       "Plinth": "#3b4a5e",
       "PlinthTrim": "#2f3a4a",

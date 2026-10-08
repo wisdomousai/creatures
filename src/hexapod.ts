@@ -32,7 +32,7 @@ export const HEXAPOD_FACE: FaceLayout = {
   mouth: [0.5, 0.82],
 };
 
-// The model's own numbers (see art/robot/hexapod.py), in three.js axes: +Z front, +Y up.
+// The model's own numbers (see blender/hexapod.py), in three.js axes: +Z front, +Y up.
 const AZ = [52, 6, -42].map((d) => (d * Math.PI) / 180);
 const HIP = { r: 0.16, y: 0.235 };
 const KNEE = { r: 0.27, y: 0.37 };

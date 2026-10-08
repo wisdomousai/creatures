@@ -20,6 +20,17 @@ const WARM = new Color(0xffc68f);
 /** The rim from behind, by firelight: a little moonlight at the window. */
 const COOL = new Color(0xbfd0ff);
 
+/**
+ * How many device pixels to draw per CSS pixel: the screen's own, up to 2, and on a phone
+ * no more than 1.5 (its GPU fills every pixel of the room each frame, and at 3× that's most
+ * of its time; 1.5 on a small screen still looks sharp).
+ */
+export function pixelRatio() {
+  const dpr = window.devicePixelRatio || 1;
+  const phone = matchMedia('(pointer: coarse)').matches && Math.min(innerWidth, innerHeight) < 720;
+  return Math.min(dpr, phone ? 1.5 : 2);
+}
+
 export class Stage {
   readonly renderer: WebGLRenderer;
   readonly scene = new Scene();
@@ -63,7 +74,7 @@ export class Stage {
   }
 
   resize(width: number, height: number) {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = pixelRatio();
     this.width = width;
     this.height = height;
     this.renderer.setPixelRatio(dpr);

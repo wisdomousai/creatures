@@ -264,7 +264,7 @@ export const ROSTER: Record<string, Member> = {
   nova: { file: 'nova.glb', make: (m) => new Nova(m), weight: 3, terms: Nova.terms },
   snail: { file: 'snail.glb', make: (m) => new Snail(m), weight: 3, terms: Snail.terms },
   lizard: { file: 'lizard.glb', make: (m) => new Lizard(m), weight: 3, terms: Lizard.terms },
-  // Only for the cookie question (art/robot/site/cookies.ts): never on his own.
+  // Only for a site's cookie question: never on his own.
   tang: { file: 'tang.glb', make: (m) => new Tang(m), weight: 0, terms: Tang.terms },
   turtle: { file: 'turtle.glb', make: (m) => new Turtle(m), weight: 3, terms: Turtle.terms },
   tortoise: {

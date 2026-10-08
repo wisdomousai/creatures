@@ -40,6 +40,8 @@ crew try to stay under 250 KB each.
 | `crew.py`  | The roster: every name here is built.                                           |
 | `*kit.py`  | What a family shares: cats, dogs, birds, bugs, hooves, fluff, the sea…          |
 | `NAME.py`  | One creature: its bones, its parts and their materials.                         |
+| `tex/`     | The material maps as generated; `tex/process.py` makes `models/tex/` from them. |
+| `pic/`     | The rooms' pictures as generated; `tex/pictures.py` makes `models/pic/`.        |
 
 ## Make one
 

@@ -1,13 +1,13 @@
 import { type Bone, Color, type Object3D, Vector3 } from 'three';
 import { BEACON, RAINBOW } from './bolt';
-import { depthScale, project } from './box';
+import { type Door, depthScale, project } from './box';
 import { type Act, Character, clamp, type Env, envelope, type Frame } from './character';
 import type { Expression, FaceLayout } from './face';
 import { sin } from './moves';
 import { Spring, wobble } from './spring';
 
 /**
- * Oops, the robot blue tang: a small, cheerful, forgetful fish. He swims through the air
+ * Oops, the robot blue tang: a big, cheerful, forgetful fish. He swims through the air
  * of the box like a fish in a tank, in the band just inside the frame, a little way back,
  * passing behind the crew. His body is a tall flat oval in three plates on a chain of
  * joints, so a wave runs down it as he swims; his tail is a crescent in two lobes that
@@ -148,7 +148,8 @@ export class Tang extends Character {
         model: 'tang',
         metres: 0.44,
         width: 0.5,
-        size: 0.95,
+        // Big, for a fish: he has a question to ask, and he's the only one asking it.
+        size: 1.9,
         feels: {
           default: { f: 2.5, zeta: 0.6 },
           root: { f: 1.6, zeta: 0.7 },
@@ -664,8 +665,10 @@ export class Tang extends Character {
   }
   private bigNext = false;
 
-  leave() {
-    if (this.state !== 'here' || !this.free) return super.leave();
+  leave(by?: 'rise' | Door) {
+    if (this.state !== 'here' || !this.free) return super.leave(by);
+    // Sent off where he is: straight down behind the front lip, as the others go.
+    if (by === 'rise') return this.offstage('rise');
     if (this.exiting) return;
     // Swim to the nearer side of the bottom, then off behind the frame.
     this.exiting = true;
@@ -710,15 +713,15 @@ export class Tang extends Character {
     this.tilt.snap(0);
   }
 
-  /** Back on the frame line, to swim off behind the side of the frame. */
-  private offstage() {
+  /** Back on the frame line, to swim off behind the side of the frame (or sink below it). */
+  private offstage(by?: 'rise') {
     this.free = null;
     this.edge = 'bottom';
     this.s = this.pos.x;
     this.h = 0;
     this.pace = this.vel.x;
     this.exiting = false;
-    super.leave();
+    super.leave(by);
   }
 
   /** Wherever he goes, his body stays inside the frame line. */

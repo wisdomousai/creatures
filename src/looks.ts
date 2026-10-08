@@ -15,7 +15,7 @@ import { imageTexture, partTexture, whenLoaded } from './textures';
 
 /**
  * The crew's looks, from the site's tokens (src/styles/global.css), matching LOOKS in
- * art/robot/bolt.py. Models carry no materials of their own, only names that say what
+ * blender/bolt.py. Models carry no materials of their own, only names that say what
  * each part is (Shell, Joint, Bezel, Glow, Beacon, Flame, Screen, Dot.n); dress()
  * builds the look's materials for those parts. A part with a colour of its own in the
  * colour look is named Base_Role (Shell_Leaf): the other looks draw it as its base.
@@ -65,7 +65,7 @@ export interface Palette {
 export const PALETTE = PALETTES as unknown as Record<string, Palette>;
 
 /**
- * Material maps on set pieces (public/robot/tex): which role gets which map, and how big a
+ * Material maps on set pieces (models/tex): which role gets which map, and how big a
  * tile is in metres (the parts' UVs are in metres: kit.box_uv). `whole` is one picture
  * laid over the part's own 0..1 UVs, not a tile.
  */

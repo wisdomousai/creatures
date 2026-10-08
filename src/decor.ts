@@ -17,7 +17,7 @@ import { DOUBLE } from './set';
 
 /**
  * The things that hang from the box's ceiling: a mobile, a pendant lamp, a mirror ball,
- * a swing, and so on (art/robot/decor.py). Each page has its own few; when the page
+ * a swing, and so on (blender/decor.py). Each page has its own few; when the page
  * changes, the old ones are drawn up into the ceiling through a hole that opens and
  * closes, and the new ones let down.
  *

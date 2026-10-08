@@ -290,6 +290,9 @@ export abstract class Character {
   protected leavesByDoor = true;
   /** Given a part to play (play.ts), and for how long. */
   role: Role | null = null;
+  /** Holding something up for the scene (Bolt the phone): it can't be taken hold of, and
+   * goes only when it's told which door (leave(door)), not when it's sent out. */
+  anchored = false;
   private roleT = 0;
   /** The height of what it stands on (a cushion), px at the front of the box. */
   standOn = 0;
@@ -469,6 +472,7 @@ export abstract class Character {
    * door. */
   leave(by?: 'rise' | Door) {
     if (this.state === 'leaving' || this.state === 'gone') return;
+    if (this.anchored && (!by || by === 'rise')) return;
     this.state = 'leaving';
     this.leaveBy = by === 'rise' ? 'rise' : this.spec.entrance;
     this.depthGoal = 0;
@@ -732,11 +736,13 @@ export abstract class Character {
   /**
    * Taken hold of at `p` (viewport px): it goes after the pointer till it's let go, a flier
    * through the air, anything else along the floor (or its wall, or the ceiling), hurrying.
-   * Returns whether it could be (not on its way in or out, or through a door, or mid-hop).
+   * Returns whether it could be (not anchored, not on its way in or out, or through a door,
+   * or mid-hop).
    */
   takeUp(p: { x: number; y: number }, frame: Frame) {
     if (this.state !== 'here' || this.taken || this.door || this.onto || this.fromGlass)
       return false;
+    if (this.anchored) return false;
     const foot = this.foot(frame);
     this.taken = { x: p.x, y: p.y, dx: foot.x - p.x, dy: foot.y - p.y };
     this.takenRole = this.role;

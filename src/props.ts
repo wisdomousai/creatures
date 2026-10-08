@@ -25,7 +25,7 @@ import { Puppet, sanitize } from './puppet';
 import { Spring } from './spring';
 
 /**
- * The crew's props, on the floor of the box (art/robot/props.py): toys to throw and
+ * The crew's props, on the floor of the box (blender/props.py): toys to throw and
  * chase (a ball of wound cable, a bone, a ball, a flying disc, a balloon, a top, blocks
  * to stack, a spot of light) and things to use (a cushion to sit on, a crate to hide
  * behind, a table to go under, a trampoline, a seesaw, a drum, a bubble wand). Each comes

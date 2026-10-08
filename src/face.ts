@@ -3,7 +3,7 @@ import { CanvasTexture, LinearFilter, SRGBColorSpace } from 'three';
 /**
  * A crew member's face: glowing shapes on a black screen, drawn on a canvas that the
  * screen shows as its emissive map. The shapes and layouts match face_pixels() in
- * art/robot/faces.py, so the Blender previews and the site agree.
+ * blender/faces.py, so the Blender previews and the site agree.
  *
  * Only redraws when something visible changes.
  */

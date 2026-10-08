@@ -1,6 +1,6 @@
 /**
  * The crew as a package (@wisdomousai/creatures): what a page needs to bring them on, and
- * the names to call them and their things by. The playground (art/robot/playground) uses
+ * the names to call them and their things by. The playground (playground/) uses
  * nothing else, so what it does any page can.
  */
 import { VERSION } from './version';
@@ -41,6 +41,22 @@ export { FixedSpring, bump, cycle, ease } from './swimmer';
 export { sin, swish, trot } from './moves';
 /** The beacon's colour for each expression, and the party colours. */
 export { BEACON, RAINBOW } from './bolt';
+
+/*
+ * For building a stage of your own round the crew (the playground's box is one): the box's
+ * perspective and doors, the three.js stage, loading a model, the set's spots, the looks'
+ * outfits, and the few of the crew a page talks to by name.
+ */
+export { Door, depthScale, floorDepth, horizon, project } from './box';
+export { type Setting } from './box-texture';
+export { loadModel, type Body } from './character';
+export { type Column } from './decor';
+export { dress, type Outfit } from './looks';
+export { holdSelection } from './press';
+export { Piece, type Spot } from './set';
+export { Stage, pixelRatio } from './stage';
+export { Owl } from './owl';
+export { Tang } from './tang';
 
 /** The models (and their textures and pictures) of this version, served by jsDelivr from
  * npm: pass it as `models`, or copy the package's models/ folder and serve it yourself. */

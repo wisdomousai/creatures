@@ -70,7 +70,7 @@ export function path(keys: Key[], t: number): Pt {
 
 /**
  * What the chameleons share (Hue the veiled, Flare the panther, Trike the Jackson's, Twig the
- * pygmy leaf, Sage the Parson's; art/robot/chamkit.py): Hue's motion and tricks, so a type is
+ * pygmy leaf, Sage the Parson's; blender/chamkit.py): Hue's motion and tricks, so a type is
  * mostly numbers (its ChamKit: size, walking pace, how tightly the tail curls, which lights
  * shift colour and in what range) plus a few tricks of its own, added in its constructor with
  * `this.acts = { ...this.acts, ...own }` (Want has what they need: puff, roll, flutter, pace,

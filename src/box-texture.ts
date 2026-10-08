@@ -1,8 +1,9 @@
 import { assets } from './assets';
+import { pixelRatio } from './stage';
 
 /**
  * The rooms as pictures (box.ts): a picture of each room, a library, an office, a lab and a
- * jungle (public/robot/pic/ROOM.webp, made by art/robot/tex/pictures.py), each the whole room
+ * jungle (models/pic/ROOM.webp, made by blender/tex/pictures.py), each the whole room
  * seen from its open front in one-point perspective, as the box is: the back wall straight on,
  * the side walls, the floor and the ceiling running back to it (GEOMETRY says where its back
  * wall and its corners are in each picture). An SVG image can't recede, so each of the
@@ -62,6 +63,12 @@ const DRAFT = 1536;
  * floor). It's hinged on the left. */
 const DOORS: Partial<Record<Setting, [number, number, number]>> = {
   library: [640, 252, 890],
+};
+
+/** The wall clocks in the rooms' pictures (only the library's has one, right of its door): the
+ * ring's middle and its two radii, across and down, in px as GEOMETRY's. */
+const CLOCKS: Partial<Record<Setting, [number, number, number, number]>> = {
+  library: [1194, 343.4, 74.8, 82.6],
 };
 
 /** How much of the picture's width at each end keeps its shape across (a share of it), and at
@@ -161,10 +168,15 @@ function fit(setting: Setting, [w, h]: [number, number], room: Room) {
     most(to.left[0], l, w),
     most(to.right[0], r, w),
   );
-  const ends = Math.min(
-    (ENDS * ((r - l) / (b - t))) / ((room.br - room.bl) / (room.fb - room.cb)),
-    ENDS_MOST,
-  );
+  // A back wall narrower for its height than the picture's (a phone's): the middle of the
+  // picture's, across at the scale up goes at (squeezed in, the room looked stretched up), and
+  // its ends off the sides. Wider, the ends keep their shape and the middle takes the rest.
+  const fits = (room.br - room.bl) / (room.fb - room.cb) / ((r - l) / (b - t));
+  if (fits < 1) {
+    const pieces: [number, number, number, number][] = [[0, 1, 0.5 - fits / 2, 0.5 + fits / 2]];
+    return { back: { l, t, r, b }, to, out, pieces };
+  }
+  const ends = Math.min(ENDS / fits, ENDS_MOST);
   const pieces: [number, number, number, number][] = [
     [0, ends, 0, ENDS],
     [ends, 1 - ends, ENDS, 1 - ENDS],
@@ -299,11 +311,37 @@ export function doorOf(setting: Setting, room: Room) {
   // Its share across the picture's back wall, and across the box's (piece by piece).
   const x = (px: number) => {
     const u = (px * at - p.l) / (p.r - p.l);
-    const [u0, u1, s0, s1] = pieces.find(([, , , s1]) => u <= s1) ?? pieces[2];
+    const [u0, u1, s0, s1] = pieces.find(([, , , s1]) => u <= s1) ?? pieces[pieces.length - 1];
     return bl + (u0 + ((u - s0) / (s1 - s0)) * (u1 - u0)) * (br - bl);
   };
   const top = cb + ((door[1] * at - p.t) / (p.b - p.t)) * (fb - cb);
   return { x0: x(door[0]), x1: x(door[2]), top, bottom: fb };
+}
+
+/** Where a room's wall clock is on its back wall (viewport px: its middle and its radii), as
+ * its picture is laid there (paintRoom): null if it has none, or its picture isn't in. */
+export function clockOf(setting: Setting, room: Room) {
+  const clock = CLOCKS[setting];
+  const picture = pictures.get(setting);
+  if (!clock || !picture) return null;
+  const { back: p, pieces } = fit(setting, [picture.naturalWidth, picture.naturalHeight], room);
+  const { bl, br, cb, fb } = room;
+  const at = picture.naturalWidth / DRAFT;
+  const x = (px: number) => {
+    const u = (px * at - p.l) / (p.r - p.l);
+    const [u0, u1, s0, s1] = pieces.find(([, , , s1]) => u <= s1) ?? pieces[pieces.length - 1];
+    return bl + (u0 + ((u - s0) / (s1 - s0)) * (u1 - u0)) * (br - bl);
+  };
+  const [cx, cy, rx, ry] = clock;
+  const rise = (fb - cb) / (p.b - p.t);
+  // (Off the sides of a narrow back wall, with the picture's ends: no clock to keep.)
+  if (x(cx - rx) < bl || x(cx + rx) > br) return null;
+  return {
+    x: x(cx),
+    y: cb + (cy * at - p.t) * rise,
+    rx: (x(cx + rx) - x(cx - rx)) / 2,
+    ry: ry * at * rise,
+  };
 }
 
 /** Whether a room's picture is in. */
@@ -315,11 +353,18 @@ export const hasPictures = (setting: Setting) => pictures.has(setting);
  * picture just stretches to it, and is drawn again once the size has held for a moment
  * (`again` is called then, to draw it).
  */
+/** Pictures already drawn (by `key`, as `paint` makes it), and how many images show each: the
+ * library is the section's room and the pub both, in the same frame, and is drawn (and its
+ * JPEG made) once, not twice. */
+const drawnPictures = new Map<string, { url: string; users: number }>();
+
 export class Painting {
   /** The room the picture in the image is of (null till one is in). */
   shown: Setting | null = null;
   private key = '';
   private url = '';
+  private entry: { url: string; users: number } | null = null;
+  private entryKey = '';
   private turn = 0;
   private due = '';
   private wait = '';
@@ -329,6 +374,16 @@ export class Painting {
     readonly image: SVGImageElement,
     private again: () => void,
   ) {}
+
+  /** No longer showing the picture it had: it's let go of when no image shows it. */
+  private leave() {
+    const e = this.entry;
+    if (!e) return;
+    this.entry = null;
+    if (--e.users > 0) return;
+    URL.revokeObjectURL(e.url);
+    if (drawnPictures.get(this.entryKey) === e) drawnPictures.delete(this.entryKey);
+  }
 
   /** Draw it the next time it's asked to (its picture has just come in). */
   stale() {
@@ -358,7 +413,22 @@ export class Painting {
       }
       return;
     }
-    const canvas = paintRoom(setting, room, Math.min(window.devicePixelRatio || 1, 2));
+    // Drawn already for another image (the same room, the same frame): that one.
+    const have = drawnPictures.get(key);
+    if (have && have.users > 0 && have !== this.entry) {
+      this.key = key;
+      this.turn++;
+      have.users++;
+      image.setAttribute('href', have.url);
+      this.leave();
+      this.entry = have;
+      this.entryKey = key;
+      this.url = have.url;
+      this.shown = setting;
+      drawn?.();
+      return;
+    }
+    const canvas = paintRoom(setting, room, pixelRatio());
     if (!canvas) return; // (its picture isn't in yet: it's drawn when it is)
     this.key = key;
     const turn = ++this.turn;
@@ -367,7 +437,10 @@ export class Painting {
         if (!blob || turn !== this.turn) return;
         const url = URL.createObjectURL(blob);
         image.setAttribute('href', url);
-        if (this.url) URL.revokeObjectURL(this.url);
+        this.leave();
+        this.entry = { url, users: 1 };
+        this.entryKey = key;
+        drawnPictures.set(key, this.entry);
         this.url = url;
         this.shown = setting;
         drawn?.();

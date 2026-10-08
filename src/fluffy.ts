@@ -11,7 +11,7 @@ import { Spring } from './spring';
  * The small round four-legged crew (hamster, chinchilla, red panda, koala, panda): a Pet
  * with the acts every little furry robot shares, so each creature file is its own build,
  * its own tricks and its own lights. For whoever builds the next fluffy creature on the
- * Pet base; the model side is art/robot/fluffkit.py.
+ * Pet base; the model side is blender/fluffkit.py.
  *
  * What it gives: the pet's postures (stand, sit, lie, nap, stretch), moods in the ears and
  * tail, and a dozen acts of its own: a yawn, a sniff, a look round, a head tilt, a scratch,

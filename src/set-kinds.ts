@@ -7,7 +7,7 @@ import type { Material } from 'three';
 import type { Piece } from './set';
 
 /**
- * What each set piece is and what it does (art/robot/set.py has their models). Each
+ * What each set piece is and what it does (blender/set.py has their models). Each
  * kind has an `ambient` that runs every frame (the quiet life it always has: sway,
  * breathing, blinks, its lights) and acts, little things it does now and then. An act
  * gets the piece, its seconds so far `u`, an ease-in-and-out `e` (0..1..0) and its length;
@@ -46,8 +46,9 @@ export interface Kind {
   seat?: number;
   /** A nook a cat may sleep in (the bookcases): its middle across, as a share of the piece's
    * width from its middle (- to the left), its cushion's top, a share of its height, and the
-   * room in it (clear across, a share of its width; clear above the cushion, of its height). */
-  nook?: { x: number; seat: number; w: number; h: number };
+   * room in it (clear across, a share of its width; clear above the cushion, of its height),
+   * and how far back the cushion lies in it (a share of its height). */
+  nook?: { x: number; seat: number; w: number; h: number; back?: number };
   /** Nothing to click or hover: no hit area (the library's rug under the book's stand). */
   inert?: boolean;
   /** It plays music (notes float up from it). */
@@ -1643,7 +1644,14 @@ const gramophone: Kind = {
     own.crank += dt * 300 * (p.c('wind') + p.c('hunt'));
     const scratch = p.c('scratch') * 40 * sin(t * 13);
     const blast = p.c('blast');
+    // A new record: the arm swings off, and the old one's carried out to one side while a
+    // new one comes in from the other (`swap` runs 0..1 once, fed from the room).
+    const swap = p.feed.swap || 0;
+    const lift = swap > 0 ? Math.min(1, swap * 7, (1 - swap) * 7) : 0;
+    const leg = swap < 0.5 ? swap * 2 : swap * 2 - 1;
+    const slid = swap <= 0 ? 0 : (swap < 0.5 ? 1 : -1) * (swap < 0.5 ? leg : 1 - leg);
     p.later(() => {
+      if (swap > 0) p.puppet.shift('disc', slid * 0.32, Math.sin(Math.PI * leg) * 0.1, 0);
       p.puppet.swing('disc', own.spin + scratch);
       p.puppet.turn('crank', own.crank, 0, 0);
       p.puppet.stretch(
@@ -1655,11 +1663,11 @@ const gramophone: Kind = {
     });
     // The tonearm: down on the record while it plays (riding its wobble), swung out and
     // lifted off it when it doesn't.
-    const off = 1 - state.level;
+    const off = Math.max(1 - state.level, lift);
     p.puppet.add(
       'tonearm',
       -8 * off - 6 * p.c('lift'),
-      PARKED * off + state.level * 0.8 * sin((own.spin * D) / 2),
+      PARKED * off + state.level * (1 - lift) * 0.8 * sin((own.spin * D) / 2),
       0,
     );
     // The horn: sways a little, nods on the beat, turns to listen toward the mouse (or
@@ -2037,9 +2045,6 @@ function shelfCopy(p: Piece, t: number) {
 
 const libBook = (s: number, k: number) => `lib${s}${k}`;
 const LIB_BONES = [0, 1, 2, 3, 4].flatMap((s) => [1, 5, 9].map((k) => libBook(s, k)));
-/** Where the ladder rolls (metres from where it was built, along the rail). */
-const LADDER = [-0.55, 0.12] as const;
-const ladders = new WeakMap<Piece, { x: number; from: number; to: number }>();
 /** The books on bones it has (the nook's shelf has fewer), and its cushion's give. */
 const libBones = new WeakMap<Piece, string[]>();
 const nookGive = new WeakMap<Piece, number>();
@@ -2048,19 +2053,26 @@ const booksOf = (p: Piece) => {
   if (!b) libBones.set(p, (b = LIB_BONES.filter((n) => p.puppet.has(n))));
   return b;
 };
-/** The middle shelf's left half is a cat's nook (set.py LIB_NOOK): the cushion's top, and the
- * room from the side to the bookend and up to the next shelf's underside. */
-const NOOK = { x: -0.25 / 1.06, seat: (0.84 + 0.048) / 2.04, w: 0.46 / 1.06, h: 0.3 / 2.04 };
+/** The bottom shelf of the low case (set.py readcase) has the gramophone on its left end and,
+ * behind it, the cat's pillow: its middle across, the pillow's top, the room
+ * on it (across, and up to the next shelf), and how far back it lies (metres). */
+const NOOK = {
+  x: -0.5 / 1.62,
+  seat: (0.1 + 0.081) / 1.45,
+  w: 0.54 / 1.62,
+  h: 0.4 / 1.45,
+  back: 0.045 / 1.45,
+};
 
 const bookcase: Kind = {
-  metres: 2.04,
-  width: 1.06,
-  deep: 0.3,
-  size: 2.7,
+  metres: 1.45,
+  width: 1.62,
+  deep: 0.2,
+  size: 2.1,
   depth: [0.9, 0.97],
   blocks: true,
   nook: NOOK,
-  feel: (b) => (/^lib/.test(b) ? feel(4, 0.45) : b === 'ladder' ? feel(1.3, 0.12) : feel(3, 0.5)),
+  feel: (b) => (/^lib/.test(b) ? feel(4, 0.45) : feel(3, 0.5)),
   ambient(p, t, dt) {
     const n = p.night;
     const books = booksOf(p);
@@ -2105,67 +2117,23 @@ const bookcase: Kind = {
       const breath = sin(t * 0.8 + p.seed);
       p.later(() => p.puppet.shift('nook', 0, 0.0015 * breath - 0.008 * give, 0));
     }
-    // The ladder, hooked on the rail: it rolls along it, swings on its hooks, and sways when
-    // someone brushes past. (The other case has none.)
-    const lad = ladders.get(p) ?? { x: 0, from: 0, to: 0 };
-    ladders.set(p, lad);
-    const roll = p.c('roll');
-    if (roll) lad.x = lad.from + (lad.to - lad.from) * roll;
-    if (p.puppet.has('ladder')) {
-      p.later(() => p.puppet.shift('ladder', lad.x, 0, 0));
-      p.puppet.add(
-        'ladder',
-        live * (-p.c('swing') * 9 * sin(t * 3.2) + p.stir * 2.5 * sin(t * 6)) +
-          0.4 * k * sin(t * 0.5 + p.seed),
-        0,
-        p.c('rock') * 3 * sin(t * 5) + p.c('rollV') * 4,
-      );
-    }
     const read = p.c('read');
     // Kept still, its eyes are half shut and low, and it doesn't light up when hovered.
     p.eyes(
       0.022,
       p.c('shut') + read * 0.45 + (p.still ? 0.55 : 0),
       live * (p.c('wide') + p.hover * 0.5 + p.excite * 0.4),
-      read ? (lad.x - 0.2) / 0.5 : p.gx,
+      read ? -0.4 : p.gx,
       read ? 0.8 : p.gy,
     );
     p.glow(0, (0.9 - n * 0.35 - p.c('dim') * 0.5) * (p.still ? 0.45 : 1));
-    // The clamp lamp on the ladder (the other's banker's lamp): a reading light, warm. Kept
-    // still, it and the lit spines hold steady instead of breathing.
+    // The banker's lamp (the library's other case has one): a reading light, warm. Kept still,
+    // it and the lit spines hold steady instead of breathing.
     const breathe = p.still ? 0 : 1;
     p.glow(1, 0.55 + read * 0.45 + 0.05 * breathe * sin(t * 1.7) - p.c('dim') * 0.3, '#ffd99a');
     p.glow(2, (0.35 + 0.3 * breathe * sin(t * 0.8 + p.seed) + read * 0.5) * (1 - n * 0.4));
   },
   acts: {
-    roll: {
-      weight: 3,
-      length: [3.5, 5],
-      start: (p) => {
-        const lad = ladders.get(p) ?? { x: 0, from: 0, to: 0 };
-        lad.from = lad.x;
-        // Somewhere else along the rail, a good way off.
-        let to = LADDER[0] + Math.random() * (LADDER[1] - LADDER[0]);
-        if (Math.abs(to - lad.x) < 0.2)
-          to = lad.x > (LADDER[0] + LADDER[1]) / 2 ? LADDER[0] : LADDER[1];
-        lad.to = to;
-        ladders.set(p, lad);
-      },
-      pose: (p, u, e, len) => {
-        const r = ramp(u, 0.3, len - 0.8);
-        p.set('roll', r);
-        // It leans into the roll and swings when it stops.
-        const lad = ladders.get(p);
-        p.set('rollV', (lad ? Math.sign(lad.to - lad.from) : 0) * hump(u, 0.3, len - 0.8));
-        p.set('swing', hump(u, len - 1.2, len) * 0.6);
-        p.set('read', e * 0.3);
-      },
-    },
-    swing: {
-      weight: 2,
-      length: [2.5, 3.5],
-      pose: (p, u, e) => (p.set('swing', e), p.set('wide', e * 0.5)),
-    },
     pop: {
       weight: 3,
       length: [2, 3],
@@ -2214,12 +2182,11 @@ const bookcase: Kind = {
 };
 
 /**
- * The library's other bookcase, not the bookcase's match (set.py, twin): wider and lower,
- * four shelves, its nook on the right, a shelf lower and roomier, a banker's lamp on top instead of a
- * ladder, and the library's copy of the book on the shelf above the nook: the book comes off
- * it to be read and goes back on it after.
+ * The library's other bookcase, not the low one's match (set.py, twin): taller, four shelves,
+ * its nook on the right, a shelf lower and roomier, a banker's lamp on top, and the library's
+ * copy of the book on the shelf above the nook: the book comes off it to be read and goes back
+ * on it after.
  */
-const { roll: _roll, swing: _swing, ...unladdered } = bookcase.acts;
 const libcase: Kind = {
   ...bookcase,
   metres: 1.68,
@@ -2229,7 +2196,6 @@ const libcase: Kind = {
     bookcase.ambient(p, t, dt);
     shelfCopy(p, t);
   },
-  acts: unladdered,
 };
 
 // ---------- Cat tree ----------

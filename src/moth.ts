@@ -36,7 +36,7 @@ export const MOTH_FACE: FaceLayout = {
  * How her wings fold at rest, so she doesn't sit with them up like Prism: each is laid flat
  * and swept back over her body in a low tent, the forewings (40 degrees of slope) covering
  * the hindwings (48), the inner edges on her midline. [pitch, yaw, roll] in degrees then the
- * move [x, y, z] in metres, for the left wing (the right is its mirror); art/robot/moth.py
+ * move [x, y, z] in metres, for the left wing (the right is its mirror); blender/moth.py
  * has the same numbers and draws her portrait this way.
  */
 const REST_FORE = [-50.272, 94.458, -44.075, 0.079, -0.064, 0.057] as const;
