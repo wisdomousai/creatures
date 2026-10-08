@@ -124,14 +124,14 @@ Any of them will hold up a sign, and nobody is told how. The grip is found on th
 the creature class says which end of the body does the holding (a robot's palms, a dog's
 jaw, an owl's talons) and the sign is placed by looking for that spot on the skin, so a new
 creature gets it for free. Then the sign is picked for the body. Anyone who can hold things
-overhead gets a picket on a stick, an owl hovers and hangs a board from its feet, someone
+overhead gets an upright board on a pole, as wide as its words, an owl hovers and hangs a board from its feet, someone
 with no grip at all gets an easel on the floor beside them, and the small ones get a card.
 If they're still on their way in, `holdUp` doesn't mind: you get the handle at once and `hold.ready`
 resolves when they're on stage with the sign up, so `crew.call('beagle').then(m => crew.holdUp(m, 'sign', ...))`
 needs no polling. Anyone who holds a sign in their mouth stands it at the side, tipped out, so the board rises
 beside their head and is never in front of the face.
 
-Ask for a kind by name (`'placard'`, `'picket'`, `'hanger'`, `'arrow'`, `'paddle'`, `'easel'`,
+Ask for a kind by name (`'placard'`, `'picket'`, `'hanger'`, `'arrow'`, `'paddle'`, `'signpost'`, `'easel'`,
 `'banner'`, `'card'`, `'tag'`) and they will if they can; `crew.canHold(who, tool)` says (a banner, say, is only for someone whose
 hands are as far apart as its poles).
 

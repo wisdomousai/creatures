@@ -96,6 +96,16 @@ export interface Tool {
   points?: 'left' | 'right';
   /** Its face is a disc: the words are fitted inside the circle, not its bounding square. */
   round?: boolean;
+  /**
+   * An upright board on a pole, held in one raised hand (the `hand` mount): its height is what
+   * the lettering needs, its width follows the words (made as wide as the label, on one line,
+   * or on two or more if one would be wider than MAX_ASPECT times its height). The model's
+   * board is in two halves on bones `boardL` and `boardR` that slide apart; its face is
+   * `face` wide as made. `clear` is how far over the grip (m) the board's foot is, `out` how
+   * far (m) the grip is out beside the head, `frame` how much wider each side the board is than
+   * its face, all as made.
+   */
+  board?: { face: number; clear: number; out: number; frame: number };
 }
 
 /**
@@ -110,6 +120,7 @@ export const TOOLS: Record<string, Tool> = {
   hanger: { model: 'tool-hanger', mount: 'feet', family: 'sign', bar: 0.189 },
   card: { model: 'tool-card', mount: 'grip', family: 'sign', clear: true },
   paddle: { model: 'tool-paddle', mount: 'hand', family: 'sign', round: true },
+  signpost: { model: 'tool-signpost', mount: 'hand', family: 'sign', board: { face: 0.36, clear: 0.2, out: 0.07, frame: 0.034 } },
   arrow: { model: 'tool-arrow', mount: 'grip', family: 'sign', points: 'right', clear: true },
   // (Its right grip is as far from the left as signs.py says.)
   banner: { model: 'tool-banner', mount: 'hands', family: 'sign', grips: [0, 0.9] },
@@ -143,7 +154,7 @@ const FAMILIES: Record<string, (c: Character) => string | null> = {
     // (One hanging from the ceiling would have it upside down.)
     if (c.edge === 'top') return null;
     if (suits(c, 'feet')) return 'hanger';
-    if (suits(c, 'hand')) return 'paddle';
+    if (suits(c, 'hand')) return 'signpost';
     return suits(c, 'hands') ? 'placard' : null;
   },
 };
@@ -346,6 +357,14 @@ const CAP = 0.72;
 export const MIN_CAP_PX = 18;
 /** ...but its board is never more than this share of the screen's short side. */
 const MAX_BOARD = 0.45;
+/** A board on a pole is as wide as its words, up to this many times its height (then they wrap)... */
+export const MAX_ASPECT = 3.5;
+/** ...and never narrower than this many times it. */
+const MIN_ASPECT = 1.5;
+/** ...and at most this share of the screen's width. */
+const MAX_WIDE = 0.9;
+/** How far (rad) a raised board may tip from the vertical: a little sway, no leaning. */
+const MAX_TILT = 0.1;
 /** How far down its handle (the tool's metres) a board made bigger is gripped, at most. */
 const GRIP_LOW = 0.08;
 const BUTTON = 'hold';
@@ -453,6 +472,8 @@ const v2 = new Vector3();
 const v3 = new Vector3();
 const tri = new Triangle();
 const v4 = new Vector3();
+/** (For shape(), called while v1 holds where the grip is.) */
+const v5 = new Vector3();
 const ray = new Raycaster();
 // (Each a little askew, so a ray doesn't run down the seam between two triangles.)
 const AXES = [
@@ -486,6 +507,15 @@ class Holding implements Held, Carried {
   private faceH = 0;
   /** How tall its capitals are, as a share of the board's height (from the last lettering). */
   private cap = 0;
+  /** A board on a pole (Tool.board): its halves' bones, how wide its face is now and how far
+   * it is moved along, in the tool's metres. */
+  private wide: Puppet | null = null;
+  private bw = 0;
+  private off = 0;
+  /** How much bigger than as made the board is made, over the pole and the grip's size. */
+  private grow = 1;
+  private rest: Box3 | null = null;
+  private shaped = '';
   /** How big the tool is held, as a multiple of how it was made (the raised arm sets it). */
   private shown = 1;
   /** Textures let go of, to dispose once the new one has been drawn (never one on screen). */
@@ -643,8 +673,13 @@ class Holding implements Held, Carried {
         bound = mesh.geometry.boundingBox!;
       }
       const size = bound.getSize(v1);
-      this.board = { mesh, w: size.x, h: size.y, bound };
+      this.board = { mesh, w: size.x, h: size.y, bound: bound.clone() };
     });
+    if (this.def.board && this.board) {
+      this.wide = new Puppet(scene, { default: { f: 3.5, zeta: 0.35 } });
+      this.rest = this.board.bound.clone();
+      this.bw = this.def.board.face;
+    }
     this.box.setFromObject(scene);
     if (this.def.flutter) this.ripple = new Puppet(scene, { default: { f: 3.5, zeta: 0.35 } });
     if (this.board) this.letter(true);
@@ -683,7 +718,8 @@ class Holding implements Held, Carried {
     const need = b.h * this.shown * this.c.px * pixelRatio() * 1.5;
     let h = 128;
     while (h < need && h < 1024) h *= 2;
-    let w = Math.round(h * (b.w / b.h));
+    const plan = this.def.board ? this.plan() : null;
+    let w = Math.round(h * (plan ? plan.aspect : b.w / b.h));
     if (w > MAX_SIDE) [w, h] = [MAX_SIDE, Math.round(MAX_SIDE * (b.h / b.w))];
     const canvas = document.createElement('canvas');
     canvas.width = w;
@@ -697,8 +733,12 @@ class Holding implements Held, Carried {
       g.scale(-1, 1);
     }
     const family = this.opts.font ?? SANS;
-    const { lines, size } = fit(g, this.text, family, w * FILL, h * FILL, !!this.def.round);
+    const { lines, size } = plan
+      ? { lines: plan.lines, size: plan.k * h }
+      : fit(g, this.text, family, w * FILL, h * FILL, !!this.def.round);
     this.cap = (size / h) * CAP;
+    // A board on a pole is made as wide as the words need.
+    if (plan) this.bw = plan.aspect * b.h;
     g.font = `700 ${size}px ${family}`;
     g.fillStyle = INK;
     g.textAlign = 'center';
@@ -866,11 +906,18 @@ class Holding implements Held, Carried {
       grips.forEach((g, i) => this.in(g, this.touch[i]));
       if (mount === 'hand') {
         at.copy(pl);
-        roll = this.aim(grips[0]);
         size = this.readable();
-        // Grown, it is held lower down the handle: up to a hand's width of it.
-        const grown = this.arm ? clamp(size / this.arm.size - 1, 0, 1) : 0;
-        this.gripY = -GRIP_LOW * grown;
+        if (this.def.board) {
+          // Upright, whoever holds it: the board's foot is over the hand, never leaning.
+          roll = 0;
+          this.gripY = 0;
+          this.shape();
+        } else {
+          roll = this.aim(grips[0]);
+          // Grown, it is held lower down the handle: up to a hand's width of it.
+          const grown = this.arm ? clamp(size / this.arm.size - 1, 0, 1) : 0;
+          this.gripY = -GRIP_LOW * grown;
+        }
       } else {
         at.copy(pl).add(pr).multiplyScalar(0.5);
         if (mount === 'hands') {
@@ -913,7 +960,7 @@ class Holding implements Held, Carried {
     if (!grips) at.y += this.lift.y;
     root.position.copy(at.applyMatrix4(model.matrix));
     // A bar in two feet is only tipped so far before it comes out of one of them.
-    const tip = roll + this.wiggle.y;
+    const tip = this.def.board ? clamp(roll + this.wiggle.y, -MAX_TILT, MAX_TILT) : roll + this.wiggle.y;
     if (this.gripY) {
       // The tool is moved so the hand is where it grips the handle, not at its middle.
       const d = this.gripY * this.appear.y * size;
@@ -1041,7 +1088,9 @@ class Holding implements Held, Carried {
   private raised() {
     if (this.mount !== 'hand') return null;
     const grip = gripsOf(this.c, 'hand')?.[0];
-    return (this.arm ??= grip ? new RaisedArm(this.c, this.side, grip) : null);
+    const board = this.def.board;
+    const raise = board && { clear: board.clear, out: board.out, lean: 0.03, gap: 0.06 };
+    return (this.arm ??= grip ? new RaisedArm(this.c, this.side, grip, raise) : null);
   }
 
   /**
@@ -1058,11 +1107,75 @@ class Holding implements Held, Carried {
       const { width, height } = this.view.stage;
       const px = this.c.px;
       const least = MIN_CAP_PX / (this.cap * b.h * px);
-      const most = (MAX_BOARD * Math.min(width, height)) / (b.h * px);
+      let most = (MAX_BOARD * Math.min(width, height)) / (b.h * px);
+      // A board on a pole, as wide as its words, also fits the screen's width (frame and all).
+      const frame = this.def.board?.frame;
+      if (frame !== undefined) {
+        most = (MAX_BOARD * Math.min(width, height)) / ((b.h + 2 * frame) * px);
+        most = Math.min(most, (MAX_WIDE * width) / ((this.bw + 2 * frame) * px));
+      }
       want = Math.max(want, Math.min(least, Math.max(most, arm.size)));
+    }
+    if (this.def.board) {
+      // The pole and its grip stay the size a hand takes; the board alone is made as big as
+      // reading it needs.
+      const hand = Math.min(want, Math.max(arm.size, HAND));
+      this.grow = want / hand;
+      if (Math.abs(hand - arm.scale) > 0.004) arm.fit(hand);
+      this.shown = want;
+      return hand;
     }
     if (Math.abs(want - arm.scale) > 0.004) arm.fit(want);
     return (this.shown = arm.scale);
+  }
+
+  /**
+   * Make the board as wide as its words (`bw`, its face as made plus what its two halves slide
+   * apart) and set it over the head as far as its pole allows: the pole stays under the board,
+   * the board's middle toward the middle of the head.
+   */
+  private shape() {
+    const { wide, board, arm } = this;
+    const made = this.def.board;
+    if (!wide || !board || !arm || !made) return;
+    const g = this.grow;
+    // The face as wide as it is made, times how much bigger the board is.
+    const face = this.bw * g;
+    const reach = face / 2 - POLE_MARGIN;
+    // Over the head, but never past the frame (where the pole is on it, as of the last frame).
+    let want = arm.headDx() / arm.scale;
+    const { camera, width } = this.view.stage;
+    const outer = face + 2 * made.frame * g;
+    const at = v5.setFromMatrixPosition(this.root.matrixWorld).project(camera);
+    const pole = ((at.x + 1) / 2) * width;
+    const unit = arm.scale * this.c.px;
+    if (this.appear.y > 0.9 && unit > 0) {
+      const f = this.view.frame();
+      const lo = (Math.max(EDGE, f.left + EDGE) - pole) / unit + outer / 2;
+      const hi = (Math.min(width - EDGE, f.right - EDGE) - pole) / unit - outer / 2;
+      if (lo <= hi) want = clamp(want, lo, hi);
+    }
+    this.off = clamp(want, -reach, reach);
+    const key = `${this.bw.toFixed(4)} ${this.off.toFixed(4)} ${g.toFixed(4)}`;
+    if (key === this.shaped) return;
+    this.shaped = key;
+    const open = g * (this.bw - made.face) / 2;
+    for (const [bone, x] of [['boardL', this.off - open], ['boardR', this.off + open]] as const) {
+      wide.shift(bone, x, 0, 0);
+      wide.bone(bone).scale.setScalar(g);
+    }
+    // (The face's box, for the button over it: its rest box grown about the board's foot.)
+    const foot = v5.setFromMatrixPosition(wide.restMatrix('boardL')).y;
+    const rest = this.rest!;
+    board.bound.min.set(this.off - face / 2, foot + (rest.min.y - foot) * g, rest.min.z * g);
+    board.bound.max.set(this.off + face / 2, foot + (rest.max.y - foot) * g, rest.max.z * g);
+    board.w = face;
+  }
+
+  /** The label broken into the lines of a board on a pole, and how wide it is (planBoard). */
+  private plan() {
+    const g = (scratch ??= document.createElement('canvas').getContext('2d')!);
+    return planBoard(g, this.text, this.opts.font ?? SANS);
   }
 
   /** Which way the handle points: along the bone that holds it, on the screen. */
@@ -1242,6 +1355,64 @@ class Holding implements Held, Carried {
     this.done(false);
     this.finish();
   }
+}
+
+let scratch: CanvasRenderingContext2D | null = null;
+
+/** How far (tool m) a board's edge is kept from its pole. */
+const POLE_MARGIN = 0.05;
+/** The smallest a board's pole and grip are made (as made = 1), however small the holder: any
+ * smaller and a hand has nothing to hold. */
+const HAND = 0.8;
+/** A board is kept this far (px) inside the box's frame, where its pole lets it. */
+const EDGE = 6;
+
+/**
+ * The words of a board on a pole: how many lines, how big the letters are (`k`, of the board's
+ * height) and how wide the board is (`aspect`, times its height). One line at the biggest
+ * letters if it makes a board no wider than MAX_ASPECT times its height; if it would be wider,
+ * the words are broken into two lines (or more, if that makes the letters bigger), each as even
+ * as can be, and the board is as wide as the widest of them. A single long word gets smaller
+ * letters instead. The letters never leave the board.
+ */
+export function planBoard(g: CanvasRenderingContext2D, text: string, family: string) {
+  const words = text.trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return { lines: [''], k: BIGGEST, aspect: MIN_ASPECT };
+  g.font = `700 100px ${family}`;
+  const em = (line: string) => g.measureText(line).width / 100;
+  // Every way of breaking the words into n lines: the one with the narrowest widest line.
+  const split = (n: number): string[] => {
+    let best: string[] = [words.join(' ')];
+    let widest = Infinity;
+    const go = (from: number, left: number, lines: string[]) => {
+      if (left === 1) {
+        const all = [...lines, words.slice(from).join(' ')];
+        const w = Math.max(...all.map(em));
+        if (w < widest - 1e-9) [widest, best] = [w, all];
+        return;
+      }
+      for (let to = from + 1; to <= words.length - left + 1; to++) go(to, left - 1, [...lines, words.slice(from, to).join(' ')]);
+    };
+    go(0, n, []);
+    return best;
+  };
+  let pick: { lines: string[]; k: number } | null = null;
+  for (let n = 1; n <= Math.min(4, words.length); n++) {
+    const lines = split(n);
+    const widest = Math.max(...lines.map(em));
+    const most = Math.min(BIGGEST, FILL / (n * LEADING));
+    const k = Math.min(most, (MAX_ASPECT * FILL) / widest);
+    // One line that fits at the biggest letters wins; else the break with the biggest letters
+    // (fewer lines on a tie), and a single long word just gets smaller ones.
+    if (n === 1 && (k === most || words.length === 1)) {
+      pick = { lines, k };
+      break;
+    }
+    if (n > 1 && (!pick || k > pick.k + 1e-6)) pick = { lines, k };
+  }
+  const { lines, k } = pick!;
+  const aspect = Math.max(MIN_ASPECT, (Math.max(...lines.map(em)) * k) / FILL);
+  return { lines, k, aspect };
 }
 
 /** The words broken into lines, and the biggest letters that fit them in w by h. */

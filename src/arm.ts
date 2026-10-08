@@ -23,6 +23,16 @@ const CLEAR = 0.15;
 
 const angle = (v: Vector3) => Math.atan2(v.y, v.x);
 
+/** How a tool sits in the raised hand, as made: how far over the grip its foot is, how far out
+ * beside the head the grip goes (m), and how far the forearm leans out (rad). */
+export interface Raise {
+  clear: number;
+  out: number;
+  lean: number;
+  /** How far over the head's top the board's foot is (m, as made); 0.03 unless said. */
+  gap?: number;
+}
+
 export class RaisedArm {
   /** The arm's bones, shoulder first, down to the one the grip is on. */
   private chain: string[] = [];
@@ -48,6 +58,7 @@ export class RaisedArm {
     private c: Character,
     side: 1 | -1,
     grip: Grip,
+    private raise: Raise = { clear: CLEAR, out: 0.1, lean: LEAN },
   ) {
     const p = c.puppet;
     // The arm: from the grip's bone up through its parents that are part of the same arm.
@@ -82,7 +93,8 @@ export class RaisedArm {
   fit(s: number) {
     this.scale = s;
     const { end, shoulder, elbow, side } = this;
-    const to = new Vector3(this.middle + side * (this.half + 0.1 * s), this.top + 0.03 * s - CLEAR * s, 0);
+    const { clear, out, lean, gap = 0.03 } = this.raise;
+    const to = new Vector3(this.middle + side * (this.half + out * s), this.top + gap * s - clear * s, 0);
     to.y = Math.max(to.y, shoulder.y + 0.05);
     this.roll = [];
     this.reach = 0;
@@ -91,12 +103,12 @@ export class RaisedArm {
       // The forearm straight up (leaning out a little): the elbow is that far below the grip.
       const up = end.clone().sub(elbow);
       const forearm = up.length();
-      const target = to.clone().setY(to.y - forearm * Math.cos(LEAN)).setX(to.x - side * forearm * Math.sin(LEAN));
+      const target = to.clone().setY(to.y - forearm * Math.cos(lean)).setX(to.x - side * forearm * Math.sin(lean));
       const upper = elbow.clone().sub(shoulder);
       const want = target.clone().sub(shoulder);
       this.roll[0] = angle(want) - angle(upper);
       // The forearm turns the rest of the way, to stand up.
-      this.roll[1] = Math.PI / 2 - side * LEAN - angle(up) - this.roll[0];
+      this.roll[1] = Math.PI / 2 - side * lean - angle(up) - this.roll[0];
       this.reach = Math.max(0, want.length() - upper.length());
       this.along.copy(upper).normalize();
     } else {
@@ -109,6 +121,12 @@ export class RaisedArm {
     this.roll = this.roll.map((r) => (r * 180) / Math.PI);
     // Turn the short way round.
     this.roll = this.roll.map((r) => ((((r + 180) % 360) + 360) % 360) - 180);
+  }
+
+  /** How far the head's middle is from the grip, across (m, + toward the holder's left), when
+   * the tool is fitted at its size: where a board wider than the head should sit over it. */
+  headDx() {
+    return -this.side * (this.half + this.raise.out * this.scale);
   }
 
   /** Raise the arm (k 0..1), before the joints move. */

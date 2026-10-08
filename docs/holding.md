@@ -9,7 +9,7 @@ air near a paw. This is how that works, how to give a new body a real hold, and 
 
 | Body                                         | Sign          | How                                                              |
 | -------------------------------------------- | ------------- | ---------------------------------------------------------------- |
-| Hands, forearms or arms (a monkey, a robot)  | `paddle`      | One arm raised past the head, the handle up out of the hand      |
+| Hands, forearms or arms (a monkey, a robot)  | `signpost`    | One arm raised beside the head, a pole up out of the hand, an upright board over the head |
 | Two hands that reach each other              | `placard`     | Both hands, held out in front                                    |
 | Hoot, hovering                               | `hanger`      | A bar, hooked over his talons                                    |
 | Only a mouth, jaw or chin (cats, dogs, ...)  | none          | `canHold(who, 'sign')` is false, `holdUp` gives `null`           |
@@ -17,7 +17,7 @@ air near a paw. This is how that works, how to give a new body a real hold, and 
 
 A creature's `tools` list in `families.ts` is for the extras (a lantern, a map); signs aren't on it.
 
-## The paddle, for any handed body
+## The signpost, for any handed body
 
 There is nothing to write for a body with an arm pair. `props.ts` finds the grip (the palm of
 `hand.L`/`hand.R`, else the far end of `forearm`, `fore` or `arm`), and `arm.ts` works out the
@@ -28,15 +28,33 @@ and tall the head is.
   straight up, and the handle goes up out of the hand.
 - Arms are short and heads are big, so the arm stretches like a rubber hose to get the board clear:
   the elbow is drawn out along the upper arm, or a body with one bone to an arm gets that bone longer.
-- The paddle is made smaller for a small head (a squirrel's is a fair bit smaller than Bolt's), down to a third of its size.
-- **A sign is for reading, so it has a minimum size.** Whoever holds it, the board is made big enough
-  that its lettering is at least 18 CSS px tall (capitals, `MIN_CAP_PX` in `tools.ts`) on the screen as
-  it is now, worked out from the holder's size on screen and the words (a longer label is wrapped,
-  to fit inside the round board, so it needs a bigger board). The board is never more than 45% of the
-  screen's short side. The arm is fitted again for the bigger board (`RaisedArm.fit`): the handle is
-  longer with it, and the hand takes it nearer the foot of the handle so it doesn't hang below the
-  holder. A holder big enough already keeps the size its head calls for. The contact check holds at
-  any size.
+- **The board is upright and as wide as its words.** It is a landscape board on a pole (`tool-signpost`,
+  `blender/signs.py`), never a disc: a round sign has to be huge to hold a word, but a rectangle grows in
+  width with the label while its height stays put. The board's height is what reading needs; its width
+  follows the label on one line, and only if one line would be wider than `MAX_ASPECT` (3.5) times the
+  height is the label broken into two lines (or more, if that makes the letters bigger), as evenly as
+  can be, and the board is as wide as the widest line (`planBoard`). It is never narrower than 1.5 times
+  its height, and a single long word gets smaller letters rather than a wider board. The letters
+  never leave the board.
+- **A sign is for reading, so it has a minimum size.** Whoever holds it, its lettering is at least
+  18 CSS px tall (capitals, `MIN_CAP_PX` in `tools.ts`) on the screen as it is now, worked out from the
+  holder's size on screen and the words. The board (frame and all) is never more than 45% of the screen's
+  short side, nor wider than 90% of its width, frame and all. A holder big enough already keeps the size its head calls
+  for. The model's board is in two halves on bones `boardL` and `boardR` that the page slides apart to
+  the width it wants, and the face between them is stretched flat, so the lettering stays even.
+- **The pole and its grip stay the size a hand takes** (never under 0.8 as made, the head's size
+  otherwise); only the board is made bigger, by scaling its two bones about its foot. A small holder
+  gets a small hand-sized pole under a board that is big enough to read.
+- **Held upright**: the board never leans toward the middle of the page or with the arm. The forearm
+  leans out 2 degrees, the pole is vertical and the board's tilt is the little sway of its life, clamped
+  to `MAX_TILT` (0.1 rad, under 6 degrees) whoever holds it and however big it is.
+- **Over the head**: the board's foot is over the head's top (a hand's width of the pole is under it,
+  and the arm stretches to reach it, `RaisedArm.fit`). The grip is beside the head; the board is slid
+  along its pole to sit over the head as far as its pole allows (the pole stays under it, `POLE_MARGIN`),
+  and never past the box's frame. The pole's foot is a hand's width under the grip, well above
+  the holder's feet, a crate or the floor.
+- The paddle (`'paddle'`, a round board on a short handle) is still there by name; it is held the
+  old way (the handle leaning with the arm, grown with the board).
 - The side is the one toward the middle of the page. A body with something already in one hand says
   which it holds with: `readonly holdWith = -1 as const` (Dibble's trowel is in her left).
 
@@ -80,7 +98,7 @@ dots the places that should hold, so a miss is visible.
 
 ```ts
 const r = await crew.holdCheck('monkey', 'sign', { label: 'Home' }, 4);
-// { tool: 'paddle', held, gap, reach, ok }; the hold stays up for a close-up till held.release()
+// { tool: 'signpost', held, gap, reach, ok }; the hold stays up for a close-up till held.release()
 ```
 
 Or by hand: `const held = crew.holdUp(...); held.check(); ...; held.worstGap`. `check(false)` turns
@@ -89,7 +107,7 @@ the dots off. It is a debug helper: nothing the site ships needs it.
 ## Fliers, and crates
 
 - **A flier that holds with a hand hovers on request**: `holdUp('bolt', 'sign', { hover: { x, y } })`
-  keeps him in the air on his flames, feet at the spot, the paddle raised in one mitt. A body opts
+  keeps him in the air on his flames, feet at the spot, the board raised on its pole in one mitt. A body opts
   in by being a flier that can `hoverAt(x, y)`, `comeDown()` and say whether it is `onErrand`
   (Hoot and Bolt do). `lead()` from the air flies them off the side of the frame; `release()`
   brings them down to the floor.

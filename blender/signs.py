@@ -50,11 +50,14 @@ SIGNS = {
     'banner': dict(span=0.9, hw=0.4, hh=0.13, mid=0.34),
     'card': dict(hw=0.15, hh=0.08, mid=0.2, thick=0.014, bumper=0.012, inset=0.02),
     'tag': dict(hw=0.15, hh=0.105, clip=-0.25),
+    # An upright board on a pole; `fw` is half the face's width as made (the page stretches it
+    # to fit the words), `hf` half its height, `bottom` how high the board's bottom is over the grip.
+    'signpost': dict(fw=0.18, hf=0.09, bottom=0.2, r=0.02, inset=0.02, bumper=0.014, thick=0.014),
 }
 # How far each of the new ones hangs below its origin, so a preview can stand it on the floor.
 PREVIEWS = {
     'arrow': dict(lift=0.16, width=0.7), 'paddle': dict(lift=0.17, width=0.45), 'easel': dict(lift=0.0, width=0.5),
-    'banner': dict(lift=0.17, width=1.0), 'card': dict(lift=0.08, width=0.35), 'tag': dict(lift=0.58, width=0.35), 'hanger': dict(lift=0.5, width=0.6),
+    'banner': dict(lift=0.17, width=1.0), 'signpost': dict(lift=0.17, width=0.7), 'card': dict(lift=0.08, width=0.35), 'tag': dict(lift=0.58, width=0.35), 'hanger': dict(lift=0.5, width=0.6),
 }
 THICK = 0.022
 BUMPER = 0.022
@@ -334,7 +337,69 @@ def tag(m, add, paper, shell, s):
             bolt(add, m, (sx * (hw - INSET * 0.45), -THICK - 0.001, mid + sz * (hh - INSET * 0.45)), 0.012, 'front')
 
 
-MORE = {'arrow': arrow, 'paddle': paddle, 'easel': easel, 'banner': banner, 'card': card, 'tag': tag}
+def sides(obj, at=0.0):
+    """Skin weights that split a part down the middle: the left half (x < at) follows boardL,
+    the right half boardR, vertices on the seam both (so the seam stays put)."""
+    xs = [(obj.matrix_basis @ v.co).x - at for v in obj.data.vertices]
+    left = [1.0 if x < -1e-6 else (0.5 if abs(x) <= 1e-6 else 0.0) for x in xs]
+    return {'boardL': left, 'boardR': [1.0 - w for w in left]}
+
+
+def signpost(m, add, paper, shell, s):
+    """An upright landscape board on a pole, for one hand held up over the head. The board's
+    two halves are on bones boardL and boardR (they slide apart along x: the page makes it as
+    wide as its words, and moves both together to sit it over the head), the Board face a flat
+    quad stretched between them, so its UVs stay even. The pole is behind the board, its ridged
+    grip at the origin, a clamp under the board, a light (Dot0) on the pole above the grip."""
+    fw, hf, bot, r = s['fw'], s['hf'], s['bottom'], s['r']
+    # A slimmer frame than the other signs': the board is made big for a small holder, and its
+    # frame grows with it.
+    ins, bump, thick = s['inset'], s['bumper'], s['thick']
+    hw, hh = fw + ins, hf + ins
+    mid = bot + bump + hh
+    yb = -0.014 - thick
+    corners = [(hw, mid - hh), (hw, mid + hh), (-hw, mid + hh), (-hw, mid - hh)]
+    # (A vertex on the seam of each long edge, for the two halves to part along.)
+
+    def seamed(poly):
+        res = []
+        for i, (x, z) in enumerate(poly):
+            res.append((x, z))
+            nx, nz = poly[(i + 1) % len(poly)]
+            if abs(z - nz) < 1e-9 and x * nx < 0:
+                res.append((0.0, z))
+        return res
+
+    shape = seamed(rounded_poly(corners, r))
+    big = seamed(rounded_poly(inflate(corners, bump), r + 0.01))
+    board = prism('SignBoard', shape, thick * 2, (0, yb, 0))
+    add(board, shell, sides(board))
+    bumper = prism('SignBumper', big, thick * 1.4, (0, yb + 0.004, 0))
+    add(bumper, m['joint'], sides(bumper))
+    y = yb - thick - 0.002
+    quad = kit.mesh_object('Board', [(fw, y, mid - hf), (fw, y, mid + hf), (-fw, y, mid + hf), (-fw, y, mid - hf)],
+                           [(0, 1, 2, 3)])
+    if quad.data.polygons[0].normal.y > 0:  # (a lone quad has no neighbours to say which way is out: face front, -Y)
+        quad.data.flip_normals()
+    quad.data.polygons.foreach_set('use_smooth', [False])
+    kit.planar_uv(quad)
+    add(quad, paper, sides(quad))
+    for sx in (-1, 1):
+        for sz in (-1, 1):
+            bolt(add, m, (sx * (hw - ins * 0.45), -thick - 0.001 + yb - 0.0, mid + sz * (hh - ins * 0.45)), 0.01,
+                 'front', 'boardL' if sx < 0 else 'boardR')
+    top = mid + hh - 0.01
+    add(kit.tube('Pole', [(0, 0, -0.12), (0, 0, top)], 0.014, ring=12)[0], m['joint'])
+    grip(add, m, shell, -0.08, 0.08, 0.02)
+    add(kit.torus('Collar', 0.024, 0.0085, seg=(16, 6), location=(0, 0, 0.09)), m['joint'])
+    add(kit.superellipsoid('PoleFoot', (0.026, 0.026, 0.026), seg=(14, 10), location=(0, 0, -0.125)), shell)
+    add(kit.torus('Clamp', 0.021, 0.008, seg=(16, 6), location=(0, 0, bot - 0.012)), m['joint'])
+    add(kit.superellipsoid('Light', (0.011, 0.006, 0.011), 0.6, 0.6, seg=(10, 8), location=(0, -0.0165, 0.145)),
+        m['dot'](0))
+
+
+MORE = {'arrow': arrow, 'paddle': paddle, 'easel': easel, 'banner': banner, 'card': card, 'tag': tag,
+        'signpost': signpost}
 
 
 def build_sign(kind, look='ink', flame=None):
@@ -353,7 +418,10 @@ def build_sign(kind, look='ink', flame=None):
 
     if kind in MORE:
         MORE[kind](m, add, paper, shell, s)
-        rig = kit.armature('SignRig', [('root', (0, 0, 0), (0, 0, 0.2), None)])
+        bones = [('root', (0, 0, 0), (0, 0, 0.2), None)]
+        if kind == 'signpost':  # the board's two halves slide apart
+            bones += [('boardL', (0, 0, 0.2), (0, 0, 0.4), 'root'), ('boardR', (0, 0, 0.2), (0, 0, 0.4), 'root')]
+        rig = kit.armature('SignRig', bones)
         return looks.finish(rig, parts, skin, m)
     hw, hh, mid = s['hw'], s['hh'], s['mid']
 
