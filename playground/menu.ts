@@ -19,6 +19,8 @@ export function menu(
   items: string[],
   run: (item: string) => void,
   last?: { label: string; run: () => void },
+  /** Tricks it always offers, not left to the few at random. */
+  always: string[] = [],
 ) {
   shown?.shut();
   const el = document.createElement('div');
@@ -50,11 +52,12 @@ export function menu(
     items.length > FEW + 2
       ? new Set(
           items
-            .filter((item) => item !== 'idle')
+            .filter((item) => item !== 'idle' && !always.includes(item))
             .map((item) => ({ item, at: Math.random() }))
             .sort((a, b) => a.at - b.at)
-            .slice(0, FEW)
-            .map((r) => r.item),
+            .slice(0, FEW - always.length)
+            .map((r) => r.item)
+            .concat(always),
         )
       : new Set(items);
   const buttons = keys(items.filter((item) => few.has(item)));

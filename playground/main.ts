@@ -12,7 +12,9 @@ import {
   SET,
   inFamily,
   installCommand,
+  type Character,
   type Family,
+  type Held,
   type LookName,
 } from '@wisdomousai/creatures';
 import { menu } from './menu';
@@ -508,11 +510,34 @@ small.addEventListener('change', () => unfold(false));
 
 // A right-click (or a long press) on one of the crew or a set piece: its tricks, to pick
 // one, and at the foot a way to send it off or put it away.
-crew.onMenu = (m, at) =>
-  menu(at, m.spec.name, m.repertoire, (act) => m.perform(act), {
-    label: 'Send out',
-    run: () => m.leave(),
-  });
+const signs = new Map<Character, Held>();
+crew.onMenu = (m, at) => {
+  // Those who can hold a sign are asked to, with their own name on it; picked, it leads them
+  // off toward the nearer side.
+  const sign = crew.canHold(m, 'sign') ? [signs.has(m) ? 'putDownSign' : 'holdUpSign'] : [];
+  return menu(
+    at,
+    m.spec.name,
+    [...m.repertoire, ...sign],
+    (act) => {
+      if (act === 'putDownSign') return signs.get(m)?.release();
+      if (act !== 'holdUpSign') return m.perform(act);
+      const held = crew.holdUp(m, 'sign', {
+        label: m.spec.name,
+        onPick: () => void held?.lead(m.s < innerWidth / 2 ? 'left' : 'right'),
+      });
+      if (!held) return;
+      signs.set(m, held);
+      const gone = setInterval(() => {
+        if (!held.released) return;
+        clearInterval(gone);
+        signs.delete(m);
+      }, 500);
+    },
+    { label: 'Send out', run: () => m.leave() },
+    sign,
+  );
+};
 if (crew.set)
   crew.set.onMenu = (p, at) => {
     const name = words(p.name);
