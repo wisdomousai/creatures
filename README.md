@@ -109,6 +109,37 @@ crew.dismiss(); // everyone home
 Everyone has tricks of their own, and `crew.members.get('owl')?.repertoire` lists Hoot's.
 The rest of the options and methods are in [the reference](docs/reference.md).
 
+## Hand them a sign
+
+```ts
+const hold = crew.holdUp('cat', 'sign', {
+  label: 'Contact',
+  onPick: () => location.assign('/contact'),
+});
+if (hold) hold.label = 'Say hello'; // the lettering is repainted
+await hold?.lead('right'); // and off they walk with it, out of the page
+```
+
+Any of them will hold up a sign, and nobody is told how. The grip is found on the model:
+the creature class says which end of the body does the holding (a robot's palms, a dog's
+jaw, an owl's talons) and the sign is placed by looking for that spot on the skin, so a new
+creature gets it for free. Then the sign is picked for the body. Anyone who can hold things
+overhead gets a picket on a stick, an owl hovers and hangs a board from its feet, someone
+with no grip at all gets an easel on the floor beside them, and the small ones get a card.
+Ask for a kind by name (`'placard'`, `'picket'`, `'hanger'`, `'arrow'`, `'paddle'`, `'easel'`,
+`'banner'`, `'card'`, `'tag'`) and they will if they can; `crew.canHold(who, tool)` says.
+
+The lettering is painted on a canvas, fitted to the board by trying text sizes until the
+words just fit, and laid on the board's paper. It uses your font (`font: 'Georgia'`, a CSS
+font family), looks sharp on a dense screen, and is repainted for each look. With
+`onPick` there is a real `<button>` over the board, so it can be tabbed to, read out
+and pressed with Enter or Space as well as clicked, and it wiggles when it's hovered or focused. Take it
+away with `hold.release()`.
+
+There's more than signs. `crew.holdUp('owl', 'telescope')` (also a map, a lantern, a
+magnifier, a flag that ripples, an umbrella, a balloon on a string and a megaphone) holds
+it the same way. A creature's card lists the ones it was made to carry (`CARDS.owl.tools`).
+
 ## Make one of your own
 
 A creature is two files that agree on some names. A Python script builds the body in

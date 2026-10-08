@@ -66,6 +66,22 @@ some of them find room beside your content.
 | `SET`, `DECOR`, `GAMES` | The set pieces, the hangings and the games, by name.                                                           |
 | `MODELS`, `VERSION`     | This version's models on jsDelivr, and the version.                                                            |
 
+## Holding things up
+
+`crew.holdUp(who, tool, options?)` has someone hold a tool up (`who` is a key or a creature) and
+returns a handle, or `null` if they can't. `crew.canHold(who, tool)` asks first. `tool` is
+a key of `TOOLS`, or `'sign'` to have the kind chosen for their body.
+
+- Options: `label` (the lettering), `font` (a CSS font family; the size is fitted to the board), `onPick` (puts a button over the board), `host` (where the button goes),
+  `point` (`'left'` or `'right'`, for an arrow), `hover` (an owl's spot: `{ x, y }`, px).
+- The handle: `label` (settable), `button`, `ready` (resolves when it's up),
+  `released`, `lead(toward)` (`'left'`, `'right'` or a door: they walk or fly off holding it, and the
+  promise resolves once they're gone) and `release()`.
+- `TOOLS` is the registry: each has a `model`, a `mount` (`hands`, `grip`, `feet`, `neck`,
+  `floor`) and, for signs, a `family`. A creature class opts in with `holdsUp`, `holdOffset`
+  and `holdPose(hold, k, t)`; `CARDS[key].tools` lists the extras it carries.
+- `gripOf(creature)` and `gripOn(creature, bone, part)` find where a creature holds things.
+
 ## Speech bubbles
 
 `new Bubble(host, { at })` puts a speech bubble in `host`, its tail pointing at `at()`, the
