@@ -54,7 +54,7 @@ SIGNS = {
 # How far each of the new ones hangs below its origin, so a preview can stand it on the floor.
 PREVIEWS = {
     'arrow': dict(lift=0.16, width=0.7), 'paddle': dict(lift=0.17, width=0.45), 'easel': dict(lift=0.0, width=0.5),
-    'banner': dict(lift=0.17, width=1.0), 'card': dict(lift=0.08, width=0.35), 'tag': dict(lift=0.58, width=0.35),
+    'banner': dict(lift=0.17, width=1.0), 'card': dict(lift=0.08, width=0.35), 'tag': dict(lift=0.58, width=0.35), 'hanger': dict(lift=0.5, width=0.6),
 }
 THICK = 0.022
 BUMPER = 0.022
