@@ -59,7 +59,8 @@ SET = ('fern', 'sunflower', 'lamp', 'armchair', 'bookshelf', 'rug', 'stool', 'ra
 # The old computer in the middle of the box that the site's pages play on (monitor.py).
 # The tools the crew hold (signs.py for the signs, tools.py for the rest), exported as
 # tool-NAME.
-TOOLS = ('placard', 'picket', 'hanger')
+TOOLS = ('placard', 'picket', 'hanger', 'magnifier', 'lantern', 'map', 'telescope', 'flag', 'umbrella', 'balloon',
+         'megaphone')
 
 
 def module(name):
