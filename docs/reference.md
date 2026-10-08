@@ -69,7 +69,7 @@ some of them find room beside your content.
 ## Holding things up
 
 `crew.holdUp(who, tool, options?)` has someone hold a tool up (`who` is a key or a creature) and
-returns a handle, or `null` if they can't. `crew.canHold(who, tool)` asks first. `tool` is
+returns a handle, or `null` if they can't (or aren't on the page at all). Someone still entering gets a handle that waits for them: `ready` resolves once they're on stage holding it, or false if they can't after all. `crew.canHold(who, tool)` asks first. `tool` is
 a key of `TOOLS`, or `'sign'` to have the kind chosen for their body.
 
 - Options: `label` (the lettering), `font` (a CSS font family; the size is fitted to the board), `onPick` (puts a button over the board), `host` (where the button goes),
