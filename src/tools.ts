@@ -94,6 +94,8 @@ export interface Tool {
   clear?: boolean;
   /** Modelled pointing this way (viewer's side); asked to point the other way it's mirrored. */
   points?: 'left' | 'right';
+  /** Its face is a disc: the words are fitted inside the circle, not its bounding square. */
+  round?: boolean;
 }
 
 /**
@@ -107,7 +109,7 @@ export const TOOLS: Record<string, Tool> = {
   picket: { model: 'tool-picket', mount: 'grip', family: 'sign', clear: true },
   hanger: { model: 'tool-hanger', mount: 'feet', family: 'sign', bar: 0.189 },
   card: { model: 'tool-card', mount: 'grip', family: 'sign', clear: true },
-  paddle: { model: 'tool-paddle', mount: 'hand', family: 'sign' },
+  paddle: { model: 'tool-paddle', mount: 'hand', family: 'sign', round: true },
   arrow: { model: 'tool-arrow', mount: 'grip', family: 'sign', points: 'right', clear: true },
   // (Its right grip is as far from the left as signs.py says.)
   banner: { model: 'tool-banner', mount: 'hands', family: 'sign', grips: [0, 0.9] },
@@ -337,6 +339,15 @@ const FILL = 0.88;
 const BIGGEST = 0.62;
 const LEADING = 1.12;
 const MAX_SIDE = 2048;
+/** The height of a capital as a share of the font size. */
+const CAP = 0.72;
+/** A sign is for reading: its lettering is made at least this tall (CSS px, capitals) wherever
+ * it is on the screen, however small the one who holds it. */
+export const MIN_CAP_PX = 18;
+/** ...but its board is never more than this share of the screen's short side. */
+const MAX_BOARD = 0.45;
+/** How far down its handle (the tool's metres) a board made bigger is gripped, at most. */
+const GRIP_LOW = 0.08;
 const BUTTON = 'hold';
 
 const holding = new WeakMap<Character, Holding>();
@@ -473,6 +484,10 @@ class Holding implements Held, Carried {
   private box = new Box3();
   private face: CanvasTexture | null = null;
   private faceH = 0;
+  /** How tall its capitals are, as a share of the board's height (from the last lettering). */
+  private cap = 0;
+  /** How big the tool is held, as a multiple of how it was made (the raised arm sets it). */
+  private shown = 1;
   /** Textures let go of, to dispose once the new one has been drawn (never one on screen). */
   private spent: CanvasTexture[] = [];
   private hovered = false;
@@ -498,6 +513,11 @@ class Holding implements Held, Carried {
   worstReach = NaN;
   private t = 0;
   private px = 0;
+  private lettered = 1;
+  /** How far down the handle (in the tool's metres) the hand has it: a board made bigger for
+   * a small holder is held nearer the foot of its handle, so the handle doesn't hang down
+   * past the holder's feet. */
+  private gripY = 0;
   /** Popping in (0 away, 1 in hand); wiggling; lifting; swinging; and how fast it's carried. */
   private appear = new FixedSpring(4.5, 0.55);
   private wiggle = new FixedSpring(5, 0.22);
@@ -660,7 +680,7 @@ class Holding implements Held, Carried {
   private letter(first = false) {
     const b = this.board;
     if (!b) return;
-    const need = b.h * this.c.px * pixelRatio() * 1.5;
+    const need = b.h * this.shown * this.c.px * pixelRatio() * 1.5;
     let h = 128;
     while (h < need && h < 1024) h *= 2;
     let w = Math.round(h * (b.w / b.h));
@@ -677,7 +697,8 @@ class Holding implements Held, Carried {
       g.scale(-1, 1);
     }
     const family = this.opts.font ?? SANS;
-    const { lines, size } = fit(g, this.text, family, w * FILL, h * FILL);
+    const { lines, size } = fit(g, this.text, family, w * FILL, h * FILL, !!this.def.round);
+    this.cap = (size / h) * CAP;
     g.font = `700 ${size}px ${family}`;
     g.fillStyle = INK;
     g.textAlign = 'center';
@@ -814,9 +835,10 @@ class Holding implements Held, Carried {
     this.wiggle.update(dt, 0);
     this.lift.update(dt, this.hovered ? 0.035 : 0);
     if (this.fading && this.appear.y < 0.02) return this.release();
-    if (this.board && this.px !== c.px) {
+    if (this.board && (this.px !== c.px || this.lettered !== this.shown)) {
       this.px = c.px;
-      const need = this.board.h * c.px * pixelRatio() * 1.5;
+      this.lettered = this.shown;
+      const need = this.board.h * this.shown * c.px * pixelRatio() * 1.5;
       if ((need > this.faceH && this.faceH < 1024) || need * 4 <= this.faceH) this.letter();
     }
     const root = this.root;
@@ -845,7 +867,10 @@ class Holding implements Held, Carried {
       if (mount === 'hand') {
         at.copy(pl);
         roll = this.aim(grips[0]);
-        size = this.raised()?.size ?? 1;
+        size = this.readable();
+        // Grown, it is held lower down the handle: up to a hand's width of it.
+        const grown = this.arm ? clamp(size / this.arm.size - 1, 0, 1) : 0;
+        this.gripY = -GRIP_LOW * grown;
       } else {
         at.copy(pl).add(pr).multiplyScalar(0.5);
         if (mount === 'hands') {
@@ -889,6 +914,12 @@ class Holding implements Held, Carried {
     root.position.copy(at.applyMatrix4(model.matrix));
     // A bar in two feet is only tipped so far before it comes out of one of them.
     const tip = roll + this.wiggle.y;
+    if (this.gripY) {
+      // The tool is moved so the hand is where it grips the handle, not at its middle.
+      const d = this.gripY * this.appear.y * size;
+      root.position.x += d * Math.sin(tip);
+      root.position.y -= d * Math.cos(tip);
+    }
     root.rotation.z = mount === 'feet' ? clamp(tip, -TILT, TILT) : tip;
     root.scale.set(s * size, this.appear.y * size, this.appear.y * size);
     this.flutter(dt);
@@ -920,7 +951,7 @@ class Holding implements Held, Carried {
     const bar = this.def.bar;
     // Where each hand wants it, on the tool, then in the holder's space.
     const want = grips.map((_, i) => {
-      const p = new Vector3(g ? g[i] : 0, 0, 0);
+      const p = new Vector3(g ? g[i] : 0, this.gripY, 0);
       if (bar !== undefined) {
         // A bar: the nearest point of it to this foot.
         root.worldToLocal(model.localToWorld(p.copy(this.touch[i])));
@@ -1011,6 +1042,27 @@ class Holding implements Held, Carried {
     if (this.mount !== 'hand') return null;
     const grip = gripsOf(this.c, 'hand')?.[0];
     return (this.arm ??= grip ? new RaisedArm(this.c, this.side, grip) : null);
+  }
+
+  /**
+   * How big a raised sign is held: as big as its holder's head calls for, but never so small
+   * that its lettering is under MIN_CAP_PX tall on the screen as it is now (nor the board more
+   * than MAX_BOARD of the screen). The arm is worked out again for the board it gets.
+   */
+  private readable() {
+    const arm = this.raised();
+    if (!arm) return 1;
+    let want = arm.size;
+    const b = this.board;
+    if (b && this.cap > 0) {
+      const { width, height } = this.view.stage;
+      const px = this.c.px;
+      const least = MIN_CAP_PX / (this.cap * b.h * px);
+      const most = (MAX_BOARD * Math.min(width, height)) / (b.h * px);
+      want = Math.max(want, Math.min(least, Math.max(most, arm.size)));
+    }
+    if (Math.abs(want - arm.scale) > 0.004) arm.fit(want);
+    return (this.shown = arm.scale);
   }
 
   /** Which way the handle points: along the bone that holds it, on the screen. */
@@ -1193,7 +1245,7 @@ class Holding implements Held, Carried {
 }
 
 /** The words broken into lines, and the biggest letters that fit them in w by h. */
-function fit(g: CanvasRenderingContext2D, text: string, family: string, w: number, h: number) {
+function fit(g: CanvasRenderingContext2D, text: string, family: string, w: number, h: number, round = false) {
   const words = text.trim().split(/\s+/).filter(Boolean);
   const wrap = (size: number) => {
     g.font = `700 ${size}px ${family}`;
@@ -1211,7 +1263,13 @@ function fit(g: CanvasRenderingContext2D, text: string, family: string, w: numbe
   };
   const fits = (size: number) => {
     const lines = wrap(size);
-    return lines.length * size * LEADING <= h && lines.every((l) => g.measureText(l).width <= w);
+    if (!round) return lines.length * size * LEADING <= h && lines.every((l) => g.measureText(l).width <= w);
+    // A disc: every line's corners (its capitals' height, a little over) are inside the circle.
+    const r = Math.min(w, h) / 2;
+    return lines.every((l, i) => {
+      const y = (Math.abs(i - (lines.length - 1) / 2) * LEADING + 0.42) * size;
+      return Math.hypot(g.measureText(l).width / 2, y) <= r;
+    });
   };
   let lo = 4;
   let hi = Math.max(lo, Math.floor(h * BIGGEST));

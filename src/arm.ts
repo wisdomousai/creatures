@@ -33,9 +33,16 @@ export class RaisedArm {
   private reach = 0;
   private along = new Vector3();
   private grow = 1;
-  /** How big the tool should be for this body (1 as it is made). */
+  /** How big the tool is for this body's head (1 as it is made): what its head calls for. */
   readonly size: number;
   private k = 0;
+  private end: Vector3;
+  private shoulder: Vector3;
+  private elbow: Vector3 | null;
+  private side: 1 | -1;
+  private half: number;
+  private top: number;
+  private middle: number;
 
   constructor(
     private c: Character,
@@ -50,19 +57,36 @@ export class RaisedArm {
       this.chain.unshift(b.name);
     }
     const at = (bone: string) => new Vector3().setFromMatrixPosition(p.restMatrix(bone));
-    const end = new Vector3().copy(grip.at).applyMatrix4(p.restMatrix(grip.bone.name));
-    const shoulder = at(this.chain[0]);
+    this.end = new Vector3().copy(grip.at).applyMatrix4(p.restMatrix(grip.bone.name));
+    this.shoulder = at(this.chain[0]);
+    this.elbow = this.chain.length > 1 ? at(this.chain[1]) : null;
+    this.side = side;
     const head = skinBox(c, 'head');
-    const half = head ? (head.max.x - head.min.x) / 2 : c.spec.width * 0.3;
-    const top = head ? head.max.y : c.spec.metres * 0.85;
-    const middle = head ? (head.max.x + head.min.x) / 2 : 0;
+    this.half = head ? (head.max.x - head.min.x) / 2 : c.spec.width * 0.3;
+    this.top = head ? head.max.y : c.spec.metres * 0.85;
+    this.middle = head ? (head.max.x + head.min.x) / 2 : 0;
     // The tool made smaller for a head that is smaller than its board.
-    this.size = Math.min(1, Math.max(0.35, (half * 2) / BOARD));
-    const s = this.size;
-    // Where the grip should be: past the side of the head, with the board's foot above its top.
-    const to = new Vector3(middle + side * (half + 0.1 * s), top + 0.03 * s - CLEAR * s, 0);
+    this.size = Math.min(1, Math.max(0.35, (this.half * 2) / BOARD));
+    this.fit(this.size);
+  }
+
+  /** The size the tool is fitted for now (1 as it is made): `size`, or bigger where the board
+   * has to be big enough to read (tools.ts asks for that with `fit`). */
+  scale = 1;
+
+  /**
+   * Work out the raise for a tool this size: where the grip goes (past the side of the head, the
+   * board's foot above its top, the handle longer as the board is bigger) and how the bones turn
+   * and stretch to put it there.
+   */
+  fit(s: number) {
+    this.scale = s;
+    const { end, shoulder, elbow, side } = this;
+    const to = new Vector3(this.middle + side * (this.half + 0.1 * s), this.top + 0.03 * s - CLEAR * s, 0);
     to.y = Math.max(to.y, shoulder.y + 0.05);
-    const elbow = this.chain.length > 1 ? at(this.chain[1]) : null;
+    this.roll = [];
+    this.reach = 0;
+    this.grow = 1;
     if (elbow) {
       // The forearm straight up (leaning out a little): the elbow is that far below the grip.
       const up = end.clone().sub(elbow);

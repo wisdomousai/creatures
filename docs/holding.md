@@ -29,6 +29,14 @@ and tall the head is.
 - Arms are short and heads are big, so the arm stretches like a rubber hose to get the board clear:
   the elbow is drawn out along the upper arm, or a body with one bone to an arm gets that bone longer.
 - The paddle is made smaller for a small head (a squirrel's is a fair bit smaller than Bolt's), down to a third of its size.
+- **A sign is for reading, so it has a minimum size.** Whoever holds it, the board is made big enough
+  that its lettering is at least 18 CSS px tall (capitals, `MIN_CAP_PX` in `tools.ts`) on the screen as
+  it is now, worked out from the holder's size on screen and the words (a longer label is wrapped,
+  to fit inside the round board, so it needs a bigger board). The board is never more than 45% of the
+  screen's short side. The arm is fitted again for the bigger board (`RaisedArm.fit`): the handle is
+  longer with it, and the hand takes it nearer the foot of the handle so it doesn't hang below the
+  holder. A holder big enough already keeps the size its head calls for. The contact check holds at
+  any size.
 - The side is the one toward the middle of the page. A body with something already in one hand says
   which it holds with: `readonly holdWith = -1 as const` (Dibble's trowel is in her left).
 
