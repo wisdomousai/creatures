@@ -33,6 +33,8 @@ export interface RoamOptions extends LaneOptions {
   every?: [number, number];
   /** How near (metres) a lane must be for anyone to come on it. Default 18. */
   near?: number;
+  /** How many may be out on one lane at once. Default 1 (2 while only one is out). */
+  perLane?: number;
   /** The scene's lights cast them real shadows: no shadow cards, and their meshes cast and
    * take shadows. Default false. */
   castShadows?: boolean;
@@ -81,6 +83,7 @@ export class Roam {
       models: MODELS,
       every: [6, 16],
       near: 18,
+      perLane: 1,
       castShadows: false,
       ...rest,
     };
@@ -175,7 +178,10 @@ export class Roam {
     if (!names.length) return;
     const lanes = this.lanes
       .map((lane) => ({ lane, d: lane.world(lane.length / 2, 0.5, this.v).distanceTo(eye) }))
-      .filter((x) => x.d < this.opts.near && !this.out.some((o) => o.lane === x.lane && this.out.length > 1))
+      .filter((x) => {
+        const on = this.out.filter((o) => o.lane === x.lane).length;
+        return x.d < this.opts.near && (on < this.opts.perLane || this.out.length <= 1);
+      })
       .sort((a, b) => a.d - b.d);
     if (!lanes.length) return;
     const c = await this.load(pickWeighted(names));

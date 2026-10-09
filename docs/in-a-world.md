@@ -46,6 +46,7 @@ They watch the camera when it's before their lane and near, from where it really
 | `models`      | Where the models are, ending in a slash (`MODELS`).                                  |
 | `every`       | Seconds between arrivals, picked between the two (`[6, 16]`).                        |
 | `near`        | How near (m) a lane must be for anyone to come on it (18).                           |
+| `perLane`     | How many may be out on one lane at once (1).                                         |
 | `castShadows` | No shadow cards; their meshes cast and take your lights' shadows (`false`).          |
 | `px`          | Lane px a metre (100).                                                               |
 | `bot`         | The crew's unit in lane px (55: Bolt stands 0.8 m).                                  |
