@@ -36,14 +36,14 @@ export {
   type Tool,
   type View,
 } from './tools';
-export { gripAt, gripOf, gripOn, handy, type Grip, type GripPart } from './props';
+export { gripAt, gripOf, gripOn, handy, type Grip, type GripPart, type Hatches } from './props';
 export type { Hold } from './character';
 /** The set pieces there are, and which come out on each page (see Crew.page). */
 export { SET, SET_PAGES } from './set';
 /** The hangings there are, and which hang on each page. */
 export { DECOR, PAGES } from './decor';
 /** The games there are, and which are played on each page. */
-export { GAMES } from './play';
+export { GAMES, WORLD_GAMES } from './play';
 export { MODELS, VERSION };
 
 /*
@@ -82,4 +82,4 @@ export { Tang } from './tang';
  * to walk, laid flat in it, and the roaming that brings them on near whoever is looking.
  */
 export { Lane, type LaneOptions, type LaneSpec } from './lane';
-export { Roam, type RoamLink, type RoamOptions } from './roam';
+export { Roam, type RoamLink, type RoamOptions, type RoamSeat } from './roam';

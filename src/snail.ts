@@ -340,8 +340,8 @@ export class Snail extends Character {
   }
 
   protected onEnter() {
-    // A different one of the family each time.
-    this.setCoat((this.coat + 1 + Math.floor(Math.random() * (FAMILY.length - 1))) % FAMILY.length);
+    // A different one of the family each time (unless it's the one that was in a picture).
+    if (!this.same) this.setCoat((this.coat + 1 + Math.floor(Math.random() * (FAMILY.length - 1))) % FAMILY.length);
     this.turn = 0;
     this.turnRate = 0;
     this.out = 1;

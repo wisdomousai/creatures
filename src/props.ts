@@ -19,7 +19,7 @@ import {
   TubeGeometry,
   Vector3,
 } from 'three';
-import { type Box, type Door, depthScale, floorDepth, horizon, project } from './box';
+import { type Door, depthScale, floorDepth, horizon, project } from './box';
 import { type Body, type Character, clamp, type Env, type Frame, shadowTexture } from './character';
 import { dress, type LookName, type Outfit } from './looks';
 import { Puppet, sanitize } from './puppet';
@@ -253,6 +253,11 @@ const v = new Vector3();
 const w = new Vector3();
 const q = new Quaternion();
 const q2 = new Quaternion();
+const q3 = new Quaternion();
+
+/** How far back `depth` is, as the holder's z: in a box, further from the camera so nearer
+ * ones pass in front; laid flat in a world, back is back. */
+const back = (f: Frame, depth: number) => depth * (f.flat ? floorDepth(f) : f.depth * 3);
 const e = new Euler();
 const DEG = Math.PI / 180;
 /** How fast each slows on the floor (per second). */
@@ -267,6 +272,15 @@ const FRICTION: Partial<Record<Kind['moves'], number>> = {
 export interface Spot {
   s: number;
   depth: number;
+}
+
+/**
+ * Where the props come up and go back down: a hole that opens in the floor where one's to
+ * come up (the box's trapdoors), and shuts after it. Without any (a floor in a world of your
+ * own), they rise up through the floor where they are, and sink back into it.
+ */
+export interface Hatches {
+  portal(kind: 'floor', x: number, depth: number, w: number): Door;
 }
 
 export class Prop implements Body {
@@ -326,7 +340,9 @@ export class Prop implements Body {
   private twirl = 0;
   fallen = false;
   /** Sent away, and waiting to be down on the floor to go. */
-  private going: { portal: Box['portal'] } | null = null;
+  private going: { hatches: Hatches | null } | null = null;
+  /** A soft card under it for a shadow; off where the scene's lights cast it real ones. */
+  shadowCard = true;
   /** A spot of light: where it's going. */
   aim: Spot | null = null;
   /** The block it stands on. */
@@ -466,7 +482,7 @@ export class Prop implements Body {
   // ---------- Coming and going ----------
 
   /** Up through a hole in the floor at (s, depth); a spot of light just comes on. */
-  arrive(f: Frame, s: number, depth: number, box: { portal: Box['portal'] }) {
+  arrive(f: Frame, s: number, depth: number, hatches: Hatches | null) {
     this.s = s;
     this.depth = depth;
     this.h = 0;
@@ -474,30 +490,31 @@ export class Prop implements Body {
     this.rise = 0;
     this.want = 1;
     this.holder.visible = true;
-    if (this.kind.moves !== 'spot') this.open(f, box);
+    if (this.kind.moves !== 'spot') this.open(f, hatches);
   }
 
   /** Back down a hole where it is, once it's down on the floor (a spot just goes out). */
-  leave(box: { portal: Box['portal'] }) {
+  leave(hatches: Hatches | null) {
     if (this.heldBy) this.drop();
     this.reeling = false;
     this.users.clear();
     this.aim = null;
-    this.going = box;
-    if (this.h < 2 || this.kind.moves === 'spot') this.sink(box);
+    this.going = { hatches };
+    if (this.h < 2 || this.kind.moves === 'spot') this.sink(hatches);
   }
 
-  private sink(box: { portal: Box['portal'] }) {
+  private sink(hatches: Hatches | null) {
     this.going = null;
     this.want = 0;
     this.vs = this.vz = 0;
-    if (this.frame && this.kind.moves !== 'spot') this.open(this.frame, box);
+    if (this.frame && this.kind.moves !== 'spot') this.open(this.frame, hatches);
   }
 
-  private open(f: Frame, box: { portal: Box['portal'] }) {
+  private open(f: Frame, hatches: Hatches | null) {
+    if (!hatches) return;
     const x = project(f, this.depth, { x: this.s, y: f.bottom }).x;
     const width = this.footprint(f).x * 2 * depthScale(f, this.depth);
-    this.portal ??= box.portal('floor', x, this.depth, Math.max(width * 1.25, f.bot * 0.7));
+    this.portal ??= hatches.portal('floor', x, this.depth, Math.max(width * 1.25, f.bot * 0.7));
   }
 
   get gone() {
@@ -621,7 +638,7 @@ export class Prop implements Body {
       this.portal.want = 0;
       if (this.portal.open <= 0) this.portal = null;
     }
-    if (this.going && this.h < 2 && !this.heldBy) this.sink(this.going);
+    if (this.going && this.h < 2 && !this.heldBy) this.sink(this.going.hatches);
     if (this.taken && (this.rise < 1 || this.heldBy || this.going)) this.taken = null;
     if (this.taken) this.carry(dt, f);
     else if (!this.heldBy && this.rise === 1) {
@@ -970,10 +987,14 @@ export class Prop implements Body {
       const c = this.heldBy;
       c.holder.updateMatrixWorld(true);
       w.copy(this.grip.at).applyMatrix4(this.grip.bone.matrixWorld);
+      // (Where its parent is: the box's stage, or a lane turned and scaled in a world.)
+      const parent = this.holder.parent;
+      parent?.worldToLocal(w);
       this.taking = Math.min(1, this.taking + dt / 0.2);
       const u = this.taking * this.taking * (3 - 2 * this.taking);
       this.holder.position.copy(this.from).lerp(w, u);
       c.puppet.bone('root').getWorldQuaternion(q);
+      if (parent) q.premultiply(parent.getWorldQuaternion(q3).invert());
       const held = this.kind.held;
       if (held)
         q.multiply(q2.setFromEuler(e.set(held[2] * DEG, held[0] * DEG, held[1] * DEG, 'YXZ')));
@@ -987,7 +1008,7 @@ export class Prop implements Body {
         x: this.s + shake,
         y: f.bottom - this.h - this.middle(f) - up,
       });
-      this.holder.position.set(mid.x, -mid.y, -this.depth * f.depth * 3);
+      this.holder.position.set(mid.x, -mid.y, -back(f, this.depth));
       this.holder.quaternion.copy(this.turn);
       if (this.kind.moves === 'spin') {
         // A top leans on its point, not about its middle.
@@ -1000,11 +1021,19 @@ export class Prop implements Body {
       // Its shadow on the floor under it, fainter the higher it goes.
       const foot = project(f, this.depth, { x: this.s, y: f.bottom });
       const lift = clamp(1 - this.h / (this.heightPx(f) * 3 + f.bot), 0, 1);
-      this.shadow.visible = this.rise > 0.5 && !spot;
+      this.shadow.visible = this.shadowCard && this.rise > 0.5 && !spot;
       this.shadow.material.opacity = 0.22 * lift * clamp(this.rise * 2 - 1, 0, 1);
       const width = this.footprint(f).x * 2.3 * k * (0.7 + 0.3 * lift);
-      this.shadow.scale.set(width, f.depth * 0.5 * k, 1);
-      this.shadow.position.set(foot.x, -foot.y, -this.depth * f.depth * 3 - width * 0.4);
+      if (f.flat) {
+        // Flat on the floor under it, a pool round it.
+        this.shadow.rotation.x = -Math.PI / 2;
+        this.shadow.scale.set(width, width * 0.8, 1);
+        this.shadow.position.set(foot.x, -foot.y + 0.5, -back(f, this.depth));
+      } else {
+        this.shadow.rotation.x = 0;
+        this.shadow.scale.set(width, f.depth * 0.5 * k, 1);
+        this.shadow.position.set(foot.x, -foot.y, -back(f, this.depth) - width * 0.4);
+      }
     }
     if (this.kind.unrolls) this.drawRope(f);
     // Through its hole while it comes and goes (not once it's up, as the hole closes under
@@ -1017,8 +1046,13 @@ export class Prop implements Body {
         plane.constant = e[2];
       } else plane.constant = 1e6;
     });
+    // (Laid flat in a world, the planes are the world's: the floor is where the lane is.)
     this.planes[3].normal.set(0, 1, 0);
-    this.planes[3].constant = this.heldBy ? 1e6 : f.bottom;
+    this.planes[3].constant = this.heldBy
+      ? 1e6
+      : f.flat
+        ? -(this.holder.parent?.getWorldPosition(w).y ?? 0)
+        : f.bottom;
   }
 
   /** The cable it has paid out, along the floor where it lies and up to the ball. */
@@ -1030,7 +1064,7 @@ export class Prop implements Body {
     const r = Math.max(0.7, f.bot * 0.022);
     const at = (s: number, depth: number, h: number) => {
       const p = project(f, depth, { x: s, y: f.bottom - h - r });
-      return new Vector3(p.x, -p.y, -depth * f.depth * 3);
+      return new Vector3(p.x, -p.y, -back(f, depth));
     };
     const pts = c.map((p) => at(p.s, p.depth, 0));
     pts.push(this.heldBy ? this.holder.position.clone() : at(this.s, this.depth, this.h));

@@ -48,6 +48,9 @@ They watch the camera when it's before their lane and near, from where it really
 | `near`        | How near (m) a lane must be for anyone to come on it (18).                           |
 | `perLane`     | How many may be out on one lane at once (1).                                         |
 | `castShadows` | No shadow cards; their meshes cast and take your lights' shadows (`false`).          |
+| `seats`       | What they may get up on and sit: benches, chairs, a cat tree (see below).            |
+| `leave`       | `false`: whoever comes stays, their time up or not (a room's own residents) (`true`). |
+| `play`        | `true`: they get up games with the props (fetch, yarn, a ball…) by themselves; or the games' names (`false`). |
 | `px`          | Lane px a metre (100).                                                               |
 | `bot`         | The crew's unit in lane px (55: Bolt stands 0.8 m).                                  |
 | `ceiling`     | How high fliers may go, in metres (3.2).                                             |
@@ -69,7 +72,12 @@ facing into the room. A lane's `floor: [x0, z0, x1, z1]` is where one held may b
 | `holding`              | The one held, or `null`.                                             |
 | `dress(look)`          | A new look for everyone.                                             |
 | `enabled`              | `false`: no one new comes (those out stay till they go).             |
+| `seats`                | What they may get up on and sit (set it when your furniture's in).   |
 | `onStage`              | Who's out, and on which `Lane`.                                      |
+| `play(c, name?)`       | A game (by name, or any that fits) on that one's lane (see below).   |
+| `games(c)`             | The games that can be played where that one is.                      |
+| `playing(c)`           | What's being played on that one's lane, or `null`.                   |
+| `jumpOut(who, at, land)` | One jumps out of a picture on a wall (see below).                  |
 | `lanes`                | The `Lane`s: each one's `group` is in your scene.                    |
 
 Held, as on a page: a walker hurries after the point on the floor under the pointer, off
@@ -85,6 +93,54 @@ canvas.addEventListener('pointerdown', (e) => {
 });
 canvas.addEventListener('pointermove', (e) => roam.drag(rayAt(e)));
 canvas.addEventListener('pointerup', () => roam.drop());
+```
+
+## Seats
+
+Give them furniture and they use it. Now and then one picks a seat near it that it can
+hop up on (about half as high again as itself; a flier, any), walks round to the front of
+it (or the back, if it's behind), hops up, and sits, lies down or naps a while; when it's
+off somewhere else it hops down. Two don't take the same place: a bench takes as many as
+fit along it. Let go over a seat, one lands on it.
+
+```ts
+roam.seats = [
+  // A bench 1.6 m long at (0, -11), its seat 0.45 m up, running along z.
+  { at: [0, -11], height: 0.45, length: 1.6, width: 0.45, along: [0, 1] },
+  // A perch, for the fliers only.
+  { at: [3, -6], height: 1.8, length: 0.6, width: 0.1, along: [1, 0], fliers: true },
+];
+```
+
+A lane's crew use the seats on its `floor` (or within a metre of the lane, without one).
+On a frame of your own, give a character `env.seats` (`Top`s, in its px) and it does the
+same.
+
+## Games
+
+With `play` on, now and then the crew on a lane get up a game by themselves: a bone thrown
+and fetched, a ball of yarn batted about, a cushion fought over. The props come up through
+the floor, are played with, and sink back when the game's done; whoever a game wants that
+isn't there (a dog for fetch) walks in from an end out of sight. `roam.play(c)` starts one
+where `c` is, on a click or from a menu: `roam.games(c)` are the ones to offer.
+
+```ts
+const roam = new Roam(scene, { lanes, roster, play: ['fetch', 'yarn', 'ball'] });
+menu.onPick = (name) => roam.play(who, name);
+```
+
+## Out of a picture
+
+`roam.jumpOut(who, at, land)` brings one on as on the Creatures page's monitor: its feet at
+`at` (world) on a picture, a beat there, then an arc down to the floor at `land` (`[x, z]`),
+on the lane whose floor that's on. `who` is a ROSTER name, or one of your own already
+standing somewhere (on a lane of your own inside a frame, say): that very one comes out,
+in its own coat, and is one of the crew from then on. It resolves to the one that came, or
+`null` (one already out stays where it is; a flier or a swimmer comes its own way).
+
+```ts
+const out = await roam.jumpOut(inFrame, inFrame.holder.getWorldPosition(new Vector3()), [x, z]);
+if (out) frame.fillWithSomeoneElse();
 ```
 
 ## Without Roam

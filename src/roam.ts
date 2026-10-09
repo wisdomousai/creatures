@@ -4,7 +4,11 @@
 // walks off a lane's end by a way through to another lane (a link: a doorway, say) comes on
 // there, when no one is looking. Poke one and it notices; poke it again and it does a trick.
 // Take hold of one and it goes after the pointer: across the floor, or (a flier) through
-// the air; let go, and it goes back to its lane.
+// the air; let go, and it goes back to its lane. Give it seats (a bench, a cat tree's
+// platforms) and now and then one goes over, hops up and sits a while. Let them play, and
+// now and then those on a lane get up a game with toys that come up through the floor (a
+// bone to fetch, a ball of yarn to bat about) or without (tag, a dance). One can jump out
+// of a picture on a wall, as out of the glass on a page.
 import {
   Frustum,
   Matrix4,
@@ -14,14 +18,30 @@ import {
   type Scene,
   Vector3,
 } from 'three';
-import { type Character, loadModel } from './character';
+import { type Character, type Env, loadModel, type Top } from './character';
 import { ROSTER } from './crew';
 import { Lane, type LaneOptions, type LaneSpec } from './lane';
 import type { LookName } from './looks';
+import { Play, WORLD_GAMES } from './play';
 import { setOutlineViewport } from './stage';
 import { MODELS } from './version';
 
 type End = 'start' | 'end';
+
+/** Something in the world the crew can get up on and sit: a bench, an armchair, a cat
+ * tree's platform, a kennel's roof; a perch, for the fliers. Its top is a rectangle. */
+export interface RoamSeat {
+  /** Its top's middle on the floor plan, [x, z] (metres), and how high it is (m). */
+  at: [number, number];
+  height: number;
+  /** How long its top is (m), and which way that runs on the floor ([x, z], length 1);
+   * and how deep it is across that (m). */
+  length: number;
+  along: [number, number];
+  width: number;
+  /** Only fliers get up on it (a perch, a lamp's top). Default: whoever can hop that high. */
+  fliers?: boolean;
+}
 
 /** A way through between two lanes' ends. */
 export interface RoamLink {
@@ -48,6 +68,14 @@ export interface RoamOptions extends LaneOptions {
   /** The scene's lights cast them real shadows: no shadow cards, and their meshes cast and
    * take shadows. Default false. */
   castShadows?: boolean;
+  /** What they can get up on and sit (see RoamSeat; `seats` sets them later). */
+  seats?: RoamSeat[];
+  /** Do they go when their time's up? Default true. False, and whoever comes stays till
+   * they're taken off somewhere (a room's own residents). */
+  leave?: boolean;
+  /** Do those on a lane play games together, now and then? true: any that suit a world
+   * (WORLD_GAMES: fetch, yarn, ball, tag...); or a list, the only ones played. Default false. */
+  play?: boolean | string[];
 }
 
 interface Out {
@@ -84,6 +112,10 @@ export class Roam {
   private m = new Matrix4();
   private v = new Vector3();
   private poked = new Map<Character, number>();
+  /** The seats on (or about) each lane's floor, as its crew see them: tops. */
+  private tops = new Map<Lane, Top[]>();
+  /** Each lane's games (those with anyone on, once they're asked to play). */
+  private plays = new Map<Lane, Play>();
   /** The one held, on its lane; a flier, on the upright plane it's carried about in. */
   private held: { c: Character; lane: Lane; plane: Plane | null } | null = null;
 
@@ -98,6 +130,9 @@ export class Roam {
       near: 18,
       perLane: 1,
       castShadows: false,
+      seats: [],
+      leave: true,
+      play: false,
       ...rest,
     };
     this.lanes = options.lanes.map((spec) => new Lane(spec, { px, bot, ceiling }));
@@ -112,11 +147,23 @@ export class Roam {
       this.links.set(`${a.lane}:${a.end}`, { lane: lb, end: b.end });
       this.links.set(`${b.lane}:${b.end}`, { lane: la, end: a.end });
     }
+    this.seats = this.opts.seats;
     if (typeof window !== 'undefined') {
       const size = () => setOutlineViewport(innerWidth, innerHeight);
       size();
       addEventListener('resize', size);
     }
+  }
+
+  /** What they can get up on and sit, in the world. */
+  get seats(): readonly RoamSeat[] {
+    return this.opts.seats;
+  }
+
+  set seats(seats: readonly RoamSeat[]) {
+    this.opts.seats = [...seats];
+    this.tops.clear();
+    for (const lane of this.lanes) this.tops.set(lane, seatsOn(lane, this.opts.seats));
   }
 
   /** Who's out, and on which lane. */
@@ -158,21 +205,26 @@ export class Roam {
     if (held && (held.c.state !== 'here' || !this.out.some((o) => o.c === held.c)))
       this.held = null;
 
-    // Each lane's crew live on their own frame: everyone on it, and where the eye is.
+    // Each lane's crew live on their own frame: everyone on it, its toys, and where the eye
+    // is. (A lane no one's on any more still has its toys put away.)
     for (const lane of this.lanes) {
       const here = this.out.filter((o) => o.lane === lane);
-      if (!here.length) continue;
-      const env = {
+      let play = this.plays.get(lane);
+      if (!play && here.length && this.opts.play) play = this.playOn(lane);
+      if (!here.length && !play?.props.length) continue;
+      const env: Env = {
         frame: lane.frame,
         pointer: lane.pointer(eye, this.time),
         time: this.time,
         crew: here.map((o) => o.c),
-        props: [],
+        props: play?.props ?? [],
+        seats: this.tops.get(lane),
       };
       for (const o of here) {
         o.c.update(dt, env);
         lane.place(o.c);
       }
+      play?.update(dt, env);
     }
 
     // The ones who've gone: through to the next lane, if they walked off by a way through.
@@ -184,6 +236,96 @@ export class Roam {
       const to = end && o.c.spec.entrance === 'walk' && this.links.get(`${o.lane.spec.id}:${end}`);
       if (to) this.through.push({ c: o.c, lane: to.lane, end: to.end, since: this.time });
     }
+  }
+
+  /** A lane's games, the first time anyone's on it. */
+  private playOn(lane: Lane) {
+    const play = new Play(lane.group, null, this.opts.models, null, (name) => this.callTo(lane, name));
+    play.castShadows = this.opts.castShadows;
+    play.limit(Array.isArray(this.opts.play) ? this.opts.play : WORLD_GAMES);
+    play.dress(this.opts.look);
+    this.plays.set(lane, play);
+    return play;
+  }
+
+  /** Start a game on the lane this one's on (by name, or any that fits): those there play. */
+  play(c: Character, name?: string) {
+    const o = this.out.find((x) => x.c === c);
+    if (!o) return Promise.resolve(false);
+    const play = this.plays.get(o.lane) ?? this.playOn(o.lane);
+    return play.start(name);
+  }
+
+  /** What's being played on the lane this one's on, if anything. */
+  playing(c: Character) {
+    const o = this.out.find((x) => x.c === c);
+    return (o && this.plays.get(o.lane)?.playing) ?? null;
+  }
+
+  /** The games that can be played where this one is (the lane's own, if it has a list). */
+  games(c: Character): string[] {
+    if (!this.out.some((x) => x.c === c)) return [];
+    return Array.isArray(this.opts.play) ? [...this.opts.play] : [...WORLD_GAMES];
+  }
+
+  /** Someone a game wants, on this lane (walking in from an end out of sight, or up from
+   * the floor), if they're free. */
+  private async callTo(lane: Lane, name: string) {
+    if (!ROSTER[name]) return null;
+    const c = await this.load(name);
+    if (!c || this.out.some((o) => o.c === c) || this.through.some((t) => t.c === c)) return null;
+    const ends: End[] = ['start', 'end'].filter((e) => !this.seen(lane, e === 'start' ? 0 : lane.length)) as End[];
+    const s = lane.length * (0.25 + Math.random() * 0.5);
+    if (c.spec.entrance === 'walk' && ends.length) this.bring(c, lane, s, ends[0]);
+    else this.bring(c, lane, s);
+    return c;
+  }
+
+  /**
+   * Bring one on by jumping out of a picture on a wall: its feet at `at` (world) on the
+   * picture, a beat there, then an arc down to the floor at `land` ([x, z]), on the lane
+   * whose floor that's on (or the nearest). `who` is a ROSTER name, or one of the crew
+   * already about somewhere of your own (the one in the picture itself): it's taken off
+   * where it was and is one of this crew from then on, till it goes. One already out stays
+   * where it is; one that doesn't jump (a flier, a swimmer) comes its own way. With `max`
+   * out, the one that's been out longest goes.
+   */
+  async jumpOut(who: string | Character, at: Vector3, land: [number, number]): Promise<Character | null> {
+    if (typeof who === 'string' && !ROSTER[who]) return null;
+    const lane = this.laneAt(land);
+    if (!lane) return null;
+    const c = typeof who === 'string' ? await this.load(who) : who;
+    if (!c || this.out.some((o) => o.c === c) || this.through.some((t) => t.c === c)) return null;
+    const crowd = this.out.filter((o) => o.c.state === 'here' && !o.c.role);
+    if (this.out.length >= this.opts.max && crowd.length)
+      crowd.sort((a, b) => b.c.t - a.c.t)[0].c.leave();
+    c.stays = !this.opts.leave;
+    if (typeof who !== 'string') {
+      c.dress(this.opts.look);
+      if (this.opts.castShadows) c.shadowCard = false;
+    }
+    lane.group.add(c.holder);
+    const to = lane.group.worldToLocal(this.v.set(land[0], 0, land[1]));
+    const [s, depth] = [to.x, -to.z / lane.width];
+    if (c.jumpsOut && c.spec.edges.includes('bottom')) {
+      const from = lane.group.worldToLocal(this.v.copy(at));
+      c.jumpOut(lane.frame, { x: from.x, y: -from.y }, -from.z / lane.width, s, depth, typeof who !== 'string');
+    } else c.enter(lane.frame, 'bottom', s, undefined, depth);
+    lane.place(c);
+    this.out.push({ c, lane });
+    return c;
+  }
+
+  /** The lane a point on the floor ([x, z]) is on: the one whose floor it's on, nearest
+   * first, or else the nearest. */
+  private laneAt([x, z]: [number, number]) {
+    const p = new Vector3(x, 0, z);
+    const d = (lane: Lane) => lane.world(lane.length / 2, 0.5, this.v).distanceTo(p);
+    const on = this.lanes.filter((lane) => {
+      const f = lane.spec.floor;
+      return f && x >= Math.min(f[0], f[2]) && x <= Math.max(f[0], f[2]) && z >= Math.min(f[1], f[3]) && z <= Math.max(f[1], f[3]);
+    });
+    return [...(on.length ? on : this.lanes)].sort((a, b) => d(a) - d(b))[0] ?? null;
   }
 
   /** Bring someone onto a lane near the eye, where they won't be seen arriving. */
@@ -222,6 +364,7 @@ export class Roam {
   }
 
   private bring(c: Character, lane: Lane, s: number, from?: End) {
+    c.stays = !this.opts.leave;
     lane.group.add(c.holder);
     c.enter(lane.frame, 'bottom', s, from);
     lane.place(c);
@@ -360,7 +503,41 @@ export class Roam {
   dress(look: LookName) {
     this.opts.look = look;
     for (const c of this.members.values()) c.dress(look);
+    for (const p of this.plays.values()) p.dress(look);
   }
+}
+
+/** The seats a lane's crew can get to, as tops on its frame: those on its floor (the room
+ * round it, if it says), or on the strip of it, with a metre over either side. Turned
+ * across the lane, a seat's top is its width along it and its length back. */
+function seatsOn(lane: Lane, seats: readonly RoamSeat[]): Top[] {
+  const f = lane.spec.floor;
+  const [ax, az] = lane.spec.along;
+  const out: Top[] = [];
+  const p = new Vector3();
+  for (const seat of seats) {
+    const [x, z] = seat.at;
+    if (f && (x < Math.min(f[0], f[2]) || x > Math.max(f[0], f[2]) || z < Math.min(f[1], f[3]) || z > Math.max(f[1], f[3])))
+      continue;
+    const l = lane.group.worldToLocal(p.set(x, 0, z));
+    const depth = -l.z / lane.width;
+    if (!f && (l.x < -lane.px || l.x > lane.length + lane.px || depth < -lane.px / lane.width || depth > 1 + lane.px / lane.width))
+      continue;
+    // Along the lane, mostly, or across it.
+    const c = Math.abs(seat.along[0] * ax + seat.along[1] * az);
+    const [long, deep] = c > Math.SQRT1_2 ? [seat.length, seat.width] : [seat.width, seat.length];
+    const halfS = (long * lane.px) / 2;
+    out.push({
+      key: seat,
+      s0: l.x - halfS,
+      s1: l.x + halfS,
+      depth,
+      h: seat.height * lane.px,
+      half: (deep * lane.px) / 2 / lane.width,
+      fliers: seat.fliers,
+    });
+  }
+  return out;
 }
 
 function clamp(x: number, lo: number, hi: number) {

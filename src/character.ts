@@ -73,6 +73,11 @@ export interface Env {
   show?: { x: number; y: number; at: number };
   /** What a flier let go over can come down onto: the monitor's top, the set pieces'. */
   tops?: readonly Top[];
+  /** What it may get up on of its own accord, now and then, to sit a while (a bench, a
+   * cat tree's platform, an armchair): it walks over, hops up, and sits (or lies, or naps:
+   * whatever it does to rest), then hops down when it's off somewhere else. Each is a top
+   * too: let go over one, it lands there. */
+  seats?: readonly Top[];
 }
 
 /** The top of something a flier can stand on: what it's the top of (the same from frame to
@@ -87,6 +92,11 @@ export interface Top {
   /** Where its middle is along the front (px), if it moves (a swing's seat): whoever
    * stands on it goes along with it. */
   at?: number;
+  /** How far it reaches back and forth from `depth` (0..1 of the floor's depth): a seat
+   * is got onto from in front of it (or behind), that far off. Default 0.1. */
+  half?: number;
+  /** A seat for fliers only (a perch, a lamp's top): walkers don't get up on it. */
+  fliers?: boolean;
 }
 
 /** Anything that takes up room on the floor: a crew member, or a prop in the way. */
@@ -316,6 +326,9 @@ export abstract class Character {
   } | null = null;
   /** How high the jump has it off the floor (px at the front), on top of its own h. */
   private glassLift = 0;
+  /** Coming on as itself again (out of the picture it was just in), so it keeps its looks
+   * (a snail doesn't put on another of its family's coats). */
+  protected same = false;
   protected leaveBy: 'rise' | 'walk' | 'fly' | 'door' = 'rise';
   /** The box's doors (the crew hands them over), and the one it is using, if any. */
   doors: readonly Door[] = [];
@@ -344,6 +357,12 @@ export abstract class Character {
   /** Let go in the air: it hangs there flapping for a while (`len` s), then goes on. */
   protected hovering: { t: number; len: number; tx: number } | null = null;
   private topsHere: readonly Top[] = [];
+  /** On its way to a seat to get up on it: the seat, where along it, and since when (s). */
+  private seeking: { seat: Top; s: number; since: number } | null = null;
+  /** Just up on a seat: it sits (or lies) once it's landed. */
+  private settling = false;
+  /** Stays till it's sent off (leave()), however long it's been here: one who lives here. */
+  stays = false;
   private perch = new Spring(2.2, 0.8);
   /** Up on something for a while (a nook in a case), or settled in a place of its own (the
    * library's company): it and those on the floor keep out of each other's reckoning (they
@@ -508,10 +527,13 @@ export abstract class Character {
   /**
    * Come on stage by jumping out of its picture on the monitor's glass (the Creatures
    * page): its feet at `at` (viewport px) on the glass `depth` back in the box, a beat
-   * there, then an arc forward and down to the floor at s, `to` of the way back.
+   * there, then an arc forward and down to the floor at s, `to` of the way back. `same`:
+   * it's the one that was in the picture, and keeps its looks.
    */
-  jumpOut(frame: Frame, at: { x: number; y: number }, depth: number, s: number, to: number) {
+  jumpOut(frame: Frame, at: { x: number; y: number }, depth: number, s: number, to: number, same = false) {
+    this.same = same;
     this.enter(frame, 'bottom', s);
+    this.same = false;
     // Where that point on the glass would be at the front of the box.
     const k = depthScale(frame, depth);
     const vx = (frame.left + frame.right) / 2;
@@ -812,6 +834,88 @@ export abstract class Character {
     this.hopUp(0.08);
   }
 
+  /** How high it can hop up (px at the front of the box): about its own height and half
+   * again (a cat more, Bolt less: a subclass says). */
+  protected get spring() {
+    return this.heightPx * 1.5;
+  }
+
+  /**
+   * Now and then, between acts: off to one of the seats near it, to get up on it and sit.
+   * Not every time (most times it does as it would), not one it can't hop up on, nor one
+   * full already (each takes a place its own width along it). Says if it went.
+   */
+  private seek(env: Env): boolean {
+    const f = env.frame;
+    if (!env.seats?.length || !f.flat || this.edge !== 'bottom' || this.free || this.onTop || this.onto) return false;
+    if (Math.random() > 0.35) return false;
+    const room = this.footprint(f).x * 2;
+    const near = this.heightPx * 14;
+    const fits = env.seats.filter((t) => {
+      if (t.h > (this.flies ? Infinity : this.spring) || (t.fliers && !this.flies)) return false;
+      const middle = (t.s0 + t.s1) / 2;
+      if (Math.abs(middle - this.s) > near) return false;
+      const on = env.crew.filter((c) => c !== this && (c.onTop === t.key || c.seeking?.seat === t)).length;
+      return (on + 1) * room <= t.s1 - t.s0 + room * 0.5;
+    });
+    if (!fits.length) return false;
+    const seat = fits[Math.floor(Math.random() * fits.length)];
+    // Along it where there's a place: somewhere about the middle, on its own side of it;
+    // the far end if someone's there.
+    const half = Math.min(this.footprint(f).x, (seat.s1 - seat.s0) / 2);
+    const lo = seat.s0 + half;
+    const hi = Math.max(lo, seat.s1 - half);
+    const taken = env.crew.filter((c) => c !== this && (c.onTop === seat.key || c.seeking?.seat === seat));
+    const mid = (lo + hi) / 2;
+    let s = mid + Math.sign(this.s - mid) * (hi - lo) * 0.25 * Math.random();
+    if (taken.some((c) => Math.abs((c.seeking?.s ?? c.s) - s) < room))
+      s = Math.abs(s - lo) < Math.abs(s - hi) ? hi : lo;
+    this.seeking = { seat, s, since: this.t };
+    this.setAct('idle');
+    this.actLength = Infinity;
+    this.walkTo(s, this.approach(f, seat));
+    return true;
+  }
+
+  /** Where it stands to hop up on a seat: in front of it, or behind it if it's there. */
+  private approach(f: Frame, seat: Top) {
+    const off = (seat.half ?? 0.1) + this.footprint(f).z / floorDepth(f) + 0.02;
+    return this.depth > seat.depth ? seat.depth + off : Math.max(0, seat.depth - off);
+  }
+
+  /** On its way to a seat, it walks there and hops up; up there, it sits. It gives up if it
+   * can't get there (in the way, or the seat's gone). */
+  private toSeat(env: Env) {
+    const f = env.frame;
+    if (this.settling) {
+      if (this.onto) return;
+      this.settling = false;
+      const rest = ['sit', 'lie', 'nap'].filter((n) => this.acts[n] && (!this.acts[n].when || this.acts[n].when!()));
+      if (rest.length) this.setAct(rest[Math.floor(Math.random() * rest.length)]);
+      else this.setAct('idle');
+      // (Sitting, a good while: an act, then most times another.)
+      this.actLength = Math.max(this.actLength, 6 + Math.random() * 8);
+      this.stay = Math.max(this.stay, this.t + this.actLength + 4);
+      return;
+    }
+    const go = this.seeking!;
+    const seat = (env.seats ?? []).find((t) => t.key === go.seat.key);
+    if (!seat || this.free || this.t - go.since > 14) {
+      this.seeking = null;
+      this.actLength = 0;
+      return;
+    }
+    if (this.goal !== null || this.onto) return;
+    if (Math.abs(this.depth - this.depthGoal) * floorDepth(f) > 2) return;
+    // There: up it hops, and stays on it (keepOn) till it's off elsewhere.
+    this.seeking = null;
+    this.settling = true;
+    this.onTop = seat.key;
+    this.topAt = seat.at ?? null;
+    const rise = Math.max(0, seat.h - this.standOn);
+    this.hopOnto(go.s, seat.depth, seat.h, 0.45 + Math.sqrt(rise / (f.bot * 40)), this.flies ? 0.5 : 0.3);
+  }
+
   /** Has it got where it was sent? */
   get there() {
     return this.goal === null && this.depth === this.depthGoal;
@@ -853,6 +957,8 @@ export abstract class Character {
     this.direct({ posture: 'stand', mood: 'happy', hurry: 1.8 });
     this.perched = false;
     this.onTop = null;
+    this.seeking = null;
+    this.settling = false;
     this.aloft = this.flies && !this.free && this.edge === 'bottom';
     this.takenV = { x: 0, y: 0 };
     // A flier comes out to the front, in the air (not behind anything on the page).
@@ -1142,7 +1248,7 @@ export abstract class Character {
   update(dt: number, env: Env) {
     if (this.state === 'gone') return;
     this.scale(env.frame);
-    this.topsHere = env.tops ?? [];
+    this.topsHere = env.seats?.length ? [...(env.tops ?? []), ...env.seats] : (env.tops ?? []);
     this.t += dt;
     this.actT += dt;
     // Never sent back behind the monitor, whatever it's doing (flying, climbing, a trick).
@@ -1162,8 +1268,9 @@ export abstract class Character {
     // Flying, it goes in or out of the box on its own; otherwise it walks there (in move).
     if (this.free) this.depth += clamp(this.depthGoal - this.depth, -dt * 0.6, dt * 0.6);
     if (this.state === 'here' && !this.role && !this.taken) {
-      if (this.actT > this.actLength) this.pickAct();
-      if (this.t > this.stay && this.act === 'idle') this.leave();
+      if (this.seeking || this.settling) this.toSeat(env);
+      else if (this.actT > this.actLength && !this.seek(env)) this.pickAct();
+      if (this.t > this.stay && this.act === 'idle' && !this.stays && !this.seeking) this.leave();
     } else if (this.role?.ending && this.act !== 'idle' && this.actT > this.actLength)
       this.setAct('idle');
     this.perch.update(dt, this.standOn);

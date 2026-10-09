@@ -1,5 +1,5 @@
 import type { Object3D } from 'three';
-import { type Box, floorDepth, project } from './box';
+import { floorDepth, project } from './box';
 import { DRAG, HOLD, holdSelection } from './press';
 import {
   type Character,
@@ -12,7 +12,7 @@ import {
 } from './character';
 import type { Expression } from './face';
 import type { LookName } from './looks';
-import { Bubbles, floorAt, G, gripOf, handy, KINDS, Prop, type Spot } from './props';
+import { Bubbles, floorAt, G, gripOf, handy, type Hatches, KINDS, Prop, type Spot } from './props';
 import { inFamily } from './families';
 
 /**
@@ -52,6 +52,13 @@ export const GAMES: Record<string, string[]> = {
   'creatures/birds': ['parade', 'bubbles', 'balloon', 'drum', 'dance'],
 };
 
+/** The games for a floor in a world (a Roam's lanes): all but those played with the mouse
+ * on a page (the spot of light it holds, the bubbles it pops). */
+export const WORLD_GAMES = [
+  'fetch', 'frisbee', 'yarn', 'ball', 'balloon', 'blocks', 'top', 'trampoline', 'seesaw',
+  'drum', 'cushion', 'crate', 'table', 'tag', 'highfive', 'dance', 'parade', 'nap',
+];
+
 /** A scene ends early (someone left, or a step took too long). */
 class Cut extends Error {}
 
@@ -87,10 +94,16 @@ export class Play {
   /** The games the room is for (a playground's): they come up more, and sooner. */
   private games: string[] = [];
   private hushed = false;
+  /** The only games played here (null: any). */
+  private only: Set<string> | null = null;
+  /** The scene's lights cast the props real shadows: no shadow cards, and their meshes cast
+   * and take shadows. */
+  castShadows = false;
 
   constructor(
     private stage: Object3D,
-    private box: Box,
+    /** Where the props come up (the box's trapdoors), or null: up through the floor. */
+    private hatches: Hatches | null,
     private models: string,
     private hitLayer: HTMLElement | null,
     /** Bring someone on (by name), for a scene that needs them. */
@@ -127,8 +140,18 @@ export class Play {
   /** Start a scene now (by name, or any that fits), calling in its cast if need be. */
   /** The games this room is for (none: any, now and then). */
   favour(games: string[]) {
-    this.games = games.filter((n) => SCENES[n]);
+    this.games = games.filter((n) => SCENES[n] && this.can(n));
     if (this.games.length) this.next = Math.min(this.next, this.gap(6, 10));
+  }
+
+  /** Only these games are played here (null: any of them). */
+  limit(games: string[] | null) {
+    this.only = games && new Set(games);
+    this.games = this.games.filter((n) => this.can(n));
+  }
+
+  private can(name: string) {
+    return !this.only || this.only.has(name);
   }
 
   /** Seconds till the next game, from..from+more, sooner in a playground. */
@@ -138,7 +161,9 @@ export class Play {
 
   async start(name?: string) {
     if (this.scene || !this.env) return false;
-    const names = name ? [name] : Object.keys(SCENES).filter((n) => SCENES[n].cast(this));
+    const names = name
+      ? [name]
+      : Object.keys(SCENES).filter((n) => this.can(n) && SCENES[n].cast(this));
     name = pick(names, (n) => SCENES[n].weight * (this.games.includes(n) ? 6 : 1));
     if (!name) return false;
     const scene = SCENES[name];
@@ -156,7 +181,7 @@ export class Play {
       if (!(e instanceof Cut)) console.error(e);
     } finally {
       for (const c of cast) c.release();
-      for (const p of this.props) if (p.want > 0) p.leave(this.box);
+      for (const p of this.props) if (p.want > 0) p.leave(this.hatches);
       this.froth?.clear();
       if (this.froth) this.froth.onPop = null;
       this.scene = null;
@@ -292,13 +317,20 @@ export class Play {
     const model = await loadModel(`${this.models}prop-${name}.glb`);
     const prop = new Prop(name, model);
     prop.dress(this.look);
+    if (this.castShadows) {
+      prop.shadowCard = false;
+      prop.model.traverse((o) => {
+        const m = o as { isMesh?: boolean; castShadow: boolean; receiveShadow: boolean };
+        if (m.isMesh) m.castShadow = m.receiveShadow = true;
+      });
+    }
     const spot = at ? { s: at.s, depth: at.depth ?? 0.4 } : this.spot(prop, near, cast);
     if (!spot) {
       prop.dispose();
       throw new Cut();
     }
     prop.addTo(this.stage);
-    prop.arrive(f, spot.s, spot.depth, this.box);
+    prop.arrive(f, spot.s, spot.depth, this.hatches);
     this.props.push(prop);
     this.hitArea(prop);
     await this.until(() => prop.rise === 1, 6);
@@ -357,7 +389,7 @@ export class Play {
 
   /** Send a prop away (back down through the floor). */
   send(prop: Prop) {
-    prop.leave(this.box);
+    prop.leave(this.hatches);
   }
 
   /** Walk to (s, depth) and wait till there. */
