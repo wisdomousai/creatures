@@ -109,6 +109,23 @@ crew.dismiss(); // everyone home
 Everyone has tricks of their own, and `crew.members.get('owl')?.repertoire` lists Hoot's.
 The rest of the options and methods are in [the reference](docs/reference.md).
 
+## In a three.js world
+
+They don't need a page. In a scene of your own they walk lanes of floor you lay out, come
+on near the camera where it isn't looking and go through doorways from lane to lane:
+
+```ts
+const roam = new Roam(scene, {
+  lanes: [{ id: 'hall', at: [-6, -4], along: [1, 0], length: 12, width: 3 }],
+  roster: ['bolt', 'dog', 'cat'],
+  models: MODELS,
+});
+// each frame
+roam.update(dt, camera);
+```
+
+[The crew in a world of your own](docs/in-a-world.md) has the rest.
+
 ## Hand them a sign
 
 ```ts

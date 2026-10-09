@@ -43,12 +43,28 @@ export interface Frame {
   /** How far back anything in the room goes (0..1), if not to the back wall: up to the
    * monitor standing at the back, never behind it. Only a door takes anyone further. */
   back?: number;
+  /**
+   * Laid flat, as a floor in a three.js world, not drawn on a page in perspective: nothing
+   * shrinks going back, the floor is `depth` px deep, and the crew are placed that far back
+   * along -z (a Lane's frame: lane.ts). Nothing is clipped at its edges, and the shadow
+   * lies on the floor.
+   */
+  flat?: boolean;
 }
 
 export interface Env {
   frame: Frame;
   /** The mouse in viewport px; `at` is when it last moved (seconds). */
-  pointer: { x: number; y: number; at: number; present: boolean };
+  pointer: {
+    x: number;
+    y: number;
+    at: number;
+    present: boolean;
+    /** How far in front of the frame's front edge it is (px), when it's someone looking on
+     * in a world (a Lane's viewer). Unset, the mouse is imagined a little in front of the
+     * page. */
+    z?: number;
+  };
   time: number;
   crew: readonly Character[];
   /** Things on the floor the crew walk round (props.ts): a crate, a cushion. */
@@ -347,6 +363,9 @@ export abstract class Character {
   /** Turns off clipping at the frame line (to sit with legs over it, say). */
   protected unclipped = false;
   private look: LookName = 'ink';
+  /** Its soft shadow card on the floor: off where the scene's own lights cast it a real
+   * shadow (Roam's `castShadows`). */
+  shadowCard = true;
 
   constructor(spec: Spec, model: Object3D) {
     this.spec = spec;
@@ -1585,7 +1604,11 @@ export abstract class Character {
       const dy = eye.y - watch.y; // world y is up
       const lx = dx * Math.cos(angle) + dy * Math.sin(angle);
       const ly = -dx * Math.sin(angle) + dy * Math.cos(angle);
-      const depth = this.heightPx * 3; // the mouse is imagined a little in front of the page
+      // The mouse is imagined a little in front of the page; someone in a world is where
+      // they are.
+      const z = watch === env.pointer ? env.pointer.z : undefined;
+      const back = env.frame.flat ? this.depth * floorDepth(env.frame) : 0;
+      const depth = z !== undefined ? Math.max(z + back, this.heightPx * 0.5) : this.heightPx * 3;
       yaw = Math.atan2(lx, depth) * DEG;
       pitch = Math.atan2(-ly, depth) * DEG;
     } else if (other && wobble(env.time * 0.15, this.wanderSeed) > 0.3) {
@@ -1657,7 +1680,9 @@ export abstract class Character {
   private place(frame: Frame) {
     const foot = this.foot(frame);
     // Further back is further from the camera too, so nearer ones pass in front.
-    this.holder.position.set(foot.x, -foot.y, -this.depth * frame.depth * 3 + this.forth);
+    // (Laid flat in a world, back is back: as far as it walked.)
+    const back = frame.flat ? this.depth * floorDepth(frame) : this.depth * frame.depth * 3;
+    this.holder.position.set(foot.x, -foot.y, -back + this.forth);
     this.placeShadow(frame);
     this.holder.rotation.z = this.free ? 0 : ANGLE[this.edge];
     this.pivot.rotation.z = this.free ? this.free.tilt : 0;
@@ -1672,7 +1697,7 @@ export abstract class Character {
         plane.constant = e[2];
       } else plane.constant = 1e6;
     });
-    if (this.free || this.unclipped) {
+    if (this.free || this.unclipped || frame.flat) {
       edgePlane.constant = sidePlane.constant = 1e6;
       return;
     }
@@ -1702,12 +1727,20 @@ export abstract class Character {
    * hops, gone when it flies. Below the front lip it is cut off with the rest of it.
    */
   private placeShadow(frame: Frame) {
-    const on = !this.free && this.edge === 'bottom' && this.state !== 'gone';
+    const on = this.shadowCard && !this.free && this.edge === 'bottom' && this.state !== 'gone';
     this.shadow.visible = on;
     if (!on) return;
     const lift = clamp(1 - this.h / (this.heightPx * 0.6), 0, 1);
     const shown = clamp(this.rise.y, 0, 1);
     this.shadow.material.opacity = 0.2 * lift * shown;
+    if (frame.flat) {
+      // Flat on the floor under its feet, a pool round them.
+      this.shadow.rotation.x = -Math.PI / 2;
+      this.shadow.scale.set(this.spec.width * (1.2 - 0.3 * (1 - lift)), this.spec.width * 0.9, 1);
+      this.shadow.position.set(0, (1 - this.h) / this.px, 0);
+      return;
+    }
+    this.shadow.rotation.x = 0;
     this.shadow.scale.set(
       this.spec.width * (1.1 - 0.3 * (1 - lift)),
       (frame.depth * 0.5) / this.px,

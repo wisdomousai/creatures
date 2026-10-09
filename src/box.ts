@@ -1316,6 +1316,7 @@ export function horizon(frame: Frame) {
  * is `frame.depth` deep on screen.
  */
 export function depthScale(frame: Frame, depth: number) {
+  if (frame.flat) return 1;
   return 1 - (depth * frame.depth) / Math.max(frame.bottom - horizon(frame), frame.depth * 4);
 }
 
@@ -1326,6 +1327,7 @@ export function depthScale(frame: Frame, depth: number) {
  * step back into the box is as long as a step along it.
  */
 export function floorDepth(frame: Frame) {
+  if (frame.flat) return frame.depth;
   const eye = (frame.bottom - frame.top) * EYE_DISTANCE;
   return eye * (1 / depthScale(frame, 1) - 1);
 }

@@ -31,6 +31,15 @@ export function pixelRatio() {
   return Math.min(dpr, phone ? 1.5 : 2);
 }
 
+/**
+ * The crew's outlines are a set width in px of the canvas they're drawn on: tell them its
+ * size (CSS px). A Stage does on resize; in a three.js scene of your own, do on yours.
+ */
+export function setOutlineViewport(width: number, height: number, dpr = pixelRatio()) {
+  outlineUniforms.viewport.value.set(width * dpr, height * dpr);
+  outlineUniforms.outlinePx.value = 1.1 * dpr;
+}
+
 export class Stage {
   readonly renderer: WebGLRenderer;
   readonly scene = new Scene();
@@ -86,8 +95,7 @@ export class Stage {
     this.camera.far = d * 4;
     this.camera.lookAt(width / 2, -height / 2, 0);
     this.camera.updateProjectionMatrix();
-    outlineUniforms.viewport.value.set(width * dpr, height * dpr);
-    outlineUniforms.outlinePx.value = 1.1 * dpr;
+    setOutlineViewport(width, height, dpr);
   }
 
   render() {

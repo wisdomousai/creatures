@@ -3,7 +3,7 @@
  * the names to call them and their things by. The playground (playground/) uses
  * nothing else, so what it does any page can.
  */
-import { VERSION } from './version';
+import { MODELS, VERSION } from './version';
 
 export { Crew, ROSTER, readFrame, type CrewOptions, type Fixture, type Member } from './crew';
 export { Character, type Act, type Edge, type Frame, type Role, type Spec } from './character';
@@ -44,7 +44,7 @@ export { SET, SET_PAGES } from './set';
 export { DECOR, PAGES } from './decor';
 /** The games there are, and which are played on each page. */
 export { GAMES } from './play';
-export { VERSION };
+export { MODELS, VERSION };
 
 /*
  * For making creatures of your own (docs/how-they-are-made.md): a Character subclass, a line
@@ -73,10 +73,13 @@ export { type Column } from './decor';
 export { dress, type Outfit } from './looks';
 export { holdSelection } from './press';
 export { Piece, type Spot } from './set';
-export { Stage, pixelRatio } from './stage';
+export { Stage, pixelRatio, setOutlineViewport } from './stage';
 export { Owl } from './owl';
 export { Tang } from './tang';
 
-/** The models (and their textures and pictures) of this version, served by jsDelivr from
- * npm: pass it as `models`, or copy the package's models/ folder and serve it yourself. */
-export const MODELS = `https://cdn.jsdelivr.net/npm/@wisdomousai/creatures@${VERSION}/models/`;
+/*
+ * For the crew in a three.js world of your own (docs/in-a-world.md): lanes of floor for them
+ * to walk, laid flat in it, and the roaming that brings them on near whoever is looking.
+ */
+export { Lane, type LaneOptions, type LaneSpec } from './lane';
+export { Roam, type RoamLink, type RoamOptions } from './roam';
