@@ -54,7 +54,8 @@ They watch the camera when it's before their lane and near, from where it really
 
 A lane's front edge starts at `at` and runs `along`; its floor goes back from there to the
 left as you walk along it (along +x, back is -z), so it faces +z. Lay lanes along walls,
-facing into the room.
+facing into the room. A lane's `floor: [x0, z0, x1, z1]` is where one held may be taken
+(its room, say); without it, only along the lane.
 
 | Method / property      | What it does                                                         |
 | ---------------------- | -------------------------------------------------------------------- |
@@ -62,10 +63,29 @@ facing into the room.
 | `pick(ray)`            | The one a ray meets first (for pointing at them), or `null`.         |
 | `poke(c)`              | It notices; poked again within 3 s, it does a trick.                 |
 | `hover(c)`             | The pointer's over that one (or `null`): it knows.                   |
+| `grab(c, ray)`         | Take hold of it: it goes after the pointer. Says whether it could.   |
+| `drag(ray)`            | The pointer holding one has moved.                                   |
+| `drop()`               | Let go: it comes down, if it's up, and back to its lane.             |
+| `holding`              | The one held, or `null`.                                             |
 | `dress(look)`          | A new look for everyone.                                             |
 | `enabled`              | `false`: no one new comes (those out stay till they go).             |
 | `onStage`              | Who's out, and on which `Lane`.                                      |
 | `lanes`                | The `Lane`s: each one's `group` is in your scene.                    |
+
+Held, as on a page: a walker hurries after the point on the floor under the pointer, off
+its lane if the lane's `floor` lets it; a flier (Hoot, Nib, Whirr, Bolt…) after the
+pointer through the air, square on to the camera, so it can be lifted into the room. Let
+go up there, Hoot and Nib fly on from where they are and land; the rest come down. A press
+held 220 ms or dragged 8 px is how a page takes one up, and a good place to start.
+
+```js
+canvas.addEventListener('pointerdown', (e) => {
+  const who = roam.pick(rayAt(e));
+  if (who && roam.grab(who, rayAt(e))) canvas.setPointerCapture(e.pointerId);
+});
+canvas.addEventListener('pointermove', (e) => roam.drag(rayAt(e)));
+canvas.addEventListener('pointerup', () => roam.drop());
+```
 
 ## Without Roam
 

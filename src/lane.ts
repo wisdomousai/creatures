@@ -18,6 +18,9 @@ export interface LaneSpec {
   /** How long and how deep (metres). */
   length: number;
   width: number;
+  /** The floor round it, [x0, z0, x1, z1]: where one held may be taken (its room, say).
+   * Default: the lane. */
+  floor?: [number, number, number, number];
 }
 
 export interface LaneOptions {

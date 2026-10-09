@@ -292,8 +292,16 @@ export abstract class Character {
   /** Can it fly (or swim through the air)? Held, it flies after the pointer; else it walks. */
   readonly flies: boolean = false;
   /** Held by the pointer (pressed on and kept down): where that is (viewport px), and where
-   * its feet were from it when it was taken hold of (so it doesn't jump to it). */
-  private taken: { x: number; y: number; dx: number; dy: number } | null = null;
+   * its feet were from it when it was taken hold of (so it doesn't jump to it). On a frame
+   * laid flat in a world, how far back too (as depth is, and off the floor's either side). */
+  private taken: {
+    x: number;
+    y: number;
+    dx: number;
+    dy: number;
+    depth: number;
+    dd: number;
+  } | null = null;
   /** Its part while it's held (if it had one), to go back to; taken up into the air (not
    * flying of its own), so it comes down when it's let go; and how fast it's flying after
    * the pointer (px/s at the front of the box). */
@@ -827,12 +835,20 @@ export abstract class Character {
    * Returns whether it could be (not anchored, not on its way in or out, or through a door,
    * or mid-hop).
    */
-  takeUp(p: { x: number; y: number }, frame: Frame) {
+  takeUp(p: { x: number; y: number; depth?: number }, frame: Frame) {
     if (this.state !== 'here' || this.taken || this.door || this.onto || this.fromGlass)
       return false;
     if (this.anchored) return false;
     const foot = this.foot(frame);
-    this.taken = { x: p.x, y: p.y, dx: foot.x - p.x, dy: foot.y - p.y };
+    const depth = p.depth ?? this.depth;
+    this.taken = {
+      x: p.x,
+      y: p.y,
+      dx: foot.x - p.x,
+      dy: foot.y - p.y,
+      depth,
+      dd: this.depth - depth,
+    };
     this.takenRole = this.role;
     this.direct({ posture: 'stand', mood: 'happy', hurry: 1.8 });
     this.perched = false;
@@ -850,11 +866,12 @@ export abstract class Character {
     return true;
   }
 
-  /** The pointer holding it has moved to `p`. */
-  dragTo(p: { x: number; y: number }) {
+  /** The pointer holding it has moved to `p` (on a flat frame, and `depth` back). */
+  dragTo(p: { x: number; y: number; depth?: number }) {
     if (!this.taken) return;
     this.taken.x = p.x;
     this.taken.y = p.y;
+    if (p.depth !== undefined) this.taken.depth = p.depth;
   }
 
   /** Let go: its own again where it is (or back to its part); taken up into the air, it
@@ -884,11 +901,12 @@ export abstract class Character {
     this.goal = null;
     this.depthGoal = this.depth;
     if (hang && this.free) {
-      // Let go in the air: it flaps and stays a while, then (see hoverStep) goes on.
+      // Let go in the air: it flaps and stays a while, then (see hoverStep) goes on (in a
+      // world, soon: it was let go up there to fly).
       const side = this.free.x < (frame.left + frame.right) / 2 ? 1 : -1;
       this.hovering = {
         t: 0,
-        len: 2.5 + Math.random() * 3,
+        len: frame.flat ? 0.6 + Math.random() * 0.8 : 2.5 + Math.random() * 3,
         tx: this.free.x + side * this.heightPx * (1 + Math.random() * 3),
       };
       return;
@@ -908,6 +926,8 @@ export abstract class Character {
       this.perch.snap(drop);
       this.hopOnto(this.s, this.depth, 0, 0.2 + Math.sqrt(drop / (frame.bot * 40)), 0);
     }
+    // Put down off its own floor (in a world, it can be): back onto it.
+    else if (frame.flat && !this.free) this.walkTo(this.s, this.depth);
   }
 
   /** The top under its feet as it's let go (at `at`, front of the box px at its depth),
@@ -959,6 +979,13 @@ export abstract class Character {
     const h = this.taken!;
     const x = h.x + h.dx;
     const y = h.y + h.dy;
+    if (f.flat && this.inBox) {
+      // Laid flat in a world: after it across the floor, off its own (whoever holds it
+      // keeps it where it may go); put down, it goes back.
+      this.goal = x;
+      this.depthGoal = h.depth + h.dd;
+      return;
+    }
     const vx = (f.left + f.right) / 2;
     const vy = horizon(f);
     if (this.edge === 'bottom' && this.inBox) {
@@ -981,8 +1008,12 @@ export abstract class Character {
     const vx = (f.left + f.right) / 2;
     const vy = horizon(f);
     const half = this.widthPx() / 2;
-    const tx = clamp(vx + (h.x + h.dx - vx) / k, f.left + half, f.right - half);
+    // (Laid flat in a world, it may be taken past the ends, and back or forth.)
+    const tx = f.flat
+      ? h.x + h.dx
+      : clamp(vx + (h.x + h.dx - vx) / k, f.left + half, f.right - half);
     const ty = clamp(vy + (h.y + h.dy - vy) / k, f.top + this.heightPx, f.bottom);
+    if (f.flat) this.depthGoal = h.depth + h.dd;
     let { x, y } = this.free ?? this.frontFoot(f);
     const v = this.takenV;
     const w = 2 * Math.PI * 1.6;
@@ -1035,6 +1066,7 @@ export abstract class Character {
       this.standOn = 0;
       this.perch.snap(0);
       this.hopUp(0.08);
+      if (f.flat) this.walkTo(this.s, this.depth);
     }
   }
 
@@ -1212,7 +1244,13 @@ export abstract class Character {
       // Past the back wall only on the way through its door; and no further back than the
       // monitor (if it's there already, come in through a door, it only comes forward).
       const back = Math.max(this.backmost(frame), Math.min(this.depth, 1));
-      this.depth = clamp(this.depth + (this.vz * dt) / deep, 0, this.door ? 2 : back);
+      // (Laid flat in a world: anywhere while it's held, and from there back onto the floor.)
+      const [near, far] = !frame.flat
+        ? [0, this.door ? 2 : back]
+        : this.taken
+          ? [-Infinity, Infinity]
+          : [Math.min(0, this.depth), Math.max(back, this.depth)];
+      this.depth = clamp(this.depth + (this.vz * dt) / deep, near, far);
       this.keepApart(env);
       if (Math.abs(this.depthGoal - this.depth) * deep < 0.5) this.depth = this.depthGoal;
       // Trying to walk and getting nowhere (hemmed in): it gives up and stays put.

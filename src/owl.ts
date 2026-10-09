@@ -823,6 +823,17 @@ export class Owl extends Character {
     this.depthGoal = route[0].d ?? this.depth;
   }
 
+  /** Let go in the air (held by the pointer): he flies on from there, over or round, and
+   * down to land. */
+  protected flightBack() {
+    if (!this.free || !this.env) return false;
+    this.setAct(Math.random() < 0.5 ? 'flyover' : 'swoop');
+    this.flight = 'air';
+    this.vel = { x: 0, y: 0 };
+    this.plan(this.env.frame, { x: this.free.x, y: this.free.y });
+    return true;
+  }
+
   private takeOff(env: Env) {
     this.h = 0;
     this.lift = 0;

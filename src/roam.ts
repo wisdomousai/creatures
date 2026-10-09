@@ -3,7 +3,17 @@
 // from the floor), stays a while and goes; then someone else comes, somewhere else. One who
 // walks off a lane's end by a way through to another lane (a link: a doorway, say) comes on
 // there, when no one is looking. Poke one and it notices; poke it again and it does a trick.
-import { Frustum, Matrix4, type PerspectiveCamera, type Ray, type Scene, Vector3 } from 'three';
+// Take hold of one and it goes after the pointer: across the floor, or (a flier) through
+// the air; let go, and it goes back to its lane.
+import {
+  Frustum,
+  Matrix4,
+  type PerspectiveCamera,
+  Plane,
+  type Ray,
+  type Scene,
+  Vector3,
+} from 'three';
 import { type Character, loadModel } from './character';
 import { ROSTER } from './crew';
 import { Lane, type LaneOptions, type LaneSpec } from './lane';
@@ -55,6 +65,7 @@ interface Through {
 
 /** How long one waits in a doorway for no one to be looking (s), before giving up. */
 const PATIENCE = 12;
+const FLOOR = new Plane(new Vector3(0, 1, 0), 0);
 
 export class Roam {
   readonly lanes: Lane[];
@@ -73,6 +84,8 @@ export class Roam {
   private m = new Matrix4();
   private v = new Vector3();
   private poked = new Map<Character, number>();
+  /** The one held, on its lane; a flier, on the upright plane it's carried about in. */
+  private held: { c: Character; lane: Lane; plane: Plane | null } | null = null;
 
   constructor(scene: Scene, options: RoamOptions) {
     const { px, bot, ceiling, ...rest } = options;
@@ -139,6 +152,11 @@ export class Roam {
         this.bring(t.c, t.lane, s, t.end);
       } else if (this.time - t.since > PATIENCE) this.through.splice(this.through.indexOf(t), 1);
     }
+
+    // The one held, while it's still to be held (not going, or gone).
+    const held = this.held;
+    if (held && (held.c.state !== 'here' || !this.out.some((o) => o.c === held.c)))
+      this.held = null;
 
     // Each lane's crew live on their own frame: everyone on it, and where the eye is.
     for (const lane of this.lanes) {
@@ -267,6 +285,64 @@ export class Roam {
     return best;
   }
 
+  /** The one held, if any. */
+  get holding(): Character | null {
+    return this.held?.c ?? null;
+  }
+
+  /** Take hold of one (that `pick` found) where the pointer's `ray` is: it goes after the
+   * pointer till it's dropped. Says whether it could be (not on its way in or out). */
+  grab(c: Character, ray: Ray): boolean {
+    const o = this.out.find((x) => x.c === c);
+    if (!o || this.held) return false;
+    let plane: Plane | null = null;
+    if (c.flies) {
+      // Carried about upright, square on to the eye, through where it is.
+      const at = c.holder.getWorldPosition(new Vector3());
+      const n = new Vector3(-ray.direction.x, 0, -ray.direction.z);
+      if (n.lengthSq() < 1e-6) n.set(0, 0, 1);
+      plane = new Plane().setFromNormalAndCoplanarPoint(n.normalize(), at);
+    }
+    this.held = { c, lane: o.lane, plane };
+    const p = this.aim(ray);
+    if (!p || !c.takeUp(p, o.lane.frame)) {
+      this.held = null;
+      return false;
+    }
+    return true;
+  }
+
+  /** The pointer holding one has moved: its `ray` now. */
+  drag(ray: Ray) {
+    const p = this.held && this.aim(ray);
+    if (p) this.held!.c.dragTo(p);
+  }
+
+  /** Let go: it comes down (if it's up), and back to its lane. */
+  drop() {
+    if (!this.held) return;
+    const { c, lane } = this.held;
+    this.held = null;
+    c.putDown(lane.frame);
+  }
+
+  /** Where the pointer's ray points for the one held, on its lane's frame: on the floor
+   * (or, for a flier, the plane it's carried in), kept to the floor round the lane. */
+  private aim(ray: Ray): { x: number; y: number; depth: number } | null {
+    const { lane, plane } = this.held!;
+    const p = ray.intersectPlane(plane ?? FLOOR, this.v);
+    if (!p || p.distanceTo(ray.origin) > 60) return null;
+    const f = lane.spec.floor;
+    if (f) {
+      p.x = clamp(p.x, Math.min(f[0], f[2]), Math.max(f[0], f[2]));
+      p.z = clamp(p.z, Math.min(f[1], f[3]), Math.max(f[1], f[3]));
+    }
+    const l = lane.group.worldToLocal(p);
+    const x = f ? l.x : clamp(l.x, 0, lane.length);
+    const depth = f ? -l.z / lane.width : clamp(-l.z / lane.width, 0, 1);
+    return { x, y: Math.min(0, -l.y), depth };
+  }
+
   /** Poked: it notices; poked again soon after, a trick. */
   poke(c: Character) {
     const last = this.poked.get(c) ?? -10;
@@ -285,6 +361,10 @@ export class Roam {
     this.opts.look = look;
     for (const c of this.members.values()) c.dress(look);
   }
+}
+
+function clamp(x: number, lo: number, hi: number) {
+  return Math.max(lo, Math.min(hi, x));
 }
 
 function pickWeighted(names: string[]) {

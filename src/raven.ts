@@ -826,7 +826,8 @@ export class Raven extends Character {
       mode: 'glide',
       v: 5,
     });
-    const up = (dy: number) => at.y - H * dy;
+    // (Never into the ceiling: let go high up, he climbs no further than under it.)
+    const up = (dy: number) => Math.max(at.y - H * dy, frame.top + H * 1.2);
     const route: Waypoint[] = [];
     switch (this.kind) {
       case 'flyover': {
@@ -883,6 +884,17 @@ export class Raven extends Character {
     }
     this.route = route;
     this.depthGoal = route[0].d ?? this.depth;
+  }
+
+  /** Let go in the air (held by the pointer): he flies on from there, over or round, and
+   * down to land. */
+  protected flightBack() {
+    if (!this.free || !this.env) return false;
+    this.setAct(Math.random() < 0.5 ? 'flyover' : 'swoop');
+    this.flight = 'air';
+    this.vel = { x: 0, y: 0 };
+    this.plan(this.env.frame, { x: this.free.x, y: this.free.y });
+    return true;
   }
 
   private takeOff(env: Env) {
