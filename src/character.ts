@@ -7,6 +7,8 @@ import {
   type Object3D,
   Plane,
   PlaneGeometry,
+  type Skeleton,
+  type SkinnedMesh,
   Vector3,
 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -224,7 +226,38 @@ const models = new Map<string, Promise<Object3D>>();
 export function loadModel(url: string): Promise<Object3D> {
   let scene = models.get(url);
   if (!scene) models.set(url, (scene = loader.loadAsync(url).then((gltf) => gltf.scene)));
-  return scene.then((s) => clone(s));
+  return scene.then((s) => shareSkeletons(clone(s)));
+}
+
+/**
+ * One skeleton for all the parts on the same bones. A model comes in as a part per
+ * material, each part with a skeleton of its own though they're all on the one skin, and
+ * the renderer works out every skeleton's matrices and sends them to the GPU each frame:
+ * a body in twenty parts had it done twenty times. Parts share only where it's the very
+ * same bones in the same order, bound the same way (their inverses equal); any other keeps
+ * its own.
+ */
+export function shareSkeletons<T extends Object3D>(root: T): T {
+  const shared = new Map<string, Skeleton[]>();
+  root.traverse((o) => {
+    const mesh = o as SkinnedMesh;
+    if (!mesh.isSkinnedMesh) return;
+    const own = mesh.skeleton;
+    const key = own.bones.map((b) => b.uuid).join();
+    const same = shared.get(key);
+    const match = same?.find((s) => sameBinding(s, own));
+    if (match) mesh.skeleton = match;
+    else if (same) same.push(own);
+    else shared.set(key, [own]);
+  });
+  return root;
+}
+
+function sameBinding(a: Skeleton, b: Skeleton) {
+  return a.boneInverses.every((m, i) => {
+    const n = b.boneInverses[i].elements;
+    return m.elements.every((e, j) => Math.abs(e - n[j]) < 1e-6);
+  });
 }
 
 export abstract class Character {
