@@ -155,3 +155,22 @@ A `Frame` of your own with `flat: true` does the same anywhere: nothing shrinks 
 back, the floor is `depth` px deep, the crew stand that far back along -z, nothing is
 clipped at the frame's edges and the shadow lies on the floor. `Env.pointer.z` says how far
 in front of the frame the pointer is, when it's someone looking on.
+
+## Out of sight
+
+Whoever's out of view isn't drawn: each part of a creature (and of a set piece, a prop)
+is tested against the camera with the sphere its bones make now, wherever they've taken
+it (a leap, a spat bead of light, a bubble drifting up), not the one it had standing at
+rest. Walls are your world's, though, not theirs: in a building, hide the lanes in the
+rooms that can't be seen from where the camera is (`lane.group.visible = false`), and
+they're left out, shadows and all, while they carry on as before.
+
+Furniture of theirs standing as scenery, that nothing animates (a cat tree in a room of
+your own, a kennel), is cheaper still: `still(model)` turns it into plain meshes in the
+pose it's in, after `dress`.
+
+```ts
+const tree = await loadModel(`${MODELS}set-cattree.glb`);
+dress(tree, 'colour');
+scene.add(still(tree));
+```

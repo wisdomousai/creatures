@@ -71,6 +71,7 @@ export { type Setting } from './box-texture';
 export { loadModel, type Body } from './character';
 export { type Column } from './decor';
 export { dress, type Outfit } from './looks';
+export { still } from './bounds';
 export { holdSelection } from './press';
 export { Piece, type Spot } from './set';
 export { Stage, pixelRatio, setOutlineViewport } from './stage';

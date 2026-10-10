@@ -10,6 +10,7 @@ import {
   type Texture,
   Vector2,
 } from 'three';
+import { followBones } from './bounds';
 import PALETTES from './palettes.json';
 import { imageTexture, partTexture, whenLoaded } from './textures';
 
@@ -273,7 +274,8 @@ export function dress(
   stale.forEach((obj) => obj.removeFromParent());
   for (const mesh of meshes) {
     const name: string = (mesh.userData.role ??= (mesh.material as Material).name);
-    mesh.frustumCulled = false; // skinned bounds are the rest pose's
+    // (Left out when it's out of view, wherever its bones have taken it.)
+    if ((mesh as SkinnedMesh).isSkinnedMesh) followBones(mesh as SkinnedMesh);
     const dot = /^Dot\.?(\d+)/.exec(name);
     if (dot) {
       const m = new MeshBasicMaterial({ color: lit });
@@ -349,6 +351,6 @@ function addOutline(mesh: Mesh, colour: string, made: Material[]) {
   hull.position.copy(mesh.position);
   hull.quaternion.copy(mesh.quaternion);
   hull.scale.copy(mesh.scale);
-  hull.frustumCulled = false;
+  if ((hull as SkinnedMesh).isSkinnedMesh) followBones(hull as SkinnedMesh);
   mesh.parent?.add(hull);
 }
