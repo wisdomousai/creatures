@@ -1706,6 +1706,72 @@ def librug(m, add):
     add(sheet, m['role']('Pile'))
 
 
+# ---------- 16. Comic board ----------
+
+# The studio's board: the comic hangs on it a page at a time, flip-chart style (the site hangs
+# the pages from the rail bone and flips them over it to hang down the back). The page: its
+# width, and its top under the clips; the rail runs just above the panel, over its middle.
+BOARD_PAGE_W = 0.6
+BOARD_HANG = 1.6
+
+
+def comicboard(m, add):
+    """A freestanding studio board on two pale-oak uprights, each on a steel T-foot with
+    castors: a cork panel framed in oak, a steel rail just above it with two big bulldog clips
+    for the pages (nothing above the rail, so a page goes over it), a ledge at its foot with
+    pencils, a brush and an eraser, a slim visor with two light eyes (Dot0) under the ledge,
+    and a beacon (Dot1) on the right upright's cap."""
+    up_x, top = 0.43, 1.7
+    rz = BOARD_HANG + 0.022
+    for sx in (-1, 1):
+        x = sx * up_x
+        add(box('Upright', (0.022, 0.022, top / 2 - 0.05), (x, 0.0, top / 2 + 0.05), 0.3), m['role']('Wood'))
+        add(box('Foot', (0.025, 0.24, 0.018), (x, 0.0, 0.068), 0.35), m['joint'])
+        for sy in (-1, 1):
+            add(ball('Castor', 0.028, (x, sy * 0.21, 0.028), seg=(12, 8)), m['bezel'])
+        add(box('Cap', (0.03, 0.03, 0.014), (x, 0.0, top + 0.01), 0.4), m['joint'])
+        add(box('RailBlock', (0.016, 0.02, 0.02), (x - sx * 0.034, 0.0, rz), 0.35), m['joint'])
+        bolt(add, m, (x, -0.024, 0.45), 0.007, 'front')
+    add(box('Stretcher', (up_x - 0.02, 0.016, 0.016), (0, 0.0, 0.2), 0.35), m['role']('Wood'))
+    # The panel: cork in an oak frame, a page and a bit all round, under the rail.
+    pw, ph = BOARD_PAGE_W / 2 + 0.03, 0.45
+    pz = BOARD_HANG - 0.005 - ph
+    add(box('Cork', (pw - 0.012, 0.008, ph - 0.012), (0, 0.0, pz), 0.06), m['role']('Cork'))
+    for sz in (-1, 1):
+        add(box('FrameH', (pw + 0.008, 0.012, 0.012), (0, 0.0, pz + sz * ph), 0.15), m['role']('Wood'))
+    for sx in (-1, 1):
+        add(box('FrameV', (0.012, 0.012, ph), (sx * pw, 0.0, pz), 0.15), m['role']('Wood'))
+        for bz in (0.3, -0.3):
+            add(box('Bracket', ((up_x - pw) / 2, 0.006, 0.012), (sx * (pw + up_x) / 2, 0.0, pz + bz), 0.4), m['joint'])
+    # The rail and its clips: the pages hang from the clips' jaws, front and back.
+    add(kit.tube('Rail', [(-up_x, 0.0, rz), (up_x, 0.0, rz)], 0.011, ring=12)[0], m['joint'], 'rail')
+    for cx in (-0.2, 0.2):
+        add(box('Clip', (0.042, 0.03, 0.022), (cx, 0.0, rz - 0.004), 0.35), m['role']('Clip', 'bezel'), 'rail')
+        for sx in (-1, 1):
+            add(kit.tube('ClipWire', [(cx + sx * 0.03, -0.022, rz + 0.012), (cx + sx * 0.024, -0.03, rz + 0.045),
+                                      (cx + sx * 0.012, -0.026, rz + 0.055)], 0.0035, ring=6)[0], m['joint'], 'rail')
+    # The ledge at the panel's foot, and what lies on it.
+    lz = pz - ph - 0.03
+    add(box('Ledge', (pw + 0.02, 0.05, 0.012), (0, -0.05, lz), 0.35), m['role']('Wood'))
+    add(box('LedgeLip', (pw + 0.02, 0.006, 0.014), (0, -0.098, lz + 0.016), 0.4), m['role']('Wood'))
+    for i, (x, length, role) in enumerate(((-0.27, 0.17, 'Pencil0'), (-0.07, 0.15, 'Pencil1'), (0.03, 0.16, 'Pencil2'))):
+        add(kit.tube('Pencil', [(x, -0.06, lz + 0.02), (x + length, -0.06 + 0.012 * (i - 1), lz + 0.02)], 0.0055, ring=6)[0],
+            m['role'](role))
+    add(kit.tube('Brush', [(0.19, -0.045, lz + 0.02), (0.33, -0.05, lz + 0.02)], 0.004, ring=6)[0], m['role']('Wood'))
+    add(ball('BrushTip', 0.007, (0.335, -0.05, lz + 0.02), seg=(8, 6)), m['bezel'])
+    add(box('Eraser', (0.022, 0.013, 0.008), (-0.35, -0.06, lz + 0.022), 0.35), m['role']('Eraser'))
+    # Under the ledge: the visor and its eyes. On the right cap: the beacon.
+    vz = lz - 0.05
+    add(box('Visor', (0.14, 0.008, 0.026), (0, -0.04, vz), 0.45, seg=(24, 10)), m['bezel'])
+    add(box('VisorArm', (0.006, 0.03, 0.02), (0, -0.02, vz + 0.02), 0.4), m['joint'])
+    eyes(add, m, (0, -0.046, vz), 0.07, 0.02, 0.016, dot=0)
+    add(kit.tube('Stalk', [(up_x, 0.0, top + 0.024), (up_x, 0.0, top + 0.07)], 0.005, ring=6)[0], m['joint'], 'beacon')
+    add(ball('Beacon', 0.018, (up_x, 0.0, top + 0.085), seg=(14, 8)), m['dot'](1), 'beacon')
+    bones = [('rail', (-up_x, 0.0, rz), (up_x, 0.0, rz), 'root')]
+    bones += eye_bones((0, -0.046, vz), 0.07, 0.035, 'root')
+    bones.append(('beacon', (up_x, 0, top + 0.024), (up_x, 0, top + 0.1), 'root'))
+    return bones
+
 KINDS = {
     'fern': dict(build=fern, height=0.85, width=0.75),
     'sunflower': dict(build=sunflower, height=1.52, width=0.5),
@@ -1724,4 +1790,5 @@ KINDS = {
     'perch': dict(build=perch, height=1.3, width=0.85),
     'gramophone': dict(build=gramophone, height=0.9, width=0.6),
     'librug': dict(build=librug, height=0.03, width=1.6),
+    'comicboard': dict(build=comicboard, height=1.78, width=0.92),
 }

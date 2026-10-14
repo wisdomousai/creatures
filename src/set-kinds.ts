@@ -2718,6 +2718,50 @@ const librug: Kind = {
   acts: {},
 };
 
+// ---------- Comic board ----------
+
+/** The studio's board (set.py comicboard): a comic hangs on it a page at a time from the clips
+ * on its rail (the rail bone), and the pages are flipped over the rail to read on. A reading
+ * piece like the library's cases: kept still it only breathes, its eyes steady. */
+const comicboard: Kind = {
+  metres: 1.78,
+  width: 0.92,
+  deep: 0.52,
+  size: 2.2,
+  depth: [0.55, 0.75],
+  blocks: true,
+  feel: (b) => (/^eye/.test(b) ? feel(4, 0.6) : b === 'rail' ? feel(3, 0.35) : feel(3, 0.5)),
+  ambient(p, t) {
+    const n = p.night;
+    const live = p.still ? 0 : 1;
+    // The rail rocks a hair on its clips, more when it's poked or rattled.
+    tilt(p, 'rail', live * (0.4 * sin(t * 0.7 + p.seed) + p.c('rattle') * 3 * sin(t * 20)), 0, 1);
+    p.eyes(0.006, p.c('shut'), p.c('wide') + live * p.excite * 0.3, live * p.gx * 0.5, live * p.gy);
+    p.glow(0, 0.85 - p.c('dim') * 0.4);
+    p.glow(1, p.still ? 0.55 : 0.4 + 0.2 * sin(t * 1.2) + n * 0.3 + p.c('flash') * 0.5);
+  },
+  acts: {
+    look: {
+      weight: 2,
+      length: [3, 5],
+      pose: (p, u, e) => p.eyes(0.006, 0, e * 0.3, sin(u * 2) * e, 0),
+    },
+    rattle: {
+      weight: 1,
+      length: [1, 1.6],
+      pose: (p, u, e) => (p.set('rattle', hump(u, 0, 1) * e), p.set('wide', hump(u, 0, 1) * e)),
+    },
+    blink: {
+      weight: 1.5,
+      length: [0.5, 0.8],
+      pose: (p, u, e) => p.set('shut', hump(u, 0, 1) * e),
+    },
+  },
+  poke: (p) => {
+    p.squash.kick(1.5);
+  },
+};
+
 export const KINDS: Record<string, Kind> = {
   fern,
   sunflower,
@@ -2736,4 +2780,5 @@ export const KINDS: Record<string, Kind> = {
   perch,
   gramophone,
   librug,
+  comicboard,
 };

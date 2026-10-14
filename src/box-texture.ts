@@ -2,11 +2,11 @@ import { assets } from './assets';
 import { pixelRatio } from './stage';
 
 /**
- * The rooms as pictures (box.ts): a picture of each room, a library, an office, a lab and a
- * jungle (models/pic/ROOM.webp, made by blender/tex/pictures.py), each the whole room
- * seen from its open front in one-point perspective, as the box is: the back wall straight on,
- * the side walls, the floor and the ceiling running back to it (GEOMETRY says where its back
- * wall and its corners are in each picture). An SVG image can't recede, so each of the
+ * The rooms as pictures (box.ts): a picture of each room, a library, an office, a lab, a
+ * jungle and a comic artist's studio (models/pic/ROOM.webp, made by blender/tex/pictures.py),
+ * each the whole room seen from its open front in one-point perspective, as the box is: the
+ * back wall straight on, the side walls, the floor and the ceiling running back to it
+ * (GEOMETRY says where its back wall and its corners are in each picture). An SVG image can't recede, so each of the
  * picture's surfaces is laid on the same surface of the box, on one canvas the size of the
  * frame, and box.ts lays that over its paint, opaque, under the lamps' light and the doors. It
  * is drawn once for each new frame.
@@ -25,8 +25,9 @@ import { pixelRatio } from './stage';
  */
 
 /** The rooms there are pictures of: the library (the reading room, and the Writing section's
- * room), and the office, the lab and the jungle other sections are in. */
-export type Setting = 'library' | 'office' | 'lab' | 'jungle';
+ * room), and the office, the lab, the jungle and the studio (where comics are drawn) other
+ * sections are in. */
+export type Setting = 'library' | 'office' | 'lab' | 'jungle' | 'studio';
 
 const LAYOUTS: Record<
   Setting,
@@ -41,6 +42,7 @@ const LAYOUTS: Record<
   office: { dim: 0, base: '#e6dfd2' },
   lab: { dim: 0, base: '#e4e4e2' },
   jungle: { dim: 0.04, base: '#1f2b1c' },
+  studio: { dim: 0, base: '#ece3d6' },
 };
 
 /** Where the room is in each picture, in px of it at 1536 by 1024 (DRAFT: the size it was drawn
@@ -55,6 +57,7 @@ const GEOMETRY: Record<
   office: { back: [189, 115, 1343.5, 747], corners: [-31, -28.5, 853, 858.5] },
   lab: { back: [109.5, 69, 1397.5, 781], corners: [17, -17.5, 834, 863.5] },
   jungle: { back: [139, 77.5, 1395, 727.5], corners: [1.5, 0, 855.5, 866] },
+  studio: { back: [148, 70.5, 1402, 731], corners: [-5, -25, 791, 800] },
 };
 const DRAFT = 1536;
 
