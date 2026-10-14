@@ -1,7 +1,7 @@
 {
   "name": "@wisdomousai/creatures",
   "version": "0.6.6",
-  "description": "Toy robots of animals for the web: 149 creatures, animated live in three.js, who walk, fly, swim and play in a box round your page.",
+  "description": "149 toy robots that live in a box drawn round your web page.",
   "keywords": [
     "three",
     "threejs",
