@@ -1,13 +1,13 @@
-import { assets } from './assets';
+import { assetUrl } from './assets';
 import { pixelRatio } from './stage';
 
 /**
  * The rooms as pictures (box.ts): a picture of each room, a library, an office, a lab, a
- * jungle, a comic artist's studio and a spaceship's galley (models/pic/ROOM.webp, made by
- * blender/tex/pictures.py),
+ * jungle and a comic artist's studio (models/pic/ROOM.webp, made by blender/tex/pictures.py),
+ * or one of your own (ROOMS),
  * each the whole room seen from its open front in one-point perspective, as the box is: the
  * back wall straight on, the side walls, the floor and the ceiling running back to it
- * (GEOMETRY says where its back wall and its corners are in each picture). An SVG image can't recede, so each of the
+ * (ROOMS says where its back wall and its corners are in each picture). An SVG image can't recede, so each of the
  * picture's surfaces is laid on the same surface of the box, on one canvas the size of the
  * frame, and box.ts lays that over its paint, opaque, under the lamps' light and the doors. It
  * is drawn once for each new frame.
@@ -25,58 +25,75 @@ import { pixelRatio } from './stage';
  * a retina screen.
  */
 
-/** The rooms there are pictures of: the library (the reading room, and the Writing section's
- * room), and the office, the lab, the jungle and the studio (where comics are drawn) other
- * sections are in, and the ship (the galley of a rust-orange salvage tug: a wall screen, a
- * couch, a record player, a jar, a pot of noodles and a wall of pinned notes) a comic set
- * aboard one is read in. */
-export type Setting = 'library' | 'office' | 'lab' | 'jungle' | 'studio' | 'ship';
+/**
+ * The rooms there are pictures of, by name: the package's (the library, the reading room and
+ * the Writing section's; the office, the lab, the jungle and the studio, where comics are
+ * drawn, that other sections are in), and any of your own, added here before the crew is
+ * made (ROOMS.galley = { picture: '/rooms/galley.webp', ... }; then box.room('galley')).
+ */
+export interface RoomPicture {
+  /** The picture, 3:2 and 4K: a file under the models folder, or a whole address. */
+  picture: string;
+  /** Where the room is in it, in px of it at 1536 by 1024 (DRAFT: the size the package's
+   * were drawn at, before they were made 4K): its back wall (left, top, right, bottom), and
+   * where its four corners (top left, top right, bottom left, bottom right) run out of the
+   * picture's left or right edge, down it. */
+  back: [number, number, number, number];
+  corners: [number, number, number, number];
+  /** A touch of dark over it all (the library's, so its lamps have something to light). */
+  dim?: number;
+  /** Under the picture, wherever it doesn't quite reach. */
+  base?: string;
+  /** A wall clock on its back wall, kept going: the ring's middle and its two radii, across
+   * and down, in px as `back`'s. */
+  clock?: [number, number, number, number];
+}
 
-const LAYOUTS: Record<
-  Setting,
-  {
-    /** A touch of dark over it all (the library's, so its lamps have something to light). */
-    dim: number;
-    /** Under the picture, wherever it doesn't quite reach. */
-    base: string;
-  }
-> = {
-  library: { dim: 0.1, base: '#2b1a0f' },
-  office: { dim: 0, base: '#e6dfd2' },
-  lab: { dim: 0, base: '#e4e4e2' },
-  jungle: { dim: 0.04, base: '#1f2b1c' },
-  studio: { dim: 0, base: '#ece3d6' },
-  ship: { dim: 0.08, base: '#3a2416' },
-};
-
-/** Where the room is in each picture, in px of it at 1536 by 1024 (DRAFT: the size it was drawn
- * at, before it was made 4K): its back wall (left, top, right, bottom), and where its four
- * corners (top left, top right, bottom left, bottom right) run out of the picture's left or
- * right edge, down it. */
-const GEOMETRY: Record<
-  Setting,
-  { back: [number, number, number, number]; corners: [number, number, number, number] }
-> = {
-  library: { back: [139.5, 55, 1395.5, 839], corners: [-19, -1, 950.5, 949.5] },
-  office: { back: [189, 115, 1343.5, 747], corners: [-31, -28.5, 853, 858.5] },
-  lab: { back: [109.5, 69, 1397.5, 781], corners: [17, -17.5, 834, 863.5] },
-  jungle: { back: [139, 77.5, 1395, 727.5], corners: [1.5, 0, 855.5, 866] },
-  studio: { back: [148, 70.5, 1402, 731], corners: [-5, -25, 791, 800] },
-  ship: { back: [153, 122, 1388, 648], corners: [38, 45, 735, 740] },
-};
+const BUILT_IN = {
+  library: {
+    picture: 'pic/library.webp',
+    back: [139.5, 55, 1395.5, 839],
+    corners: [-19, -1, 950.5, 949.5],
+    dim: 0.1,
+    base: '#2b1a0f',
+    clock: [1194, 343.4, 74.8, 82.6],
+  },
+  office: {
+    picture: 'pic/office.webp',
+    back: [189, 115, 1343.5, 747],
+    corners: [-31, -28.5, 853, 858.5],
+    base: '#e6dfd2',
+  },
+  lab: {
+    picture: 'pic/lab.webp',
+    back: [109.5, 69, 1397.5, 781],
+    corners: [17, -17.5, 834, 863.5],
+    base: '#e4e4e2',
+  },
+  jungle: {
+    picture: 'pic/jungle.webp',
+    back: [139, 77.5, 1395, 727.5],
+    corners: [1.5, 0, 855.5, 866],
+    dim: 0.04,
+    base: '#1f2b1c',
+  },
+  studio: {
+    picture: 'pic/studio.webp',
+    back: [148, 70.5, 1402, 731],
+    corners: [-5, -25, 791, 800],
+    base: '#ece3d6',
+  },
+} satisfies Record<string, RoomPicture>;
+export const ROOMS: Record<string, RoomPicture> = { ...BUILT_IN };
+/** A room's name: one of the package's, or one of yours in ROOMS. */
+export type Setting = keyof typeof BUILT_IN | (string & {});
 const DRAFT = 1536;
 
-/** The doors in the rooms' pictures (only the library's has one, in the middle of its back
- * wall): the leaf's left edge, its top and its right edge, in px as GEOMETRY's (it stands on the
- * floor). It's hinged on the left. */
-const DOORS: Partial<Record<Setting, [number, number, number]>> = {
+/** The door in the library's picture (the pub's, in the middle of its back wall): the leaf's
+ * left edge, its top and its right edge, in px as `back`'s (it stands on the floor). It's
+ * hinged on the left. */
+const DOORS: Partial<Record<string, [number, number, number]>> = {
   library: [640, 252, 890],
-};
-
-/** The wall clocks in the rooms' pictures (only the library's has one, right of its door): the
- * ring's middle and its two radii, across and down, in px as GEOMETRY's. */
-const CLOCKS: Partial<Record<Setting, [number, number, number, number]>> = {
-  library: [1194, 343.4, 74.8, 82.6],
 };
 
 /** How much of the picture's width at each end keeps its shape across (a share of it), and at
@@ -101,16 +118,17 @@ export interface Room {
   eye: number;
 }
 
-const pictures = new Map<Setting, HTMLImageElement>();
-const loading = new Map<Setting, Promise<void>>();
+const pictures = new Map<string, HTMLImageElement>();
+const loading = new Map<string, Promise<void>>();
 
-/** Load a room's picture (once, when it's first wanted), and call `fn` when it's in. */
+/** Load a room's picture (once, when it's first wanted), and call `fn` when it's in (never,
+ * for a room there isn't: the box stays as it is). */
 export function whenReady(setting: Setting, fn: () => void) {
-  if (typeof document === 'undefined') return;
+  if (typeof document === 'undefined' || !ROOMS[setting]) return;
   let ready = loading.get(setting);
   if (!ready) {
     const image = new Image();
-    image.src = `${assets}pic/${setting}.webp`;
+    image.src = assetUrl(ROOMS[setting].picture);
     ready = image.decode().then(() => {
       pictures.set(setting, image);
     });
@@ -137,7 +155,7 @@ const meet = ([ax, ay]: Point, [bx, by]: Point, [cx, cy]: Point, [dx, dy]: Point
  * as shares of the back wall's width: the two ends at the scale up goes at, the middle between.
  */
 function fit(setting: Setting, [w, h]: [number, number], room: Room) {
-  const { back, corners } = GEOMETRY[setting];
+  const { back, corners } = ROOMS[setting];
   const at = w / DRAFT;
   const [l, t, r, b] = back.map((n) => n * at);
   const [tl, tr, bl, br] = corners.map((n) => n * at);
@@ -198,7 +216,7 @@ function fit(setting: Setting, [w, h]: [number, number], room: Room) {
 export function paintRoom(setting: Setting, room: Room, scale = 1): HTMLCanvasElement | null {
   const picture = typeof document === 'undefined' ? undefined : pictures.get(setting);
   if (!picture) return null;
-  const { dim, base } = LAYOUTS[setting];
+  const { dim = 0, base = '#000' } = ROOMS[setting];
   const { left, right, top, bottom, bl, br, cb, fb, k, vx, vy } = room;
   const canvas = document.createElement('canvas');
   canvas.width = Math.max(1, Math.ceil((right - left) * scale));
@@ -212,7 +230,7 @@ export function paintRoom(setting: Setting, room: Room, scale = 1): HTMLCanvasEl
   // is read off it near one to one: strips read off the whole 4K picture, each smoothed on its
   // own, take seconds to draw.
   const [w, h] = [picture.naturalWidth, picture.naturalHeight];
-  const [, wallTop, , wallFoot] = GEOMETRY[setting].back;
+  const [, wallTop, , wallFoot] = ROOMS[setting].back;
   const near = Math.min(1, (((fb - cb) * scale) / ((wallFoot - wallTop) * (w / DRAFT))) * 1.25);
   const source = document.createElement('canvas');
   source.width = Math.round(w * near);
@@ -329,7 +347,7 @@ export function doorOf(setting: Setting, room: Room) {
 /** Where a room's wall clock is on its back wall (viewport px: its middle and its radii), as
  * its picture is laid there (paintRoom): null if it has none, or its picture isn't in. */
 export function clockOf(setting: Setting, room: Room) {
-  const clock = CLOCKS[setting];
+  const clock = ROOMS[setting]?.clock;
   const picture = pictures.get(setting);
   if (!clock || !picture) return null;
   const { back: p, pieces } = fit(setting, [picture.naturalWidth, picture.naturalHeight], room);

@@ -250,6 +250,28 @@ crew.call('mole');
 
 `file` can be a whole address; the crew's own models still come from `models`.
 
+The rest of the box is made the same way, so the rest can be yours too. A room is a picture of
+one, seen from its open front in one-point perspective, and four numbers for its back wall and
+four for where its corners run off the picture (in px of a 1536 by 1024 draft of it):
+
+```ts
+import { MATERIALS, PALETTES, ROOMS } from '@wisdomousai/creatures';
+
+ROOMS.galley = {
+  picture: '/rooms/galley.webp',
+  back: [153, 122, 1388, 648],
+  corners: [38, 45, 735, 740],
+  dim: 0.08,
+  base: '#3a2416',
+};
+// A set piece of the package's in your own colours, its oak plain (no wood grain over it).
+PALETTES['set-comicboard-galley'] = { roles: { Wood: '#b5552a', Cork: '#4a4340' } };
+MATERIALS['set-comicboard-galley'] = { Wood: null };
+
+crew.box?.room('galley');
+dress(board, 'colour', { model: 'set-comicboard-galley' });
+```
+
 ## Your turn
 
 Copy Digby and change him into something else. The steps, and the mistakes worth not

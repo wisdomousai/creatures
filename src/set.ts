@@ -1,3 +1,4 @@
+import { assetUrl } from './assets';
 import { DRAG, HOLD, holdSelection, onMenu } from './press';
 import {
   Color,
@@ -65,7 +66,10 @@ export const SET_PAGES: Record<string, string[]> = {
   'creatures/birds': ['birdbath', 'perch', 'sunflower'],
 };
 
+/** The package's own set pieces (yours are in KINDS too, once added). */
 export const SET = Object.keys(KINDS);
+/** A piece's model: the package's under the models folder, or one of yours anywhere. */
+const fileOf = (name: string) => assetUrl(KINDS[name]?.file ?? `set-${name}.glb`);
 
 const firePoint = new Vector3();
 /** Kept still, its lights settle to their level over this long (s): no flicker, no blinking. */
@@ -802,7 +806,7 @@ export class Set {
   private async putInTurn(names: string[], frame: Frame) {
     const turn = ++this.turn;
     const mine = () => this.turn === turn && !this.spots;
-    names.forEach((n) => void loadModel(`${this.models}set-${n}.glb`));
+    names.forEach((n) => void loadModel(fileOf(n)));
     const missed: string[] = [];
     for (const [i, name] of [...names].entries()) {
       if (!mine()) return;
@@ -853,7 +857,7 @@ export class Set {
     if (this.loading.has(name)) return null;
     this.loading.add(name);
     this.frame = frame;
-    const model = await loadModel(`${this.models}set-${name}.glb`);
+    const model = await loadModel(fileOf(name));
     this.loading.delete(name);
     if (!this.wanted.includes(name)) return null;
     const piece = new Piece(name, model);
@@ -1051,7 +1055,7 @@ export class Set {
     const frame = this.frame;
     // (An arranged room stays as it is.)
     if (!frame || p.want === 0 || this.spots) return;
-    const out = SET.filter(
+    const out = Object.keys(KINDS).filter(
       (n) =>
         !this.wanted.includes(n) &&
         !this.away.has(n) &&

@@ -66,6 +66,24 @@ some of them find room beside your content.
 | `SET`, `DECOR`, `GAMES` | The set pieces, the hangings and the games, by name.                                                           |
 | `MODELS`, `VERSION`     | This version's models on jsDelivr, and the version.                                                            |
 
+## Your own
+
+Everything the crew are made of sits in a registry, a plain object by name, and yours go in the
+same way: fill it before `new Crew`, and the package reads it like its own. A file named in one
+is a name under the `models` folder (`'mole.glb'`, `'pic/library.webp'`; a map's bare name means
+`tex/NAME.webp`) or a whole address (`'https://…'`, `'/rooms/galley.webp'`), left as it is.
+
+| Registry     | An entry                                                                                                              |
+| ------------ | --------------------------------------------------------------------------------------------------------------------- |
+| `ROSTER`     | A creature: `{ file, make, weight }` ([how they are made](how-they-are-made.md)).                                      |
+| `PALETTES`   | Its colours in the colour look, by model name: `{ base, roles, dots }`.                                               |
+| `CARDS`      | Its name, what it is and its family (which games it is picked for, which tools it may hold).                          |
+| `TOOLS`      | Something to hold up: `{ model, mount, … }`.                                                                           |
+| `ROOMS`      | A painted room for the box: `{ picture, back, corners, dim, base, clock }`, then `crew.box.room(name)`.               |
+| `MATERIALS`  | Material maps by model and role, over the palette's colour: `{ Wood: { map, metres } }`, or `{ Wood: null }` for none. |
+| `SET_KINDS`  | A set piece: a `Kind` with its `file`, how it is alive, and its acts.                                                  |
+| `PROP_KINDS` | A prop to play with, likewise.                                                                                        |
+
 ## Holding things up
 
 `crew.holdUp(who, tool, options?)` has someone hold a tool up (`who` is a key or a creature) and

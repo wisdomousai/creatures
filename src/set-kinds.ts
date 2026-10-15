@@ -30,6 +30,9 @@ export interface ActDef {
 }
 
 export interface Kind {
+  /** Its model, for a kind of your own: a file under the models folder, or a whole address
+   * (the package's are set-NAME.glb). */
+  file?: string;
   /** Height and width in the model's metres (set.py), and front to back as a share of width. */
   metres: number;
   width: number;

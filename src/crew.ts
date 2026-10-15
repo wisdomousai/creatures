@@ -27,7 +27,7 @@ import { Set as SetPieces, SET_PAGES } from './set';
 import { type FlameStyle, glowColour, type LookName } from './looks';
 import { Stage } from './stage';
 import { canHold, GRIP_GAP, type Held, type HoldOptions, holdUp } from './tools';
-import { setAssets } from './assets';
+import { assetUrl, setAssets } from './assets';
 import { Vacuum } from './vacuum';
 import { Bunny } from './bunny';
 import { Cactus } from './cactus';
@@ -893,10 +893,7 @@ export class Crew {
     let member = this.members.get(name);
     if (member) return member;
     // A file of the crew's is in the models folder; one of yours can be anywhere.
-    const file = ROSTER[name].file;
-    const model = await loadModel(
-      /^([a-z][a-z\d+.-]*:|\/)/i.test(file) ? file : this.opts.models + file,
-    );
+    const model = await loadModel(assetUrl(ROSTER[name].file));
     member = ROSTER[name].make(model);
     member.dress(this.look, this.opts.flame);
     this.stage.scene.add(member.holder);

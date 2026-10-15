@@ -49,6 +49,9 @@ import { Spring } from './spring';
 export const G = 28;
 
 export interface Kind {
+  /** Its model, for a kind of your own: a file under the models folder, or a whole address
+   * (the package's are prop-NAME.glb). */
+  file?: string;
   /** Height and width in the model's metres (props.py). */
   metres: number;
   width: number;

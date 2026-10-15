@@ -8,6 +8,7 @@ import {
   Plane,
   Vector3,
 } from 'three';
+import { assetUrl } from './assets';
 import { type Box, type Door, depthScale, floorDepth, horizon, project } from './box';
 import { type Character, clamp, type Env, type Frame, loadModel, type Top } from './character';
 import { dress, type LookName, type Outfit } from './looks';
@@ -560,7 +561,7 @@ export class Decor {
   private hang(name: string, frame: Frame, delay: number, near?: Hanging) {
     if (this.loading.has(name)) return;
     this.loading.add(name);
-    void loadModel(`${this.models}decor-${name}.glb`).then((model) => {
+    void loadModel(assetUrl(`decor-${name}.glb`)).then((model) => {
       this.loading.delete(name);
       if (!this.wanted.includes(name)) return;
       const h = new Hanging(name, model, this.box);
@@ -577,7 +578,7 @@ export class Decor {
   swap(h: Hanging) {
     const frame = this.frame;
     if (!frame || h.want === 0) return;
-    const out = DECOR.filter(
+    const out = Object.keys(KINDS).filter(
       (n) =>
         !this.wanted.includes(n) && !this.loading.has(n) && !this.hung.some((o) => o.name === n),
     );

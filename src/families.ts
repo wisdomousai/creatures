@@ -4,8 +4,10 @@
  * name is the one in its spec (the spec only comes with the model, and the page shows
  * everyone before any of them is loaded).
  */
+/** A family's name: one of the package's, or one of your own (a card can say any). */
 export type Family =
-  'cat' | 'dog' | 'bird' | 'fluffy' | 'farm' | 'jungle' | 'sea' | 'bug' | 'robot' | 'other';
+  | 'cat' | 'dog' | 'bird' | 'fluffy' | 'farm' | 'jungle' | 'sea' | 'bug' | 'robot' | 'other'
+  | (string & {});
 
 export interface Card {
   name: string;

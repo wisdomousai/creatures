@@ -1,5 +1,5 @@
 """The rooms' pictures (Codex image generation): each room (library, office, lab, jungle,
-studio, ship) as one picture of the whole room from its open front, in one-point perspective, 3840 by
+studio) as one picture of the whole room from its open front, in one-point perspective, 3840 by
 2560 (4K, so a retina screen never stretches it up), laid surface by surface on the box by
 src/box-texture.ts (its GEOMETRY says where the back wall and the corners are
 in each).

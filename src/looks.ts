@@ -68,9 +68,13 @@ export const PALETTE = PALETTES as unknown as Record<string, Palette>;
 /**
  * Material maps on set pieces (models/tex): which role gets which map, and how big a
  * tile is in metres (the parts' UVs are in metres: kit.box_uv). `whole` is one picture
- * laid over the part's own 0..1 UVs, not a tile.
+ * laid over the part's own 0..1 UVs, not a tile. SURFACES says by role, MATERIALS by model
+ * and role (null: that role plain, whatever SURFACES says); a piece of your own goes in
+ * MATERIALS, with a map of the package's by name or your own by its address.
  */
-interface Surface {
+export interface Surface {
+  /** One of the package's maps (wood, leather, bookcloth, velvet, rug), or a whole address
+   * to a map of your own. */
   map: string;
   metres: number;
   whole?: boolean;
@@ -89,12 +93,8 @@ const SURFACES: Record<string, Surface> = {
   Book4: LEATHER,
   Cushion: { map: 'velvet', metres: 0.25 },
 };
-const MODEL_SURFACES: Record<string, Record<string, Surface>> = {
+export const MATERIALS: Record<string, Record<string, Surface | null>> = {
   'set-gramophone': { Case: WOOD },
-  // Aboard the ship the board's uprights are painted steel, worn, not grained oak.
-  'set-comicboard-ship': {
-    Wood: { map: 'plaster', metres: 0.4, strength: { ink: 0.1, paper: 0.25, colour: 0.35 } },
-  },
   'set-librug': {
     Pile: { map: 'rug', metres: 1, whole: true, strength: { ink: 0.7, paper: 0.85 } },
   },
@@ -219,7 +219,8 @@ export function dress(
   // own grain by the shader (mean-compensated, so no part gets darker on average).
   const surfaced: Record<string, Material | null> = {};
   const surface = (base: string, role: string | undefined, mesh: Mesh) => {
-    const spec = role && (MODEL_SURFACES[opts.model ?? '']?.[role] ?? SURFACES[role]);
+    const own = MATERIALS[opts.model ?? ''];
+    const spec = role && (own && role in own ? own[role] : SURFACES[role]);
     if (!role || !spec || !opts.model?.startsWith('set-') || !mesh.geometry.getAttribute('uv'))
       return null;
     const key = `${base}_${role}`;

@@ -67,13 +67,16 @@ export { BEACON, RAINBOW } from './bolt';
  * outfits, and the few of the crew a page talks to by name.
  */
 export { Door, depthScale, floorDepth, horizon, project } from './box';
-export { type Setting } from './box-texture';
+export { ROOMS, type RoomPicture, type Setting } from './box-texture';
 export { loadModel, type Body } from './character';
 export { type Column } from './decor';
-export { dress, type Outfit } from './looks';
+export { MATERIALS, type Surface, dress, type Outfit } from './looks';
 export { still } from './bounds';
 export { holdSelection } from './press';
 export { Piece, type Spot } from './set';
+export { KINDS as SET_KINDS, type Kind as SetKind } from './set-kinds';
+export { KINDS as PROP_KINDS, type Kind as PropKind } from './props';
+export { assetUrl } from './assets';
 export { Stage, pixelRatio, setOutlineViewport } from './stage';
 export { Owl } from './owl';
 export { Tang } from './tang';

@@ -7,7 +7,7 @@ import {
   type Texture,
   TextureLoader,
 } from 'three';
-import { assets } from './assets';
+import { assetUrl } from './assets';
 
 /**
  * Small tiling textures for a few parts of a robot, drawn here rather than shipped: a
@@ -102,14 +102,16 @@ const waiting = new Map<string, (() => void)[]>();
 const ready = new Set<string>();
 
 /**
- * The map called `name`, loaded once and shared (null where there is no document). Its
- * image comes in later: whenLoaded(name, fn) says when.
+ * The map called `name` (one of the package's, under tex/; or a whole address to one of
+ * yours), loaded once and shared (null where there is no document). Its image comes in
+ * later: whenLoaded(name, fn) says when.
  */
 export function imageTexture(name: string): Texture | null {
   if (images.has(name)) return images.get(name)!;
   let texture: Texture | null = null;
   if (typeof document !== 'undefined') {
-    texture = new TextureLoader().load(`${assets}tex/${name}.webp`, () => {
+    const file = /[/:]/.test(name) ? name : `tex/${name}.webp`;
+    texture = new TextureLoader().load(assetUrl(file), () => {
       ready.add(name);
       waiting.get(name)?.forEach((fn) => fn());
       waiting.delete(name);

@@ -674,7 +674,7 @@ export class Box {
     this.sceneryClip.setAttribute('rx', f(radius));
     const room = roomOf(frame);
     this.scenery.paint(this.setting, room);
-    this.clocks[1].place(this.scenery.shown === 'library' ? clockOf('library', room) : null);
+    this.clocks[1].place(this.scenery.shown ? clockOf(this.scenery.shown, room) : null);
   }
 
   private showScenery() {

@@ -13,7 +13,8 @@ import {
 import type { Expression } from './face';
 import type { LookName } from './looks';
 import { Bubbles, floorAt, G, gripOf, handy, type Hatches, KINDS, Prop, type Spot } from './props';
-import { inFamily } from './families';
+import { CARDS } from './families';
+import { assetUrl } from './assets';
 
 /**
  * The crew at play: little scenes a director runs now and then with whoever is on the
@@ -38,8 +39,6 @@ import { inFamily } from './families';
  * is cut short; either way everyone gets back to their own life and the props go.
  */
 
-const DOGS = inFamily('dog');
-const CATS = inFamily('cat');
 /** Acts that are some kind of rest, for one on a cushion or under a table. */
 const RESTS = ['nap', 'sleep', 'doze', 'dozeOff', 'snooze', 'rest', 'sit', 'loaf', 'float'];
 
@@ -314,7 +313,7 @@ export class Play {
    * if it's asked for there. */
   async bring(name: string, near: Character | null, cast: Character[] = [], at?: { s: number; depth?: number }) {
     const f = this.frame;
-    const model = await loadModel(`${this.models}prop-${name}.glb`);
+    const model = await loadModel(assetUrl(KINDS[name]?.file ?? `prop-${name}.glb`));
     const prop = new Prop(name, model);
     prop.dress(this.look);
     if (this.castShadows) {
@@ -781,8 +780,8 @@ function bow(c: Character, a: number) {
 // ---------- The scenes ----------
 
 const kindOf = (c: Character) => c.spec.model;
-const isDog = (c: Character) => DOGS.includes(kindOf(c));
-const isCat = (c: Character) => CATS.includes(kindOf(c));
+const isDog = (c: Character) => CARDS[kindOf(c)]?.family === 'dog';
+const isCat = (c: Character) => CARDS[kindOf(c)]?.family === 'cat';
 /** A pet (moods, postures: pet.ts). */
 const isPet = (c: Character) => 'mood' in c;
 /** Quick enough on its feet for chasing games. */

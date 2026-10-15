@@ -17,7 +17,7 @@ import {
   type SkinnedMesh,
   Vector3,
 } from 'three';
-import { assets } from './assets';
+import { assetUrl } from './assets';
 import type { Door } from './box';
 import {
   type Carried,
@@ -71,7 +71,8 @@ import { ease, FixedSpring } from './swimmer';
 export type Mount = Hold | 'neck' | 'floor';
 
 export interface Tool {
-  /** Its model, a file in the models folder (without .glb). */
+  /** Its model: a file in the models folder (without .glb; its palette's name too), or, for
+   * one of your own, a whole address to it. */
   model: string;
   mount: Mount;
   /** Held by the feet over a bar: half the bar's length, in its metres, along x. */
@@ -637,7 +638,7 @@ class Holding implements Held, Carried {
         return false;
       }
     }
-    loadModel(`${assets}${this.def.model}.glb`).then(
+    loadModel(assetUrl(`${this.def.model}.glb`)).then(
       (scene) => this.arrive(scene),
       () => {
         console.warn(`creatures: no tool model ${this.def.model}`);

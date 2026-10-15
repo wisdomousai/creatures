@@ -19,6 +19,7 @@ import {
   Vector3,
 } from 'three';
 import { type Character, type Env, loadModel, type Top } from './character';
+import { assetUrl, setAssets } from './assets';
 import { ROSTER } from './crew';
 import { Lane, type LaneOptions, type LaneSpec } from './lane';
 import type { LookName } from './looks';
@@ -135,6 +136,8 @@ export class Roam {
       play: false,
       ...rest,
     };
+    // (The tools, the maps and the pictures load from the models folder too.)
+    setAssets(this.opts.models);
     this.lanes = options.lanes.map((spec) => new Lane(spec, { px, bot, ceiling }));
     for (const lane of this.lanes) {
       this.byId.set(lane.spec.id, lane);
@@ -387,8 +390,7 @@ export class Roam {
     this.loading.add(name);
     try {
       const member = ROSTER[name];
-      const file = /^([a-z][a-z\d+.-]*:|\/)/i.test(member.file) ? member.file : this.opts.models + member.file;
-      const c = member.make(await loadModel(file));
+      const c = member.make(await loadModel(assetUrl(member.file)));
       c.dress(this.opts.look);
       if (this.opts.castShadows) {
         c.shadowCard = false;
