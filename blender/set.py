@@ -1710,18 +1710,22 @@ def librug(m, add):
 
 # The studio's board: the comic hangs on it a page at a time, flip-chart style (the site hangs
 # the pages from the rail bone and flips them over it to hang down the back). The page: its
-# width, and its top under the clips; the rail runs just above the panel, over its middle.
+# width, and its top under the clips; the rail runs just above the panel, over its middle. The
+# wide board (comicboard-wide) is two pages across, BOARD_GAP apart, for a spread.
 BOARD_PAGE_W = 0.6
 BOARD_HANG = 1.6
+BOARD_GAP = 0.06
 
 
-def comicboard(m, add):
+def comicboard(m, add, wide=False):
     """A freestanding studio board on two pale-oak uprights, each on a steel T-foot with
     castors: a cork panel framed in oak, a steel rail just above it with two big bulldog clips
     for the pages (nothing above the rail, so a page goes over it), a ledge at its foot with
     pencils, a brush and an eraser, a slim visor with two light eyes (Dot0) under the ledge,
-    and a beacon (Dot1) on the right upright's cap."""
-    up_x, top = 0.43, 1.7
+    and a beacon (Dot1) on the right upright's cap. Wide: two pages side by side on the rail,
+    with two clips each, the uprights half a page and the gap further out."""
+    across = BOARD_PAGE_W / 2 + BOARD_GAP / 2 if wide else 0
+    up_x, top = 0.43 + across, 1.7
     rz = BOARD_HANG + 0.022
     for sx in (-1, 1):
         x = sx * up_x
@@ -1734,7 +1738,7 @@ def comicboard(m, add):
         bolt(add, m, (x, -0.024, 0.45), 0.007, 'front')
     add(box('Stretcher', (up_x - 0.02, 0.016, 0.016), (0, 0.0, 0.2), 0.35), m['role']('Wood'))
     # The panel: cork in an oak frame, a page and a bit all round, under the rail.
-    pw, ph = BOARD_PAGE_W / 2 + 0.03, 0.45
+    pw, ph = BOARD_PAGE_W / 2 + 0.03 + across, 0.45
     pz = BOARD_HANG - 0.005 - ph
     add(box('Cork', (pw - 0.012, 0.008, ph - 0.012), (0, 0.0, pz), 0.06), m['role']('Cork'))
     for sz in (-1, 1):
@@ -1745,7 +1749,7 @@ def comicboard(m, add):
             add(box('Bracket', ((up_x - pw) / 2, 0.006, 0.012), (sx * (pw + up_x) / 2, 0.0, pz + bz), 0.4), m['joint'])
     # The rail and its clips: the pages hang from the clips' jaws, front and back.
     add(kit.tube('Rail', [(-up_x, 0.0, rz), (up_x, 0.0, rz)], 0.011, ring=12)[0], m['joint'], 'rail')
-    for cx in (-0.2, 0.2):
+    for cx in [c + sx * across for sx in ((-1, 1) if wide else (0,)) for c in (-0.2, 0.2)]:
         add(box('Clip', (0.042, 0.03, 0.022), (cx, 0.0, rz - 0.004), 0.35), m['role']('Clip', 'bezel'), 'rail')
         for sx in (-1, 1):
             add(kit.tube('ClipWire', [(cx + sx * 0.03, -0.022, rz + 0.012), (cx + sx * 0.024, -0.03, rz + 0.045),
@@ -1791,4 +1795,5 @@ KINDS = {
     'gramophone': dict(build=gramophone, height=0.9, width=0.6),
     'librug': dict(build=librug, height=0.03, width=1.6),
     'comicboard': dict(build=comicboard, height=1.78, width=0.92),
+    'comicboard-wide': dict(build=lambda m, add: comicboard(m, add, wide=True), height=1.78, width=1.58),
 }

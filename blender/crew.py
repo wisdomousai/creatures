@@ -55,7 +55,7 @@ DECOR = ('mobile', 'pendant', 'disco', 'swing', 'lantern', 'chime', 'orrery', 'p
 PROPS = ('yarn', 'bone', 'ball', 'cushion', 'crate', 'table', 'balloon', 'frisbee', 'block-star', 'block-ring',
          'block-heart', 'top', 'trampoline', 'seesaw', 'drum', 'wand', 'spot')
 # The living set pieces, plants and furniture in the back of the box (set.py), exported as set-NAME.
-SET = ('fern', 'sunflower', 'lamp', 'armchair', 'bookshelf', 'rug', 'stool', 'radio', 'fireplace', 'bookcase', 'cattree', 'kennel', 'birdbath', 'perch', 'gramophone', 'libcase', 'librug', 'comicboard')
+SET = ('fern', 'sunflower', 'lamp', 'armchair', 'bookshelf', 'rug', 'stool', 'radio', 'fireplace', 'bookcase', 'cattree', 'kennel', 'birdbath', 'perch', 'gramophone', 'libcase', 'librug', 'comicboard', 'comicboard-wide')
 # The old computer in the middle of the box that the site's pages play on (monitor.py).
 # The tools the crew hold (signs.py for the signs, tools.py for the rest), exported as
 # tool-NAME.

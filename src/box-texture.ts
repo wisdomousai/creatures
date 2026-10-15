@@ -3,7 +3,8 @@ import { pixelRatio } from './stage';
 
 /**
  * The rooms as pictures (box.ts): a picture of each room, a library, an office, a lab, a
- * jungle and a comic artist's studio (models/pic/ROOM.webp, made by blender/tex/pictures.py),
+ * jungle, a comic artist's studio and a spaceship's galley (models/pic/ROOM.webp, made by
+ * blender/tex/pictures.py),
  * each the whole room seen from its open front in one-point perspective, as the box is: the
  * back wall straight on, the side walls, the floor and the ceiling running back to it
  * (GEOMETRY says where its back wall and its corners are in each picture). An SVG image can't recede, so each of the
@@ -26,8 +27,10 @@ import { pixelRatio } from './stage';
 
 /** The rooms there are pictures of: the library (the reading room, and the Writing section's
  * room), and the office, the lab, the jungle and the studio (where comics are drawn) other
- * sections are in. */
-export type Setting = 'library' | 'office' | 'lab' | 'jungle' | 'studio';
+ * sections are in, and the ship (the galley of a rust-orange salvage tug: a wall screen, a
+ * couch, a record player, a jar, a pot of noodles and a wall of pinned notes) a comic set
+ * aboard one is read in. */
+export type Setting = 'library' | 'office' | 'lab' | 'jungle' | 'studio' | 'ship';
 
 const LAYOUTS: Record<
   Setting,
@@ -43,6 +46,7 @@ const LAYOUTS: Record<
   lab: { dim: 0, base: '#e4e4e2' },
   jungle: { dim: 0.04, base: '#1f2b1c' },
   studio: { dim: 0, base: '#ece3d6' },
+  ship: { dim: 0.08, base: '#3a2416' },
 };
 
 /** Where the room is in each picture, in px of it at 1536 by 1024 (DRAFT: the size it was drawn
@@ -58,6 +62,7 @@ const GEOMETRY: Record<
   lab: { back: [109.5, 69, 1397.5, 781], corners: [17, -17.5, 834, 863.5] },
   jungle: { back: [139, 77.5, 1395, 727.5], corners: [1.5, 0, 855.5, 866] },
   studio: { back: [148, 70.5, 1402, 731], corners: [-5, -25, 791, 800] },
+  ship: { back: [153, 122, 1388, 648], corners: [38, 45, 735, 740] },
 };
 const DRAFT = 1536;
 

@@ -1169,6 +1169,23 @@
     },
     "dots": ["#3d4a5a", "#ffcf6a"]
   },
+  "set-comicboard-ship": {
+    "base": {
+      "joint": "#5a5248",
+      "bezel": "#2a2520",
+      "glow": "#ffb05a"
+    },
+    "roles": {
+      "Wood": "#b5552a",
+      "Cork": "#4a4340",
+      "Clip": "#2a2520",
+      "Pencil0": "#e2b23a",
+      "Pencil1": "#3d6fb0",
+      "Pencil2": "#c8483e",
+      "Eraser": "#e88f9a"
+    },
+    "dots": ["#3d4a5a", "#ffb05a"]
+  },
   "set-librug": {
     "base": {
       "joint": "#6b5a4a"

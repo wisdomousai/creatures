@@ -91,6 +91,10 @@ const SURFACES: Record<string, Surface> = {
 };
 const MODEL_SURFACES: Record<string, Record<string, Surface>> = {
   'set-gramophone': { Case: WOOD },
+  // Aboard the ship the board's uprights are painted steel, worn, not grained oak.
+  'set-comicboard-ship': {
+    Wood: { map: 'plaster', metres: 0.4, strength: { ink: 0.1, paper: 0.25, colour: 0.35 } },
+  },
   'set-librug': {
     Pile: { map: 'rug', metres: 1, whole: true, strength: { ink: 0.7, paper: 0.85 } },
   },
